@@ -970,22 +970,22 @@ const S = {
 };
 
 // ── PERSIST ────────────────────────────────────────────
-const DB_VERSION = 5; // tăng version để force reset khi có breaking change
+const DB_VERSION = 6; // tăng version để force reset khi có breaking change
 
 function persist(){
   try{
-    localStorage.setItem('hts_v5', JSON.stringify({...S, _ver: DB_VERSION}));
+    localStorage.setItem('hts_v6', JSON.stringify({...S, _ver: DB_VERSION}));
   }catch(e){}
 }
 
 function restore(){
   try{
-    const raw = localStorage.getItem('hts_v5');
+    const raw = localStorage.getItem('hts_v6');
     if(!raw) return;
     const d = JSON.parse(raw);
     // Version check — nếu format cũ thì bỏ qua, seed lại từ đầu
     if(!d._ver || d._ver < DB_VERSION){
-      localStorage.removeItem('hts_v5');
+      localStorage.removeItem('hts_v6');
       return;
     }
     // Migrate: đảm bảo users có field pw (tương thích version cũ dùng password)
@@ -998,7 +998,7 @@ function restore(){
     Object.assign(S, d);
   }catch(e){
     // Nếu parse lỗi thì xóa data hỏng
-    try{ localStorage.removeItem('hts_v5'); }catch(_){}
+    try{ localStorage.removeItem('hts_v6'); }catch(_){}
   }
 }
 
@@ -1152,12 +1152,12 @@ async function gasCall(action, data) {
 
 // ═══ SHA-256 (Web Crypto) ════════════════════════════════
 async function sha256(str) {
-  const buf = await crypto.subtle.digest(
-    'SHA-256',
-    new TextEncoder().encode(str + 'HTSOLAR_SECRET')
-  );
-  return Array.from(new Uint8Array(buf))
-    .map(b => b.toString(16).padStart(2,'0')).join('');
+  // Output base64 giống GAS Utilities.base64Encode(computeDigest(...))
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str + 'HTSOLAR_SECRET'));
+  const bytes = new Uint8Array(buf);
+  let binary = '';
+  bytes.forEach(b => binary += String.fromCharCode(b));
+  return btoa(binary);
 }
 
 async function hashPendingPasswords() {
@@ -1174,7 +1174,7 @@ async function hashPendingPasswords() {
 // ═══ AUTH ════════════════════════════════════════════════
 function clearCacheAndReload() {
   if (!confirm('Reset về dữ liệu mặc định? Dữ liệu bạn đã nhập sẽ mất.')) return;
-  try { localStorage.removeItem('hts_v5'); } catch(e) {}
+  try { localStorage.removeItem('hts_v6'); } catch(e) {}
   location.reload();
 }
 
