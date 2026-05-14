@@ -1,0 +1,1906 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>HT Solar ERP – Final v4</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+/* ====================================================
+   HT SOLAR ERP — MASTER STYLESHEET
+   Palette: Navy #0f2d5e | Blue #1a56db | Orange #f97316
+   Font: Syne (display) + Be Vietnam Pro (body)
+==================================================== */
+:root{
+  --navy:#0f2d5e; --blue:#1a56db; --blue-mid:#2563eb; --blue-l:#dbeafe; --blue-xl:#eff6ff;
+  --orange:#f97316; --orange-d:#c2410c; --orange-l:#ffedd5;
+  --green:#16a34a; --green-l:#dcfce7;
+  --red:#dc2626; --red-l:#fee2e2;
+  --teal:#0891b2; --teal-l:#cffafe;
+  --bg:#f0f4fc; --bg2:#e4ecf8; --white:#fff;
+  --text:#1e293b; --muted:#64748b; --border:#dde3ed;
+  --sidebar-w:248px; --topbar-h:58px;
+  --r:10px; --r-lg:14px;
+  --shadow:0 2px 12px rgba(26,86,219,.09);
+  --shadow-lg:0 8px 32px rgba(26,86,219,.16);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Be Vietnam Pro',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6}
+h1,h2,h3,.logo-txt{font-family:'Syne',sans-serif}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+
+/* ══════════════════════════════════════
+   LOGIN
+══════════════════════════════════════ */
+.login-page{min-height:100vh;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(140deg,#050f26 0%,#0f2d5e 50%,#1a3a8f 100%);position:relative;overflow:hidden}
+.login-bg{position:absolute;inset:0;pointer-events:none}
+.sun-ring{position:absolute;border-radius:50%;border:1.5px solid rgba(249,115,22,.18);
+  top:50%;left:50%;transform:translate(-50%,-50%);animation:pulse 4s ease-in-out infinite}
+.r1{width:280px;height:280px}.r2{width:520px;height:520px;animation-delay:.8s;border-color:rgba(249,115,22,.1)}
+.r3{width:800px;height:800px;animation-delay:1.6s;border-color:rgba(249,115,22,.05)}
+.sun-core{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:80px;height:80px;border-radius:50%;
+  background:radial-gradient(circle,rgba(249,115,22,.5),rgba(249,115,22,.05));
+  animation:pulse 3s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.7;transform:translate(-50%,-50%) scale(1)}50%{opacity:1;transform:translate(-50%,-50%) scale(1.06)}}
+.login-card{background:rgba(255,255,255,.97);border-radius:20px;padding:40px 44px;
+  width:420px;max-width:calc(100vw - 32px);box-shadow:0 24px 80px rgba(0,0,0,.4);position:relative;z-index:2}
+.login-logo{display:flex;align-items:center;gap:14px;margin-bottom:32px}
+.logo-icon-wrap{width:52px;height:52px;background:linear-gradient(135deg,var(--orange),var(--orange-d));
+  border-radius:14px;display:flex;align-items:center;justify-content:center;
+  color:#fff;font-size:22px;box-shadow:0 4px 16px rgba(249,115,22,.4);flex-shrink:0}
+.login-logo h1{font-size:24px;font-weight:800;color:var(--navy)}
+.login-logo p{font-size:11px;color:var(--muted);letter-spacing:.4px;margin-top:1px}
+.lf-group{margin-bottom:18px}
+.lf-group label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:6px}
+.inp-wrap{position:relative}
+.inp-wrap i{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:13px}
+.inp-wrap input{width:100%;padding:11px 14px 11px 38px;border:1.5px solid var(--border);
+  border-radius:var(--r);font-size:14px;font-family:inherit;transition:.2s;background:var(--bg)}
+.inp-wrap input:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-l);background:#fff}
+.login-err{background:var(--red-l);color:var(--red);padding:10px 14px;border-radius:8px;margin-bottom:14px;font-size:13px;display:none}
+.btn-login{width:100%;padding:13px;background:linear-gradient(135deg,var(--blue-mid),var(--navy));
+  color:#fff;border:none;border-radius:var(--r);font-size:15px;font-weight:600;font-family:inherit;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:.15s}
+.btn-login:hover{opacity:.9;transform:translateY(-1px)}
+.login-hint{text-align:center;margin-top:18px;font-size:12px;color:var(--muted)}
+.login-accounts{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;justify-content:center}
+.acc-chip{background:var(--bg2);border:1px solid var(--border);border-radius:20px;
+  padding:4px 12px;font-size:11px;color:var(--muted);cursor:pointer;transition:.15s}
+.acc-chip:hover{background:var(--blue-l);border-color:var(--blue);color:var(--blue)}
+
+/* ══════════════════════════════════════
+   APP LAYOUT
+══════════════════════════════════════ */
+.app-layout{display:flex;min-height:100vh}
+
+/* ── SIDEBAR ── */
+.sidebar{width:var(--sidebar-w);min-height:100vh;
+  background:linear-gradient(180deg,var(--navy) 0%,#1a3a8f 100%);
+  display:flex;flex-direction:column;position:fixed;top:0;left:0;z-index:100;
+  transition:width .25s ease,transform .25s ease;overflow:hidden}
+.sidebar.collapsed{width:60px}
+.sb-header{display:flex;align-items:center;justify-content:space-between;
+  padding:16px 14px;border-bottom:1px solid rgba(255,255,255,.08)}
+.sb-logo{display:flex;align-items:center;gap:10px;color:#fff;white-space:nowrap;overflow:hidden}
+.sb-logo i{font-size:20px;color:var(--orange);min-width:22px;flex-shrink:0}
+.sb-logo span{font-family:'Syne',sans-serif;font-size:17px;font-weight:800}
+.sb-toggle{background:rgba(255,255,255,.1);border:none;color:#fff;
+  width:26px;height:26px;border-radius:6px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.user-badge{display:flex;align-items:center;gap:10px;padding:14px;
+  border-bottom:1px solid rgba(255,255,255,.08)}
+.user-av{width:34px;height:34px;border-radius:50%;
+  background:linear-gradient(135deg,var(--orange),var(--orange-d));
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;font-weight:700;font-size:13px;flex-shrink:0}
+.user-nm{color:#fff;font-weight:600;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.user-rl{font-size:10px;background:rgba(249,115,22,.22);color:var(--orange);
+  padding:1px 8px;border-radius:20px;display:inline-block;margin-top:2px}
+.sb-nav{flex:1;overflow-y:auto;padding:10px 7px}
+.sb-nav::-webkit-scrollbar{width:3px}
+.nav-lbl{font-size:10px;font-weight:700;letter-spacing:1px;color:rgba(255,255,255,.3);
+  text-transform:uppercase;padding:10px 10px 3px;white-space:nowrap;overflow:hidden}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 10px;
+  color:rgba(255,255,255,.6);text-decoration:none;border-radius:8px;margin-bottom:1px;
+  white-space:nowrap;overflow:hidden;transition:background .15s,color .15s;cursor:pointer}
+.nav-item i{min-width:18px;font-size:14px;text-align:center;flex-shrink:0}
+.nav-item span{font-size:13px;font-weight:500}
+.nav-item:hover{background:rgba(255,255,255,.08);color:#fff}
+.nav-item.active{background:rgba(249,115,22,.22);color:var(--orange)}
+.nav-item.active i{color:var(--orange)}
+.btn-logout{margin:10px;padding:10px 14px;background:rgba(220,38,38,.15);
+  border:1px solid rgba(220,38,38,.25);color:#fca5a5;border-radius:8px;
+  cursor:pointer;font-size:13px;font-family:inherit;
+  display:flex;align-items:center;gap:8px;transition:.15s;white-space:nowrap;overflow:hidden}
+.btn-logout:hover{background:rgba(220,38,38,.25)}
+.sidebar.collapsed .nav-lbl,.sidebar.collapsed .nav-item span,
+.sidebar.collapsed .user-info,.sidebar.collapsed .btn-logout span,
+.sidebar.collapsed .sb-logo span{display:none}
+.sidebar.collapsed .nav-item{justify-content:center}
+.sidebar.collapsed .user-badge{justify-content:center}
+
+/* ── MAIN CONTENT ── */
+.main-content{margin-left:var(--sidebar-w);flex:1;min-width:0;transition:margin-left .25s}
+.main-content.expanded{margin-left:60px}
+.topbar{height:var(--topbar-h);background:var(--white);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:14px;padding:0 22px;
+  position:sticky;top:0;z-index:50;box-shadow:0 1px 0 var(--border)}
+.topbar-menu{background:none;border:none;cursor:pointer;color:var(--muted);font-size:17px;display:none;padding:4px}
+.topbar-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:var(--text);flex:1}
+.topbar-right{display:flex;align-items:center;gap:14px}
+.topbar-date{font-size:11px;color:var(--muted)}
+.topbar-notif{position:relative;cursor:pointer;color:var(--muted);font-size:17px}
+.notif-dot{position:absolute;top:0;right:-2px;width:7px;height:7px;
+  border-radius:50%;background:var(--orange);border:1.5px solid #fff}
+.page-content{padding:22px}
+.page{display:none}
+.page.active{display:block;animation:fadeIn .2s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.page-header{display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:18px;flex-wrap:wrap;gap:10px}
+.page-header h2{font-family:'Syne',sans-serif;font-size:20px;font-weight:800}
+.page-sub{font-size:12px;color:var(--muted)}
+
+/* ══════════════════════════════════════
+   STAT CARDS
+══════════════════════════════════════ */
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
+.stat-card{background:var(--white);border-radius:var(--r);padding:18px;
+  display:flex;gap:14px;align-items:flex-start;box-shadow:var(--shadow);
+  border-left:4px solid transparent;transition:transform .15s,box-shadow .15s}
+.stat-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+.stat-card.c-orange{border-left-color:var(--orange)}
+.stat-card.c-blue{border-left-color:var(--blue)}
+.stat-card.c-red{border-left-color:var(--red)}
+.stat-card.c-green{border-left-color:var(--green)}
+.stat-card.c-teal{border-left-color:var(--teal)}
+.stat-icon{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+.c-orange .stat-icon{background:var(--orange-l);color:var(--orange)}
+.c-blue .stat-icon{background:var(--blue-l);color:var(--blue)}
+.c-red .stat-icon{background:var(--red-l);color:var(--red)}
+.c-green .stat-icon{background:var(--green-l);color:var(--green)}
+.c-teal .stat-icon{background:var(--teal-l);color:var(--teal)}
+.stat-lbl{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
+.stat-val{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;margin:3px 0}
+.stat-chg{font-size:11px;color:var(--muted)}
+.stat-chg.up{color:var(--green)}.stat-chg.dn{color:var(--red)}
+
+/* ══════════════════════════════════════
+   CHARTS
+══════════════════════════════════════ */
+.chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px}
+.chart-card{background:var(--white);border-radius:var(--r);padding:18px;box-shadow:var(--shadow)}
+.chart-card.wide{grid-column:span 2}
+.chart-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;margin-bottom:14px}
+
+/* ══════════════════════════════════════
+   TABLES
+══════════════════════════════════════ */
+.tbl-card{background:var(--white);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden}
+.data-tbl{width:100%;border-collapse:collapse}
+.data-tbl th{background:var(--bg2);padding:10px 13px;font-size:11px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.4px;color:var(--muted);
+  text-align:left;white-space:nowrap;border-bottom:1px solid var(--border)}
+.data-tbl td{padding:10px 13px;border-bottom:1px solid #f0f4fb;font-size:13px;vertical-align:middle}
+.data-tbl tbody tr:last-child td{border-bottom:none}
+.data-tbl tbody tr:hover{background:var(--bg)}
+.data-tbl input{border:1px solid var(--border);border-radius:5px;padding:5px 8px;
+  font-size:12px;font-family:inherit;background:#fff;width:100%}
+.data-tbl input:focus,.data-tbl select:focus{outline:none;border-color:var(--blue)}
+.data-tbl select{border:1px solid var(--border);border-radius:5px;padding:5px 8px;
+  font-size:12px;font-family:inherit;background:#fff}
+
+/* ══════════════════════════════════════
+   FILTER BAR
+══════════════════════════════════════ */
+.filter-bar{display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.srch-box{position:relative;flex:1;min-width:180px}
+.srch-box i{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:12px}
+.srch-box input{width:100%;padding:8px 12px 8px 32px;border:1.5px solid var(--border);border-radius:8px;
+  font-size:13px;font-family:inherit;transition:.2s}
+.srch-box input:focus{outline:none;border-color:var(--blue)}
+.flt-sel{padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;
+  font-size:13px;font-family:inherit;background:#fff;cursor:pointer}
+.flt-sel:focus{outline:none;border-color:var(--blue)}
+
+/* ══════════════════════════════════════
+   BADGES
+══════════════════════════════════════ */
+.badge{display:inline-block;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:600}
+.bg-blue{background:var(--blue-l);color:#1d4ed8}
+.bg-orange{background:var(--orange-l);color:var(--orange-d)}
+.bg-green{background:var(--green-l);color:var(--green)}
+.bg-red{background:var(--red-l);color:var(--red)}
+.bg-gray{background:#f1f5f9;color:#475569}
+.bg-teal{background:var(--teal-l);color:var(--teal)}
+
+/* ══════════════════════════════════════
+   BUTTONS
+══════════════════════════════════════ */
+.btn{padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;
+  font-family:inherit;cursor:pointer;border:none;
+  display:inline-flex;align-items:center;gap:6px;transition:.15s}
+.btn:hover{opacity:.88;transform:translateY(-1px)}
+.btn:active{transform:translateY(0)}
+.btn-primary{background:linear-gradient(135deg,var(--blue-mid),var(--navy));color:#fff}
+.btn-orange{background:var(--orange);color:#fff}
+.btn-green{background:var(--green);color:#fff}
+.btn-red{background:var(--red);color:#fff}
+.btn-outline{background:transparent;border:1.5px solid var(--border);color:var(--text)}
+.btn-outline:hover{border-color:var(--blue);color:var(--blue)}
+.btn-sm{padding:5px 11px;font-size:12px}
+.btn-xs{padding:4px 9px;font-size:11px}
+.btn-icon{width:28px;height:28px;border-radius:6px;border:none;cursor:pointer;
+  display:inline-flex;align-items:center;justify-content:center;font-size:12px;transition:.15s}
+.btn-icon:hover{opacity:.75}
+.bi-blue{background:var(--blue-l);color:var(--blue)}
+.bi-orange{background:var(--orange-l);color:var(--orange)}
+.bi-red{background:var(--red-l);color:var(--red)}
+.bi-green{background:var(--green-l);color:var(--green)}
+.btn-group{display:flex;gap:8px;flex-wrap:wrap}
+
+/* ══════════════════════════════════════
+   FORMS
+══════════════════════════════════════ */
+.fg{margin-bottom:13px}
+.fg label{font-size:11px;font-weight:700;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:5px}
+.fc{width:100%;padding:8px 11px;border:1.5px solid var(--border);
+  border-radius:8px;font-size:13px;font-family:inherit;transition:.2s;background:#fff}
+.fc:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-l)}
+textarea.fc{resize:vertical}
+.fr2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.fr3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+
+/* ══════════════════════════════════════
+   PROGRESS
+══════════════════════════════════════ */
+.prog-wrap{background:var(--bg2);border-radius:4px;height:5px;width:70px;overflow:hidden}
+.prog-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--blue-mid),var(--orange))}
+
+/* ══════════════════════════════════════
+   KANBAN
+══════════════════════════════════════ */
+.kanban-board{display:flex;gap:10px;overflow-x:auto;padding-bottom:6px;margin-bottom:18px}
+.kanban-col{min-width:180px;background:var(--bg2);border-radius:var(--r);padding:12px}
+.kanban-col-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;
+  color:var(--muted);margin-bottom:8px;display:flex;align-items:center;justify-content:space-between}
+.kanban-cnt{background:var(--blue-l);color:var(--blue-mid);
+  font-size:10px;padding:1px 7px;border-radius:10px;font-weight:700}
+.kanban-card{background:#fff;border-radius:8px;padding:9px 11px;
+  margin-bottom:7px;box-shadow:0 1px 4px rgba(0,0,0,.07);
+  font-size:12px;cursor:pointer;transition:transform .12s;border-left:3px solid var(--orange)}
+.kanban-card:hover{transform:translateY(-1px)}
+.kc-name{font-weight:600;color:var(--text);margin-bottom:2px}
+.kc-val{color:var(--orange);font-weight:700}
+.kc-meta{font-size:10px;color:var(--muted);margin-top:3px}
+
+/* ══════════════════════════════════════
+   ALERT
+══════════════════════════════════════ */
+.alert-item{display:flex;align-items:center;gap:8px;
+  padding:9px 13px;border-radius:8px;margin-bottom:5px;font-size:13px;font-weight:500}
+.alert-warn{background:#fef3c7;color:#92400e;border-left:3px solid #f59e0b}
+.alert-error{background:var(--red-l);color:var(--red);border-left:3px solid var(--red)}
+
+/* ══════════════════════════════════════
+   MODAL
+══════════════════════════════════════ */
+.modal-overlay{position:fixed;inset:0;z-index:200;background:rgba(15,30,74,.55);
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity .2s;padding:14px}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal{background:#fff;border-radius:var(--r-lg);width:580px;max-width:100%;
+  max-height:90vh;overflow-y:auto;box-shadow:0 24px 80px rgba(0,0,0,.32);
+  transform:translateY(20px);transition:transform .2s;display:none}
+.modal-overlay.open .modal.vis{display:block;transform:translateY(0)}
+.modal-hd{display:flex;align-items:center;justify-content:space-between;
+  padding:18px 22px;border-bottom:1px solid var(--border)}
+.modal-hd h3{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;
+  display:flex;align-items:center;gap:8px}
+.modal-hd h3 i{color:var(--orange)}
+.modal-close{background:none;border:none;cursor:pointer;color:var(--muted);font-size:17px;padding:3px}
+.modal-body{padding:22px}
+.modal-ft{padding:14px 22px;border-top:1px solid var(--border);
+  display:flex;justify-content:flex-end;gap:8px}
+
+/* ══════════════════════════════════════
+   QUOTATION PAGE  (báo giá)
+══════════════════════════════════════ */
+.quote-layout{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.q-card{background:var(--white);border-radius:var(--r);padding:20px;box-shadow:var(--shadow)}
+.q-card h3{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;
+  color:var(--navy);margin-bottom:14px;display:flex;align-items:center;gap:7px;
+  border-bottom:1px solid var(--border);padding-bottom:10px}
+.q-card h3 i{color:var(--orange)}
+.sum-strip{display:flex;gap:10px;background:linear-gradient(135deg,var(--navy),#1a3a8f);
+  border-radius:var(--r);padding:13px 16px;color:#fff;margin-bottom:16px;flex-wrap:wrap}
+.sum-it{flex:1;min-width:100px;text-align:center}
+.sum-lbl{font-size:10px;opacity:.65;text-transform:uppercase;letter-spacing:.4px}
+.sum-v{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;margin-top:2px}
+.qp-box{border:1.5px solid var(--border);border-radius:8px;padding:16px;
+  background:var(--bg);min-height:260px;font-size:12px;max-height:480px;overflow-y:auto;margin-bottom:14px}
+.qp-co{font-family:'Syne',sans-serif;font-size:15px;font-weight:800;color:var(--navy);text-align:center}
+.qp-ttl{font-size:12px;font-weight:700;color:var(--orange);text-transform:uppercase;text-align:center;margin:2px 0}
+.qp-meta{font-size:10px;color:var(--muted);text-align:center}
+.qp-div{border:none;border-top:2px solid var(--blue);margin:8px 0}
+.qp-sec{background:var(--blue-xl);padding:3px 8px;font-weight:700;font-size:10px;
+  color:var(--blue);margin:6px 0 2px;border-left:3px solid var(--blue)}
+.qp-tbl{width:100%;border-collapse:collapse;font-size:10px}
+.qp-tbl th{background:var(--navy);color:#fff;padding:4px 6px;text-align:left}
+.qp-tbl th:last-child,.qp-tbl td:last-child{text-align:right}
+.qp-tbl td{padding:3px 6px;border-bottom:1px solid #edf0f7}
+.qp-tot{text-align:right;border-top:2px solid var(--navy);margin-top:8px;padding-top:8px}
+.qp-tot-row{font-size:10px;color:var(--muted)}
+.qp-tot-final{font-family:'Syne',sans-serif;font-size:14px;font-weight:800;color:var(--orange)}
+
+/* ── Data table inside quote tabs ── */
+.q-subtabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:14px;overflow-x:auto}
+.q-subtab{padding:9px 16px;cursor:pointer;font-size:12px;font-weight:600;
+  color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap}
+.q-subtab.act{color:var(--blue);border-bottom-color:var(--blue)}
+.q-subpane{display:none}
+.q-subpane.act{display:block}
+
+/* ══════════════════════════════════════
+   MINI TABLE (dashboard)
+══════════════════════════════════════ */
+.mini-tbl{width:100%;border-collapse:collapse;font-size:12px}
+.mini-tbl th{color:var(--muted);font-weight:600;padding:5px 9px;
+  border-bottom:1px solid var(--border);text-align:left;font-size:11px}
+.mini-tbl td{padding:6px 9px;border-bottom:1px solid #f0f4fb}
+.mini-tbl tbody tr:last-child td{border-bottom:none}
+
+/* ══════════════════════════════════════
+   TOAST
+══════════════════════════════════════ */
+#toast{position:fixed;bottom:22px;right:22px;z-index:999;
+  padding:11px 18px;border-radius:10px;font-size:13px;font-weight:500;
+  color:#fff;box-shadow:0 8px 24px rgba(0,0,0,.2);
+  transform:translateY(20px);opacity:0;transition:.3s;pointer-events:none}
+#toast.show{transform:translateY(0);opacity:1}
+#toast.success{background:var(--green)}
+#toast.error{background:var(--red)}
+#toast.info{background:var(--blue)}
+#toast.warn{background:#d97706}
+
+/* ══════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════ */
+@media(max-width:1100px){
+  .stat-grid{grid-template-columns:repeat(2,1fr)}
+  .chart-grid{grid-template-columns:1fr}
+  .chart-card.wide{grid-column:span 1}
+}
+@media(max-width:768px){
+  :root{--sidebar-w:0px}
+  .sidebar{transform:translateX(-248px);width:248px!important}
+  .sidebar.mob-open{transform:translateX(0)}
+  .main-content{margin-left:0!important}
+  .topbar-menu{display:block}
+  .topbar-date{display:none}
+  .stat-grid{grid-template-columns:1fr 1fr}
+  .quote-layout{grid-template-columns:1fr}
+  .fr2,.fr3{grid-template-columns:1fr}
+  .page-content{padding:14px}
+}
+@media(max-width:480px){
+  .stat-grid{grid-template-columns:1fr}
+  .login-card{padding:28px 20px}
+}
+</style>
+</head>
+<body>
+<div id="loadingBar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:9999;height:3px;background:linear-gradient(90deg,var(--blue),var(--orange));animation:lb 1.5s ease-in-out infinite"></div>
+<style>@keyframes lb{0%{width:0;opacity:1}70%{width:90%;opacity:1}100%{width:100%;opacity:0}}</style>
+
+
+<!-- ══════════════════════════════════════
+     LOGIN
+══════════════════════════════════════ -->
+<div id="loginPage" class="login-page">
+  <div class="login-bg">
+    <div class="sun-core"></div>
+    <div class="sun-ring r1"></div>
+    <div class="sun-ring r2"></div>
+    <div class="sun-ring r3"></div>
+  </div>
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="logo-icon-wrap"><i class="fa-solid fa-solar-panel"></i></div>
+      <div><h1>HT Solar</h1><p>Energy Management System</p></div>
+    </div>
+    <div class="lf-group">
+      <label>Tài khoản</label>
+      <div class="inp-wrap"><i class="fa fa-user"></i>
+        <input type="text" id="loginUser" placeholder="Nhập tên đăng nhập" autocomplete="off"/>
+      </div>
+    </div>
+    <div class="lf-group">
+      <label>Mật khẩu</label>
+      <div class="inp-wrap"><i class="fa fa-lock"></i>
+        <input type="password" id="loginPass" placeholder="Nhập mật khẩu"/>
+      </div>
+    </div>
+    <div id="loginErr" class="login-err"></div>
+    <button class="btn-login" onclick="doLogin()"><span>Đăng nhập</span><i class="fa fa-arrow-right"></i></button>
+    <p class="login-hint">Tài khoản demo:</p>
+    <div class="login-accounts">
+      <span class="acc-chip" onclick="fillLogin('admin','123456')">👑 admin</span>
+      <span class="acc-chip" onclick="fillLogin('ketoan','kt2024')">💰 kế toán</span>
+      <span class="acc-chip" onclick="fillLogin('sales1','kd2024')">📊 kinh doanh</span>
+      <span class="acc-chip" onclick="fillLogin('kho1','kh2024')">📦 kho</span>
+    </div>
+    <div style="margin-top:14px;text-align:center">
+      <span onclick="clearCacheAndReload()" style="font-size:11px;color:var(--muted);cursor:pointer;text-decoration:underline;opacity:.7">
+        🔄 Không đăng nhập được? Nhấn để xóa cache
+      </span>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     MAIN APP
+══════════════════════════════════════ -->
+<div id="mainApp" class="app-layout" style="display:none">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sb-header">
+      <div class="sb-logo"><i class="fa-solid fa-solar-panel"></i><span>HT Solar</span></div>
+      <button class="sb-toggle" onclick="toggleSidebar()"><i class="fa fa-bars"></i></button>
+    </div>
+    <div class="user-badge">
+      <div class="user-av" id="uAv">A</div>
+      <div class="user-info">
+        <div class="user-nm" id="uName">Admin</div>
+        <div class="user-rl" id="uRole">Quản trị</div>
+      </div>
+    </div>
+    <nav class="sb-nav">
+      <div class="nav-lbl">Tổng quan</div>
+      <a class="nav-item active" onclick="gotoPage('dashboard',this)"><i class="fa fa-chart-pie"></i><span>Dashboard</span></a>
+      <div class="nav-lbl">Kinh doanh</div>
+      <a class="nav-item" onclick="gotoPage('customers',this)"><i class="fa fa-users"></i><span>Khách hàng</span></a>
+      <a class="nav-item" onclick="gotoPage('contracts',this)"><i class="fa fa-file-contract"></i><span>Hợp đồng</span></a>
+      <div class="nav-lbl">Báo giá</div>
+      <a class="nav-item" onclick="gotoPage('quote',this)"><i class="fa fa-bolt"></i><span>Tạo báo giá</span></a>
+      <a class="nav-item" onclick="gotoPage('qdata',this)"><i class="fa fa-database"></i><span>Data giá</span></a>
+      <div class="nav-lbl">Kho vận</div>
+      <a class="nav-item" onclick="gotoPage('inventory',this)"><i class="fa fa-boxes-stacked"></i><span>Kho hàng</span></a>
+      <a class="nav-item" onclick="gotoPage('products',this)"><i class="fa fa-microchip"></i><span>Sản phẩm</span></a>
+      <div class="nav-lbl">Tài chính</div>
+      <a class="nav-item" onclick="gotoPage('payments',this)"><i class="fa fa-money-bill-wave"></i><span>Thanh toán</span></a>
+      <div class="nav-lbl">Hệ thống</div>
+      <a class="nav-item" class="nav-admin" onclick="gotoPage('users',this)"><i class="fa fa-user-shield"></i><span>Người dùng</span></a>
+      <a class="nav-item" onclick="gotoPage('logs',this)"><i class="fa fa-list-check"></i><span>Nhật ký</span></a>
+    </nav>
+    <button class="btn-logout" onclick="doLogout()"><i class="fa fa-right-from-bracket"></i><span>Đăng xuất</span></button>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main-content" id="mainContent">
+    <header class="topbar">
+      <button class="topbar-menu" onclick="toggleSidebar()"><i class="fa fa-bars"></i></button>
+      <div class="topbar-title" id="pageTitle">Dashboard</div>
+      <div class="topbar-right"><button id="btnRefresh" onclick="loadAllData()" style="display:none;background:none;border:1.5px solid var(--border);border-radius:7px;padding:5px 11px;cursor:pointer;font-size:12px;color:var(--muted);display:flex;align-items:center;gap:5px" title="Tải lại dữ liệu"><i class="fa fa-rotate"></i></button>
+        <div class="topbar-date" id="topDate"></div>
+        <div class="topbar-notif"><i class="fa fa-bell"></i><span class="notif-dot"></span></div>
+      </div>
+    </header>
+
+    <div class="page-content">
+
+      <!-- ══ PAGE: DASHBOARD ══ -->
+      <section id="page-dashboard" class="page active">
+        <div class="page-header">
+          <h2>Tổng quan hệ thống</h2>
+          <span class="page-sub" id="dashDate"></span>
+        </div>
+        <div class="stat-grid">
+          <div class="stat-card c-orange">
+            <div class="stat-icon"><i class="fa fa-circle-dollar-to-slot"></i></div>
+            <div><div class="stat-lbl">Doanh thu tháng</div><div class="stat-val" id="stRevenue">—</div><div class="stat-chg up"><i class="fa fa-arrow-trend-up"></i> Live từ hợp đồng</div></div>
+          </div>
+          <div class="stat-card c-blue">
+            <div class="stat-icon"><i class="fa fa-file-signature"></i></div>
+            <div><div class="stat-lbl">Đang thi công</div><div class="stat-val" id="stContracts">—</div><div class="stat-chg up"><i class="fa fa-hammer"></i> Hợp đồng active</div></div>
+          </div>
+          <div class="stat-card c-red">
+            <div class="stat-icon"><i class="fa fa-clock-rotate-left"></i></div>
+            <div><div class="stat-lbl">Công nợ</div><div class="stat-val" id="stDebt">—</div><div class="stat-chg dn"><i class="fa fa-triangle-exclamation"></i> Cần thu hồi</div></div>
+          </div>
+          <div class="stat-card c-green">
+            <div class="stat-icon"><i class="fa fa-boxes-stacked"></i></div>
+            <div><div class="stat-lbl">Báo giá tháng này</div><div class="stat-val" id="stQuotes">—</div><div class="stat-chg"><i class="fa fa-file-invoice"></i> Tổng báo giá</div></div>
+          </div>
+        </div>
+        <div class="chart-grid">
+          <div class="chart-card wide"><div class="chart-title">Doanh thu & lợi nhuận 6 tháng</div><canvas id="revenueChart" height="110"></canvas></div>
+          <div class="chart-card"><div class="chart-title">Trạng thái hợp đồng</div><canvas id="contractPieChart" height="170"></canvas></div>
+          <div class="chart-card wide">
+            <div class="chart-title" style="margin-bottom:10px">Hợp đồng mới nhất</div>
+            <div id="dashContracts"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══ PAGE: CUSTOMERS ══ -->
+      <section id="page-customers" class="page">
+        <div class="page-header">
+          <h2>Quản lý khách hàng</h2>
+          <div class="btn-group">
+            <button class="btn btn-primary" onclick="openModal('addCust')"><i class="fa fa-plus"></i> Thêm khách hàng</button>
+          </div>
+        </div>
+        <div class="filter-bar">
+          <div class="srch-box"><i class="fa fa-search"></i><input id="custSearch" placeholder="Tìm theo tên, SĐT, địa chỉ..." oninput="filterCust()"/></div>
+          <select class="flt-sel" id="custStat" onchange="filterCust()">
+            <option value="">Tất cả trạng thái</option>
+            <option>Khách mới</option><option>Đã báo giá</option><option>Đang chốt</option><option>Đã ký HĐ</option><option>Hoàn thành</option>
+          </select>
+          <select class="flt-sel" id="custType" onchange="filterCust()">
+            <option value="">Tất cả loại</option>
+            <option>Hộ gia đình</option><option>Doanh nghiệp</option><option>Nông nghiệp</option>
+          </select>
+        </div>
+        <div class="tbl-card"><table class="data-tbl"><thead><tr>
+          <th>Mã KH</th><th>Họ tên</th><th>SĐT</th><th>Địa chỉ</th><th>Loại</th><th>Công suất</th><th>Trạng thái</th><th>Thao tác</th>
+        </tr></thead><tbody id="customerBody"></tbody></table></div>
+      </section>
+
+      <!-- ══ PAGE: CONTRACTS ══ -->
+      <section id="page-contracts" class="page">
+        <div class="page-header">
+          <h2>Quản lý hợp đồng</h2>
+          <button class="btn btn-primary" onclick="openModal('addContract')"><i class="fa fa-plus"></i> Tạo hợp đồng</button>
+        </div>
+        <div class="kanban-board" id="kanban"></div>
+        <div class="tbl-card">
+          <div style="padding:14px 16px 0;font-family:'Syne',sans-serif;font-size:13px;font-weight:700">Danh sách hợp đồng</div>
+          <table class="data-tbl"><thead><tr>
+            <th>Mã HĐ</th><th>Khách hàng</th><th>Ngày ký</th><th>Giá trị</th><th>Đã TT</th><th>Còn nợ</th><th>Tiến độ</th><th>Trạng thái</th><th>Thao tác</th>
+          </tr></thead><tbody id="contractBody"></tbody></table>
+        </div>
+      </section>
+
+      <!-- ══ PAGE: QUOTE ══ -->
+      <section id="page-quote" class="page">
+        <div class="page-header">
+          <h2>Tạo báo giá tự động</h2>
+          <span class="page-sub">Chọn thiết bị từ data → preview → xuất DOCX chuẩn mẫu HT-TEK</span>
+        </div>
+        <div class="quote-layout">
+          <!-- FORM LEFT -->
+          <div>
+            <div class="q-card">
+              <h3><i class="fa fa-user"></i> Thông tin khách hàng</h3>
+              <div class="fr2">
+                <div class="fg"><label>Tên khách hàng *</label><input id="q_kh" class="fc" placeholder="Nguyễn Văn A / Công ty ABC"/></div>
+                <div class="fg"><label>Chọn từ DS khách hàng</label><select id="q_Customer" class="fc" onchange="onKHSel()"><option value="">-- Chọn hoặc nhập tay --</option></select></div>
+              </div>
+              <div class="fr2">
+                <div class="fg"><label>Địa chỉ</label><input id="q_dc" class="fc" placeholder="Địa chỉ lắp đặt"/></div>
+                <div class="fg"><label>Ngày báo giá</label><input id="q_ngay" type="date" class="fc"/></div>
+              </div>
+              <div class="fr2">
+                <div class="fg"><label>Mã báo giá</label><input id="q_ma" class="fc"/></div>
+                <div class="fg"><label>Người lập</label><input id="q_nguoilap" class="fc" readonly/></div>
+              </div>
+            </div>
+            <div class="q-card">
+              <h3><i class="fa fa-gear"></i> Thông số hệ thống</h3>
+              <div class="fr2">
+                <div class="fg"><label>Loại hệ thống</label>
+                  <select id="q_loai" class="fc" onchange="onQLoaiChange()">
+                    <option value="Hybrid">Hybrid (Có lưu trữ)</option>
+                    <option value="Hòa lưới">Hòa lưới (Grid-tie)</option>
+                    <option value="Độc lập">Độc lập (Off-grid)</option>
+                  </select>
+                </div>
+                <div class="fg"><label>Công suất dàn Pin (kWp)</label><input id="q_cspv" type="number" class="fc" value="10" min="0.5" step="0.5" oninput="qAutoCalc()"/></div>
+              </div>
+              <div class="fr2">
+                <div class="fg"><label>Sản lượng TB/tháng (kWh)</label><input id="q_sl" class="fc" placeholder="Tự tính…"/></div>
+                <div class="fg" id="fg_luu"><label>Dung lượng lưu trữ (kWh)</label><input id="q_csluu" type="number" class="fc" value="10" step="0.5"/></div>
+              </div>
+            </div>
+            <div class="q-card">
+              <h3><i class="fa fa-plug"></i> Thiết bị chính</h3>
+              <div class="fg"><label>Tấm pin</label><select id="q_pin" class="fc" onchange="onQPinChange()"><option value="">-- Chọn tấm pin --</option></select></div>
+              <div class="fr2">
+                <div class="fg"><label>Số lượng tấm</label><input id="q_slPin" type="number" class="fc" value="20" min="1" oninput="qAutoCalc()"/></div>
+                <div class="fg"><label>Đơn giá (đ)</label><input id="q_gpin" type="number" class="fc" oninput="qAutoCalc()"/></div>
+              </div>
+              <div class="fg" style="margin-top:6px"><label>Biến tần (Inverter)</label><select id="q_inv2" class="fc" onchange="onQInvChange()"><option value="">-- Chọn inverter --</option></select></div>
+              <div class="fr2">
+                <div class="fg"><label>Số lượng bộ</label><input id="q_slInv" type="number" class="fc" value="1" min="1" oninput="qAutoCalc()"/></div>
+                <div class="fg"><label>Đơn giá (đ)</label><input id="q_ginv" type="number" class="fc" oninput="qAutoCalc()"/></div>
+              </div>
+              <div id="bat_row" style="margin-top:6px">
+                <div class="fg"><label>Pin lưu trữ</label><select id="q_bat2" class="fc" onchange="onQBatChange()"><option value="">-- Không dùng / Chọn --</option></select></div>
+                <div class="fr2">
+                  <div class="fg"><label>Số lượng bộ</label><input id="q_slBat" type="number" class="fc" value="1" min="1" oninput="qAutoCalc()"/></div>
+                  <div class="fg"><label>Đơn giá (đ)</label><input id="q_gbat" type="number" class="fc" oninput="qAutoCalc()"/></div>
+                </div>
+              </div>
+            </div>
+            <div class="q-card">
+              <h3><i class="fa fa-screwdriver-wrench"></i> Vật tư phụ & nhân công</h3>
+              <div class="fg"><label>Gói vật tư phụ <span style="color:var(--muted);font-size:10px">(tự match theo hệ thống)</span></label>
+                <select id="q_vtp2" class="fc" onchange="onQVtpChange()"><option value="">-- Tự động / Chọn gói --</option></select>
+              </div>
+              <div class="fr2">
+                <div class="fg"><label>Đơn giá vật tư phụ (đ)</label><input id="q_gvtp" type="number" class="fc" oninput="qAutoCalc()"/></div>
+                <div class="fg"><label>Gói nhân công</label><select id="q_nc2" class="fc" onchange="onQNcChange()"><option value="">-- Chọn gói --</option></select></div>
+              </div>
+              <div class="fg"><label>Đơn giá nhân công (đ)</label><input id="q_gnc" type="number" class="fc" oninput="qAutoCalc()"/></div>
+            </div>
+            <div class="q-card">
+              <h3><i class="fa fa-percent"></i> Thuế & điều chỉnh</h3>
+              <div class="fr2">
+                <div class="fg"><label>VAT (%)</label><input id="q_vat" type="number" class="fc" value="8" min="0" max="20" oninput="qAutoCalc()"/></div>
+                <div class="fg"><label>Chiết khấu (đ)</label><input id="q_ck" type="number" class="fc" value="0" oninput="qAutoCalc()"/></div>
+              </div>
+              <div class="fg"><label>Ghi chú</label><textarea id="q_note" class="fc" rows="2"></textarea></div>
+            </div>
+          </div>
+          <!-- PREVIEW RIGHT -->
+          <div>
+            <div class="sum-strip">
+              <div class="sum-it"><div class="sum-lbl">Thiết bị chính</div><div class="sum-v" id="sq_tb">0đ</div></div>
+              <div class="sum-it"><div class="sum-lbl">Vật tư phụ</div><div class="sum-v" id="sq_vt">0đ</div></div>
+              <div class="sum-it"><div class="sum-lbl">Nhân công</div><div class="sum-v" id="sq_nc">0đ</div></div>
+              <div class="sum-it"><div class="sum-lbl">Tổng (có VAT)</div><div class="sum-v" id="sq_tot" style="color:#ffd166">0đ</div></div>
+            </div>
+            <div class="q-card">
+              <h3><i class="fa fa-eye"></i> Xem trước báo giá</h3>
+              <div class="qp-box" id="qPreview"><div style="text-align:center;color:var(--muted);padding:40px 0">Điền thông tin để xem preview…</div></div>
+              <div class="btn-group">
+                <button class="btn btn-green" onclick="exportQDocx()"><i class="fa fa-file-word"></i> Xuất DOCX</button>
+                <button class="btn btn-orange" onclick="saveQuote()"><i class="fa fa-floppy-disk"></i> Lưu báo giá</button>
+                <button class="btn btn-primary" onclick="openModal('addContractFromQuote')"><i class="fa fa-file-signature"></i> Tạo HĐ</button>
+                <button class="btn btn-outline" onclick="resetQuote()"><i class="fa fa-rotate"></i> Làm mới</button>
+              </div>
+            </div>
+            <div class="q-card" style="margin-top:0">
+              <h3><i class="fa fa-clock-rotate-left"></i> Lịch sử báo giá</h3>
+              <div style="overflow-x:auto">
+              <table class="data-tbl"><thead><tr>
+                <th>Mã BG</th><th>Khách hàng</th><th>Hệ thống</th><th>Tổng tiền</th><th>Ngày</th><th></th>
+              </tr></thead><tbody id="qHistBody"></tbody></table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══ PAGE: QDATA (Data giá) ══ -->
+      <section id="page-qdata" class="page">
+        <div class="page-header">
+          <h2>Data giá thiết bị & vật tư</h2>
+          <span class="page-sub">Dữ liệu này được dùng để tự động điền vào báo giá</span>
+        </div>
+        <div class="q-subtabs">
+          <div class="q-subtab act" onclick="switchQTab('qd-pin',this)">🌞 Tấm pin</div>
+          <div class="q-subtab" onclick="switchQTab('qd-inv',this)">⚡ Biến tần</div>
+          <div class="q-subtab" onclick="switchQTab('qd-bat',this)">🔋 Pin lưu trữ</div>
+          <div class="q-subtab" onclick="switchQTab('qd-vtp',this)">🔧 Vật tư phụ</div>
+          <div class="q-subtab" onclick="switchQTab('qd-labor',this)">👷 Nhân công</div>
+        </div>
+
+        <div id="qd-pin" class="q-subpane act">
+          <div class="btn-group" style="margin-bottom:10px"><button class="btn btn-primary btn-sm" onclick="addDevRow('pin')"><i class="fa fa-plus"></i> Thêm</button></div>
+          <div class="tbl-card" style="overflow-x:auto">
+          <table class="data-tbl"><thead><tr>
+            <th>Mã SP</th><th>Tên / Quy cách</th><th>Mô tả thêm</th><th>Công suất</th><th>ĐVT</th><th>Đơn giá (đ)</th><th>BH vật lý</th><th>BH hiệu suất</th><th></th>
+          </tr></thead><tbody id="dt-pin"></tbody></table></div>
+        </div>
+
+        <div id="qd-inv" class="q-subpane">
+          <div class="btn-group" style="margin-bottom:10px"><button class="btn btn-primary btn-sm" onclick="addDevRow('inv')"><i class="fa fa-plus"></i> Thêm</button></div>
+          <div class="tbl-card" style="overflow-x:auto">
+          <table class="data-tbl"><thead><tr>
+            <th>Mã SP</th><th>Tên / Model</th><th>Mô tả thêm</th><th>Công suất</th><th>ĐVT</th><th>Đơn giá (đ)</th><th>BH (năm)</th><th>Loại hệ thống</th><th></th>
+          </tr></thead><tbody id="dt-inv"></tbody></table></div>
+        </div>
+
+        <div id="qd-bat" class="q-subpane">
+          <div class="btn-group" style="margin-bottom:10px"><button class="btn btn-primary btn-sm" onclick="addDevRow('bat')"><i class="fa fa-plus"></i> Thêm</button></div>
+          <div class="tbl-card" style="overflow-x:auto">
+          <table class="data-tbl"><thead><tr>
+            <th>Mã SP</th><th>Tên / Quy cách</th><th>Mô tả</th><th>Dung lượng</th><th>ĐVT</th><th>Đơn giá (đ)</th><th>BH (năm)</th><th></th>
+          </tr></thead><tbody id="dt-bat"></tbody></table></div>
+        </div>
+
+        <div id="qd-vtp" class="q-subpane">
+          <div class="btn-group" style="margin-bottom:10px"><button class="btn btn-primary btn-sm" onclick="addDevRow('vtp')"><i class="fa fa-plus"></i> Thêm</button></div>
+          <div class="tbl-card" style="overflow-x:auto">
+          <table class="data-tbl"><thead><tr>
+            <th>Mã</th><th>Tên gói vật tư</th><th>Áp dụng hệ thống</th><th>kWp tối thiểu</th><th>kWp tối đa</th><th>Giá cố định (đ)</th><th>Giá / kWp (đ)</th><th>ĐVT</th><th></th>
+          </tr></thead><tbody id="dt-vtp"></tbody></table></div>
+        </div>
+
+        <div id="qd-labor" class="q-subpane">
+          <div class="btn-group" style="margin-bottom:10px"><button class="btn btn-primary btn-sm" onclick="addDevRow('labor')"><i class="fa fa-plus"></i> Thêm</button></div>
+          <div class="tbl-card" style="overflow-x:auto">
+          <table class="data-tbl"><thead><tr>
+            <th>Tên gói</th><th>Áp dụng hệ thống</th><th>kWp tối thiểu</th><th>kWp tối đa</th><th>Đơn giá (đ)</th><th></th>
+          </tr></thead><tbody id="dt-labor"></tbody></table></div>
+        </div>
+      </section>
+
+      <!-- ══ PAGE: INVENTORY ══ -->
+      <section id="page-inventory" class="page">
+        <div class="page-header">
+          <h2>Quản lý kho hàng</h2>
+          <div class="btn-group">
+            <button class="btn btn-primary" onclick="openModal('importStock')"><i class="fa fa-arrow-down"></i> Nhập kho</button>
+            <button class="btn btn-orange" onclick="openModal('exportStock')"><i class="fa fa-arrow-up"></i> Xuất kho</button>
+          </div>
+        </div>
+        <div id="stockAlerts"></div>
+        <div class="stat-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:16px">
+          <div class="stat-card c-blue" style="padding:14px"><div class="stat-icon"><i class="fa fa-solar-panel"></i></div><div><div class="stat-lbl">Tấm pin</div><div class="stat-val" id="inv-pin">—</div></div></div>
+          <div class="stat-card c-orange" style="padding:14px"><div class="stat-icon"><i class="fa fa-bolt"></i></div><div><div class="stat-lbl">Inverter</div><div class="stat-val" id="inv-inv">—</div></div></div>
+          <div class="stat-card c-green" style="padding:14px"><div class="stat-icon"><i class="fa fa-battery-full"></i></div><div><div class="stat-lbl">Pin lưu trữ</div><div class="stat-val" id="inv-bat">—</div></div></div>
+        </div>
+        <div class="tbl-card">
+          <div class="filter-bar" style="padding:12px 14px;border-bottom:1px solid var(--border)">
+            <div class="srch-box"><i class="fa fa-search"></i><input id="invSearch" placeholder="Tìm vật tư…" oninput="filterInv()"/></div>
+            <select class="flt-sel" id="invCat" onchange="filterInv()">
+              <option value="">Tất cả danh mục</option>
+              <option>Tấm pin</option><option>Inverter</option><option>Pin lưu trữ</option><option>Khung giá đỡ</option><option>Phụ kiện</option>
+            </select>
+          </div>
+          <table class="data-tbl"><thead><tr>
+            <th>Mã SP</th><th>Tên sản phẩm</th><th>Danh mục</th><th>Hãng</th><th>ĐVT</th><th>Tồn kho</th><th>Giá trung bình</th><th>Tồn tối thiểu</th><th>Trạng thái</th>
+          </tr></thead><tbody id="inventoryBody"></tbody></table>
+        </div>
+      </section>
+
+      <!-- ══ PAGE: PRODUCTS ══ -->
+      <section id="page-products" class="page">
+        <div class="page-header">
+          <h2>Danh mục sản phẩm</h2>
+          <button class="btn btn-primary" onclick="openModal('addProduct')"><i class="fa fa-plus"></i> Thêm sản phẩm</button>
+        </div>
+        <div class="tbl-card"><table class="data-tbl"><thead><tr>
+          <th>Mã</th><th>Tên sản phẩm</th><th>Model</th><th>Hãng</th><th>Danh mục</th><th>ĐVT</th><th>Giá nhập</th><th>Giá bán</th><th>Thao tác</th>
+        </tr></thead><tbody id="productBody"></tbody></table></div>
+      </section>
+
+      <!-- ══ PAGE: PAYMENTS ══ -->
+      <section id="page-payments" class="page">
+        <div class="page-header">
+          <h2>Quản lý thanh toán</h2>
+          <button class="btn btn-primary" onclick="openModal('addPayment')"><i class="fa fa-plus"></i> Ghi nhận TT</button>
+        </div>
+        <div class="tbl-card"><table class="data-tbl"><thead><tr>
+          <th>Mã TT</th><th>Mã HĐ</th><th>Khách hàng</th><th>Số tiền</th><th>Ngày TT</th><th>Hình thức</th><th>Ghi chú</th>
+        </tr></thead><tbody id="paymentBody"></tbody></table></div>
+      </section>
+
+      <!-- ══ PAGE: USERS ══ -->
+      <section id="page-users" class="page">
+        <div class="page-header">
+          <h2>Quản lý người dùng</h2>
+          <button class="btn btn-primary" onclick="openModal('addUser')"><i class="fa fa-plus"></i> Thêm người dùng</button>
+        </div>
+        <div class="tbl-card"><table class="data-tbl"><thead><tr>
+          <th>Tài khoản</th><th>Họ tên</th><th>Email</th><th>Phân quyền</th><th>Trạng thái</th><th>Đăng nhập cuối</th><th>Thao tác</th>
+        </tr></thead><tbody id="userBody"></tbody></table></div>
+      </section>
+
+      <!-- ══ PAGE: LOGS ══ -->
+      <section id="page-logs" class="page">
+        <div class="page-header"><h2>Nhật ký hoạt động</h2></div>
+        <div class="tbl-card"><table class="data-tbl"><thead><tr>
+          <th>Thời gian</th><th>Người dùng</th><th>Hành động</th><th>Module</th><th>Chi tiết</th>
+        </tr></thead><tbody id="logBody"></tbody></table></div>
+      </section>
+
+
+      <!-- PAGE: CHANGE PASSWORD -->
+      <section id="page-changepw" class="page">
+        <div class="page-header"><h2>Đổi mật khẩu</h2></div>
+        <div style="max-width:400px">
+          <div class="tbl-card" style="padding:24px">
+            <div class="fg"><label>Mật khẩu hiện tại *</label><input type="password" id="oldPassword" class="form-control"/></div>
+            <div class="fg"><label>Mật khẩu mới * (ít nhất 6 ký tự)</label><input type="password" id="newPassword" class="form-control"/></div>
+            <div class="fg"><label>Xác nhận mật khẩu mới *</label><input type="password" id="confirmPassword" class="form-control"/></div>
+            <button class="btn-primary btn" onclick="changePassword()"><i class="fa fa-floppy-disk"></i> Đổi mật khẩu</button>
+          </div>
+        </div>
+      </section>
+
+    </div><!-- /page-content -->
+  </div><!-- /main-content -->
+</div><!-- /mainApp -->
+
+<!-- ══════════════════════════════════════
+     MODALS
+══════════════════════════════════════ -->
+<div id="overlay" class="modal-overlay" onclick="closeModal(event)">
+
+  <!-- Add Customer -->
+  <div class="modal" id="modal-addCust">
+    <div class="modal-hd"><h3><i class="fa fa-user-plus"></i> Thêm khách hàng mới</h3><button class="modal-close" onclick="closeModal()"><i class="fa fa-xmark"></i></button></div>
+    <div class="modal-body">
+      <div class="fr2"><div class="fg"><label>Họ tên *</label><input id="cName" class="fc"/></div><div class="fg"><label>SĐT *</label><input id="cPhone" class="fc"/></div></div>
+      <div class="fg"><label>Địa chỉ</label><input id="cAddress" class="fc"/></div>
+      <div class="fr2"><div class="fg"><label>Email</label><input id="cEmail" class="fc" type="email"/></div>
+        <div class="fg"><label>Loại công trình</label><select id="cType" class="fc"><option>Hộ gia đình</option><option>Doanh nghiệp</option><option>Nông nghiệp</option><option>Trang trại</option></select></div></div>
+      <div class="fr2"><div class="fg"><label>Công suất (kWp)</label><input id="cCapacity" class="fc" type="number"/></div>
+        <div class="fg"><label>Trạng thái</label><select id="cStatus" class="fc"><option>Khách mới</option><option>Đã báo giá</option><option>Đang chốt</option><option>Đã ký HĐ</option><option>Hoàn thành</option></select></div></div>
+      <div class="fg"><label>Ghi chú</label><textarea id="cNote" class="fc" rows="2"></textarea></div>
+    </div>
+    <div class="modal-ft"><button class="btn btn-outline" onclick="closeModal()">Hủy</button><button class="btn btn-primary" onclick="saveCust()"><i class="fa fa-floppy-disk"></i> Lưu</button></div>
+  </div>
+
+  <!-- Add Contract -->
+  <div class="modal" id="modal-addContract">
+    <div class="modal-hd"><h3><i class="fa fa-file-signature"></i> Tạo hợp đồng mới</h3><button class="modal-close" onclick="closeModal()"><i class="fa fa-xmark"></i></button></div>
+    <div class="modal-body">
+      <div class="fr2"><div class="fg"><label>Khách hàng *</label><select id="ctCustomer" class="fc"><option value="">-- Chọn KH --</option></select></div><div class="fg"><label>Ngày ký</label><input id="ctDate" type="date" class="fc"/></div></div>
+      <div class="fr2"><div class="fg"><label>Giá trị HĐ (đ)</label><input id="ctValue" class="fc" type="number"/></div><div class="fg"><label>Đặt cọc (đ)</label><input id="ctDeposit" class="fc" type="number" value="0"/></div></div>
+      <div class="fr2"><div class="fg"><label>Trạng thái</label><select id="ctStatus" class="fc"><option>Đã ký hợp đồng</option><option>Đang thi công</option><option>Hoàn thành</option><option>Bảo hành</option></select></div><div class="fg"><label>Tiến độ (%)</label><input id="ctProgress" class="fc" type="number" value="0" min="0" max="100"/></div></div>
+      <div class="fg"><label>Ghi chú</label><textarea id="ctNote" class="fc" rows="2"></textarea></div>
+    </div>
+    <div class="modal-ft"><button class="btn btn-outline" onclick="closeModal()">Hủy</button><button class="btn btn-primary" onclick="saveContract()"><i class="fa fa-floppy-disk"></i> Lưu</button></div>
+  </div>
+
+  <!-- Contract from Quote -->
+  <div class="modal" id="modal-contractFromQuote">
+    <div class="modal-hd"><h3><i class="fa fa-file-signature"></i> Tạo hợp đồng từ báo giá</h3><button class="modal-close" onclick="closeModal()"><i class="fa fa-xmark"></i></button></div>
+    <div class="modal-body">
+      <div id="ctq_info" style="background:var(--blue-xl);border-radius:8px;padding:12px;margin-bottom:14px;font-size:13px"></div>
+      <div class="fr2"><div class="fg"><label>Ngày ký HĐ</label><input id="ctq_date" type="date" class="fc"/></div><div class="fg"><label>Đặt cọc (đ)</label><input id="ctq_dep" class="fc" type="number" value="0"/></div></div>
+      <div class="fg"><label>Ghi chú</label><textarea id="ctq_note" class="fc" rows="2"></textarea></div>
+    </div>
+    <div class="modal-ft"><button class="btn btn-outline" onclick="closeModal()">Hủy</button><button class="btn btn-primary" onclick="saveContractFromQuote()"><i class="fa fa-floppy-disk"></i> Tạo hợp đồng</button></div>
+  </div>
+
+  <!-- Import Stock -->
+  <div class="modal" id="modal-importStock">
+    <div class="modal-hd"><h3><i class="fa fa-arrow-down"></i> Nhập kho</h3><button class="modal-close" onclick="closeModal()"><i class="fa fa-xmark"></i></button></div>
+    <div class="modal-body">
+      <div class="fr2"><div class="fg"><label>Sản phẩm *</label><select id="isProduct" class="fc"></select></div><div class="fg"><label>Số lượng *</label><input id="m_isqty" class="fc" type="number" value="1" min="1"/></div></div>
+      <div class="fr2"><div class="fg"><label>Giá nhập (đ)</label><input id="isPrice" class="fc" type="number"/></div><div class="fg"><label>Nhà cung cấp</label><input id="isSupplier" class="fc"/></div></div>
+      <div class="fg"><label>Ghi chú</label><textarea id="isNote" class="fc" rows="2"></textarea></div>
+    </div>
+    <div class="modal-ft"><button class="btn btn-outline" onclick="closeModal()">Hủy</button><button class="btn btn-primary" onclick="doImportStock()"><i class="fa fa-floppy-disk"></i> Nhập kho</button></div>
+  </div>
+
+  <!-- Export Stock -->
+  <div class="modal" id="modal-exportStock">
+    <div class="modal-hd"><h3><i class="fa fa-arrow-up"></i> Xuất kho</h3><button class="modal-close" onclick="closeModal()"><i class="fa fa-xmark"></i></button></div>
+    <div class="modal-body">
+      <div class="fr2"><div class="fg"><label>Sản phẩm *</label><select id="esProduct" class="fc"></select></div><div class="fg"><label>Số lượng *</label><input id="esQty" class="fc" type="number" value="1" min="1"/></div></div>
+      <div class="fr2"><div class="fg"><label>Xuất cho HĐ</label><select id="esContract" class="fc"><option value="">-- Chọn HĐ --</option></select></div><div class="fg"><label>Ghi chú</label><input id="esNote" class="fc"/></div></div>
+    </div>
+    <div class="modal-ft"><button class="btn btn-outline" onclick="closeModal()">Hủy</button><button class="btn btn-primary" onclick="exportStockFn()"><i class="fa fa-floppy-disk"></i> Xuất kho</button></div>
+  </div>
+
+  <!-- Add Product -->
+  <div class="modal" id="modal-addProduct">
+    <div class="modal-hd"><h3><i class="fa fa-microchip"></i> Thêm sản phẩm mới</h3><button class="modal-close" onclick="closeModal()"><i class="fa fa-xmark"></i></button></div>
+    <div class="modal-body">
+      <div class="fr2"><div class="fg"><label>Tên sản phẩm *</label><input id="pName" class="fc"/></div><div class="fg"><label>Model</label><input id="pModel" class="fc"/></div></div>
+      <div class="fr2"><div class="fg"><label>Hãng</label><input id="pBrand" class="fc"/></div><div class="fg"><label>Danh mục</label><select id="pCategory" class="fc"><option>Tấm pin</option><option>Inverter</option><option>Pin lưu trữ</option><option>Khung giá đỡ</option><option>Phụ kiện</option></select></div></div>
+      <div class="fr3"><div class="fg"><label>ĐVT</label><input id="pUnit" class="fc" value="Tấm"/></div><div class="fg"><label>Giá nhập</label><input id="pBuyPrice" class="fc" type="number"/></div><div class="fg"><label>Giá bán</label><input id="pSellPrice" class="fc" type="number"/></div></div>
+    </div>
+    <div class="modal-ft"><button class="btn btn-outline" onclick="closeModal()">Hủy</button><button class="btn btn-primary" onclick="saveProduct()"><i class="fa fa-floppy-disk"></i> Lưu</button></div>
+  </div>
+
+  <!-- Add Payment -->
+  <div class="modal" id="modal-addPayment">
+    <div class="modal-hd"><h3><i class="fa fa-money-bill-wave"></i> Ghi nhận thanh toán</h3><button class="modal-close" onclick="closeModal()"><i class="fa fa-xmark"></i></button></div>
+    <div class="modal-body">
+      <div class="fr2"><div class="fg"><label>Hợp đồng *</label><select id="pmContract" class="fc"></select></div><div class="fg"><label>Số tiền (đ) *</label><input id="pmAmount" class="fc" type="number"/></div></div>
+      <div class="fr2"><div class="fg"><label>Ngày TT</label><input id="pmDate" type="date" class="fc"/></div><div class="fg"><label>Hình thức</label><select id="pmMethod" class="fc"><option>Chuyển khoản</option><option>Tiền mặt</option><option>Ví điện tử</option></select></div></div>
+      <div class="fg"><label>Ghi chú</label><textarea id="pmNote" class="fc" rows="2"></textarea></div>
+    </div>
+    <div class="modal-ft"><button class="btn btn-outline" onclick="closeModal()">Hủy</button><button class="btn btn-primary" onclick="savePayment()"><i class="fa fa-floppy-disk"></i> Lưu</button></div>
+  </div>
+
+  <!-- Add User -->
+  <div class="modal" id="modal-addUser">
+    <div class="modal-hd"><h3><i class="fa fa-user-shield"></i> Thêm người dùng</h3><button class="modal-close" onclick="closeModal()"><i class="fa fa-xmark"></i></button></div>
+    <div class="modal-body">
+      <div class="fr2"><div class="fg"><label>Tài khoản *</label><input id="uUsername" class="fc"/></div><div class="fg"><label>Họ tên *</label><input id="uFullname" class="fc"/></div></div>
+      <div class="fr2"><div class="fg"><label>Email</label><input id="uEmail" class="fc" type="email"/></div><div class="fg"><label>Mật khẩu *</label><input id="uPassword" class="fc" type="password"/></div></div>
+      <div class="fg"><label>Phân quyền</label><select id="uRole" class="fc"><option value="admin">Admin</option><option value="ketoan">Kế toán</option><option value="kinhdoanh">Kinh doanh</option><option value="kho">Kho</option><option value="kythuat">Kỹ thuật</option></select></div>
+    </div>
+    <div class="modal-ft"><button class="btn btn-outline" onclick="closeModal()">Hủy</button><button class="btn btn-primary" onclick="saveUser()"><i class="fa fa-floppy-disk"></i> Lưu</button></div>
+  </div>
+
+
+  <!-- Contract from Quote -->
+  <div class="modal" id="modal-contractFromQuote">
+    <div class="modal-hd"><h3><i class="fa fa-file-signature"></i> Tạo hợp đồng từ báo giá</h3><button class="mx" onclick="closeModal()"><i class="fa fa-xmark"></i></button></div>
+    <div class="mb">
+      <div id="ctq_info" style="background:var(--blue-xl,#eff6ff);border-radius:8px;padding:12px;margin-bottom:14px;font-size:13px"></div>
+      <div class="fr2"><div class="fg"><label>Ngày ký HĐ</label><input id="ctq_date" type="date" class="fc"/></div><div class="fg"><label>Đặt cọc (đ)</label><input id="ctq_dep" class="fc" type="number" value="0"/></div></div>
+      <div class="fg"><label>Ghi chú</label><textarea id="ctq_note" class="fc" rows="2"></textarea></div>
+    </div>
+    <div class="mf"><button class="btn bout" onclick="closeModal()">Hủy</button><button class="btn bp" onclick="saveContractFromQuote()"><i class="fa fa-floppy-disk"></i> Tạo hợp đồng</button></div>
+  </div>
+
+</div><!-- /overlay -->
+
+<div id="toast"></div>
+
+<!-- docx.js for client-side DOCX generation -->
+<script src="https://cdn.jsdelivr.net/npm/docx@9.6.1/build/index.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/docx@9.6.1/build/index.umd.js"></script>
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   HT SOLAR ERP — PRODUCTION v1.0
+   Backend: Google Apps Script + Google Sheets
+   Auth: Token-based (8h TTL), SHA-256 password hash
+   Offline: Không có (cần internet để dùng)
+   Multi-user: Có — nhiều máy, nhiều chi nhánh cùng dữ liệu thật
+═══════════════════════════════════════════════════════════════ */
+
+// ══════════════════════════════════
+//  CONFIG — ĐỔI URL NÀY SAU KHI DEPLOY GAS
+// ══════════════════════════════════
+const GAS_URL = 'YOUR_GAS_DEPLOYMENT_URL'; // https://script.google.com/macros/s/.../exec
+
+// ══════════════════════════════════
+//  STATE
+// ══════════════════════════════════
+const S = {
+  token: null,
+  user:  null,
+  customers: [], products: [], inventory: [], contracts: [],
+  quotations: [], payments: [], users: [], logs: [],
+  pin: [], inv: [], bat: [], vtp: [], labor: [],
+  cnt: { KH:0, HD:0, BG:0, TT:0, SP:0, U:0 },
+  _loading: false,
+};
+
+// ── Token lưu vào sessionStorage (đóng tab là hết)
+function saveSession() {
+  try { sessionStorage.setItem('hts_session', JSON.stringify({ token: S.token, user: S.user })); } catch(e){}
+}
+function loadSession() {
+  try {
+    const d = JSON.parse(sessionStorage.getItem('hts_session') || 'null');
+    if (d && d.token && d.user) { S.token = d.token; S.user = d.user; return true; }
+  } catch(e){}
+  return false;
+}
+function clearSession() {
+  try { sessionStorage.removeItem('hts_session'); } catch(e){}
+}
+
+// ══════════════════════════════════
+//  API CALL
+// ══════════════════════════════════
+async function api(action, data = {}) {
+  const body = { action, token: S.token, data };
+  try {
+    const res = await fetch(GAS_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' }, // GAS yêu cầu text/plain để tránh preflight
+      body: JSON.stringify(body),
+    });
+    const json = await res.json();
+    if (!json.ok) {
+      if (json.error && json.error.includes('hết hạn')) { doLogout(); return null; }
+      throw new Error(json.error || 'Lỗi server');
+    }
+    return json;
+  } catch (e) {
+    if (e.name === 'TypeError') throw new Error('Không kết nối được server. Kiểm tra URL GAS hoặc kết nối mạng.');
+    throw e;
+  }
+}
+
+// Loading spinner
+function setLoading(on) {
+  S._loading = on;
+  document.getElementById('loadingBar').style.display = on ? 'block' : 'none';
+}
+
+// ══════════════════════════════════
+//  HELPERS
+// ══════════════════════════════════
+const fV = n => new Intl.NumberFormat('vi-VN').format(Math.round(n||0)) + 'đ';
+const fM = n => { if(!n||n===0)return'0đ'; if(n>=1e9)return(n/1e9).toFixed(1)+'tỷ'; if(n>=1e6)return Math.round(n/1e6)+'tr'; return fV(n); };
+const esc = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const todayStr = () => new Date().toISOString().split('T')[0];
+const nowStr   = () => new Date().toLocaleString('vi-VN');
+function toast(msg, tp='success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'show ' + tp;
+  clearTimeout(t._x); t._x = setTimeout(() => t.className = '', 3000);
+}
+function fv(id, v) { const e = document.getElementById(id); if(e) e.value = v; }
+function gv(id)    { const e = document.getElementById(id); return e ? e.value : ''; }
+function nv(id)    { return parseFloat(gv(id)) || 0; }
+const SM = {'Khách mới':'bg-gray','Đã báo giá':'badge-blue','Đang chốt':'badge-orange','Đã ký HĐ':'badge-blue','Đã ký hợp đồng':'badge-blue','Đang thi công':'badge-orange','Hoàn thành':'badge-green','Bảo hành':'badge-teal'};
+const RM = {admin:'badge-red', ketoan:'badge-blue', kinhdoanh:'badge-orange', kho:'badge-green', kythuat:'badge-gray'};
+const RL = {admin:'Quản trị', ketoan:'Kế toán', kinhdoanh:'Kinh doanh', kho:'Kho', kythuat:'Kỹ thuật'};
+function sbadge(s) { return `<span class="badge ${SM[s]||'bg-gray'}">${esc(s)}</span>`; }
+
+// ══════════════════════════════════
+//  AUTH
+// ══════════════════════════════════
+async function doLogin() {
+  const username = gv('loginUser').trim();
+  const password = gv('loginPass');
+  const le = document.getElementById('loginErr');
+  le.style.display = 'none';
+  if (!username || !password) { le.style.display='block'; le.textContent='Vui lòng nhập tài khoản và mật khẩu!'; return; }
+
+  const btn = document.querySelector('.btn-login');
+  btn.innerHTML = '<i class="fa fa-circle-notch fa-spin"></i> Đang đăng nhập…';
+  btn.disabled = true;
+
+  try {
+    const r = await api('login', { username, password });
+    if (!r) return;
+    S.token = r.token;
+    S.user  = r.user;
+    saveSession();
+
+    document.getElementById('loginPage').style.display = 'none';
+    document.getElementById('mainApp').style.display   = 'flex';
+    document.getElementById('uAv').textContent    = r.user.fullname[0];
+    document.getElementById('uName').textContent  = r.user.fullname;
+    document.getElementById('uRole').textContent  = RL[r.user.role] || r.user.role;
+    fv('q_nguoilap', r.user.fullname);
+
+    initApp();
+    await loadAllData();
+  } catch(e) {
+    le.style.display = 'block';
+    le.textContent   = e.message;
+  } finally {
+    btn.innerHTML = '<span>Đăng nhập</span><i class="fa fa-arrow-right"></i>';
+    btn.disabled  = false;
+  }
+}
+
+function doLogout() {
+  clearSession();
+  S.token = null; S.user = null;
+  document.getElementById('mainApp').style.display  = 'none';
+  document.getElementById('loginPage').style.display = 'flex';
+  fv('loginUser',''); fv('loginPass','');
+  document.getElementById('loginErr').style.display = 'none';
+}
+
+// ══════════════════════════════════
+//  LOAD ALL DATA từ GAS
+// ══════════════════════════════════
+async function loadAllData() {
+  setLoading(true);
+  try {
+    const r = await api('getAll');
+    if (!r) return;
+    S.customers  = r.customers  || [];
+    S.products   = r.products   || [];
+    S.inventory  = r.inventory  || [];
+    S.contracts  = r.contracts  || [];
+    S.quotations = r.quotations || [];
+    S.payments   = r.payments   || [];
+    S.users      = r.users      || [];
+    S.pin        = r.pin        || [];
+    S.inv        = r.inv        || [];
+    S.bat        = r.bat        || [];
+    S.vtp        = r.vtp        || [];
+    S.labor      = r.labor      || [];
+    // Render trang hiện tại
+    const active = document.querySelector('.page.active')?.id?.replace('page-','');
+    if (active && PG_RENDER[active]) PG_RENDER[active]();
+  } catch(e) {
+    toast('Lỗi tải dữ liệu: ' + e.message, 'error');
+  } finally {
+    setLoading(false);
+  }
+}
+
+// ══════════════════════════════════
+//  NAVIGATION
+// ══════════════════════════════════
+const PG_TITLE = {
+  dashboard:'Tổng quan hệ thống', customers:'Quản lý khách hàng',
+  contracts:'Quản lý hợp đồng',   quote:'Tạo báo giá tự động',
+  qdata:'Data giá thiết bị & vật tư', inventory:'Quản lý kho hàng',
+  products:'Danh mục sản phẩm',   payments:'Quản lý thanh toán',
+  users:'Quản lý người dùng',      logs:'Nhật ký hoạt động',
+  changepw:'Đổi mật khẩu',
+};
+const PG_RENDER = {
+  dashboard: renderDashboard, customers: renderCustomers,
+  contracts: renderContracts, quote: renderQuotePage,
+  qdata: renderQData,         inventory: renderInventory,
+  products: renderProducts,   payments: renderPayments,
+  users: renderUsers,         logs: renderLogs,
+  changepw: function(){},
+};
+
+function gotoPage(name, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + name)?.classList.add('active');
+  if (el) el.classList.add('active');
+  document.getElementById('pageTitle').textContent = PG_TITLE[name] || name;
+  document.getElementById('sidebar').classList.remove('mob-open');
+  if (PG_RENDER[name]) PG_RENDER[name]();
+}
+
+function toggleSidebar() {
+  const sb = document.getElementById('sidebar');
+  if (window.innerWidth <= 768) sb.classList.toggle('mob-open');
+  else { sb.classList.toggle('collapsed'); document.getElementById('mainContent').classList.toggle('expanded'); }
+}
+
+// ══════════════════════════════════
+//  INIT
+// ══════════════════════════════════
+let _charts = {};
+function initApp() {
+  const ds = new Date().toLocaleDateString('vi-VN', {weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  document.getElementById('topbarDate').textContent = ds;
+  fv('q_ngay', todayStr());
+  fv('q_ma', 'BG-' + new Date().getFullYear() + '-' + String(Math.floor(Math.random()*900)+100));
+  // Nút refresh
+  document.getElementById('btnRefresh').style.display = 'inline-flex';
+  // Ẩn/hiện menu theo quyền
+  applyPermissions();
+}
+
+function applyPermissions() {
+  const role = S.user?.role;
+  // Chỉ admin thấy menu Users
+  document.querySelectorAll('.nav-admin').forEach(el => {
+    el.style.display = role === 'admin' ? '' : 'none';
+  });
+}
+
+// ══════════════════════════════════
+//  DASHBOARD
+// ══════════════════════════════════
+function renderDashboard() {
+  const totalPaid = S.payments.reduce((s,p) => s + (parseFloat(p.amt)||0), 0);
+  const debt      = S.contracts.reduce((s,c) => s + (parseFloat(c.val||0) - parseFloat(c.paid||0)), 0);
+  const active    = S.contracts.filter(c => c.stat === 'Đang thi công').length;
+  document.getElementById('stRevenue').textContent  = fM(totalPaid);
+  document.getElementById('stContracts').textContent = active;
+  document.getElementById('stDebt').textContent      = fM(debt);
+  document.getElementById('stQuotes').textContent    = S.quotations.length;
+  renderRevenueChart(); renderPieChart();
+  const rows = [...S.contracts].reverse().slice(0,5).map(c =>
+    `<tr><td><b>${c.id}</b></td><td>${esc(c.custName||c.cname||'')}</td><td>${fV(c.val)}</td><td>${sbadge(c.stat)}</td>
+     <td><div style="display:flex;align-items:center;gap:6px"><div class="prog-wrap"><div class="prog-fill" style="width:${c.prog||0}%"></div></div>${c.prog||0}%</div></td></tr>`
+  ).join('');
+  document.getElementById('recentContracts').innerHTML =
+    `<table class="mini-tbl"><thead><tr><th>Mã HĐ</th><th>Khách hàng</th><th>Giá trị</th><th>Trạng thái</th><th>Tiến độ</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+function renderRevenueChart() {
+  const ctx = document.getElementById('revenueChart'); if(!ctx) return;
+  if(_charts.rev) _charts.rev.destroy();
+  _charts.rev = new Chart(ctx, {type:'bar',data:{labels:['T6','T7','T8','T9','T10','T11'],datasets:[{label:'Doanh thu (tr)',data:[1200,1850,2100,1650,2400,2750],backgroundColor:'rgba(26,86,219,.72)',borderRadius:6},{label:'Lợi nhuận (tr)',data:[240,370,420,330,480,550],backgroundColor:'rgba(249,115,22,.65)',borderRadius:6}]},options:{responsive:true,plugins:{legend:{labels:{font:{family:'Be Vietnam Pro'}}}},scales:{y:{grid:{color:'rgba(0,0,0,.04)'}}}}});
+}
+function renderPieChart() {
+  const ctx = document.getElementById('contractPieChart'); if(!ctx) return;
+  if(_charts.pie) _charts.pie.destroy();
+  const cnts = {}; S.contracts.forEach(c => { cnts[c.stat]=(cnts[c.stat]||0)+1; });
+  _charts.pie = new Chart(ctx, {type:'doughnut',data:{labels:Object.keys(cnts),datasets:[{data:Object.values(cnts),backgroundColor:['#1a56db','#f97316','#16a34a','#dc2626','#0891b2'],borderWidth:2,borderColor:'#fff'}]},options:{responsive:true,plugins:{legend:{position:'bottom',labels:{font:{family:'Be Vietnam Pro',size:11}}}},cutout:'60%'}});
+}
+
+// ══════════════════════════════════
+//  CUSTOMERS
+// ══════════════════════════════════
+function renderCustomers(data) {
+  data = data || S.customers;
+  document.getElementById('customerBody').innerHTML = data.map(c => `<tr>
+    <td><span class="badge badge-blue">${esc(c.id)}</span></td>
+    <td><b>${esc(c.name)}</b>${c.note?`<br><small style="color:var(--muted)">${esc(c.note)}</small>`:''}</td>
+    <td>${esc(c.phone)}</td><td style="font-size:12px;max-width:150px">${esc(c.addr||c.address||'')}</td>
+    <td>${esc(c.type)}</td><td>${c.cap||c.capacity||0} kWp</td>
+    <td>${sbadge(c.status)}</td>
+    <td>
+      <button class="btn-icon btn-icon-orange" title="Tạo BG" onclick="quickQuote('${c.id}')"><i class="fa fa-bolt"></i></button>
+      <button class="btn-icon btn-icon-blue" title="Sửa" onclick="editCustomer('${c.id}')"><i class="fa fa-pen"></i></button>
+      <button class="btn-icon btn-icon-red" title="Xóa" onclick="deleteCustomer('${c.id}')"><i class="fa fa-trash"></i></button>
+    </td>
+  </tr>`).join('') || '<tr><td colspan="8" style="text-align:center;padding:24px;color:var(--muted)">Chưa có khách hàng</td></tr>';
+}
+function filterCustomers() {
+  const q = gv('customerSearch').toLowerCase(), st = gv('customerStatusFilter'), tp = gv('customerTypeFilter');
+  renderCustomers(S.customers.filter(c =>
+    (!q || c.name.toLowerCase().includes(q) || (c.phone||'').includes(q) || (c.addr||c.address||'').toLowerCase().includes(q)) &&
+    (!st || c.status === st) && (!tp || c.type === tp)
+  ));
+}
+async function addCustomer() {
+  const name = gv('cName').trim(), phone = gv('cPhone').trim();
+  if (!name || !phone) { toast('Nhập Họ tên và SĐT!','error'); return; }
+  const data = {
+    name, phone, addr: gv('cAddress'), email: gv('cEmail'),
+    type: gv('cType'), cap: nv('cCapacity'), status: gv('cStatus'), note: gv('cNote'),
+  };
+  const editId = document.getElementById('modal-addCustomer').dataset.editId;
+  if (editId) data.id = editId;
+  setLoading(true);
+  try {
+    const r = await api('saveCustomer', data);
+    if (!r) return;
+    if (editId) { const i = S.customers.findIndex(c=>c.id===editId); if(i>=0) S.customers[i]={...S.customers[i],...data}; }
+    else        { S.customers.push(r.data); }
+    closeModal(); renderCustomers(); populateSelects();
+    toast(editId ? 'Đã cập nhật '+name : 'Đã thêm '+name);
+  } catch(e) { toast(e.message,'error'); }
+  finally { setLoading(false); }
+}
+async function deleteCustomer(id) {
+  if (!confirm('Xóa khách hàng này?')) return;
+  setLoading(true);
+  try {
+    await api('deleteCustomer', { id });
+    S.customers = S.customers.filter(c => c.id !== id);
+    renderCustomers(); populateSelects(); toast('Đã xóa khách hàng!');
+  } catch(e) { toast(e.message,'error'); }
+  finally { setLoading(false); }
+}
+function editCustomer(id) {
+  const c = S.customers.find(x => x.id===id); if (!c) return;
+  openModal('addCustomer');
+  document.getElementById('modal-addCustomer').dataset.editId = id;
+  document.querySelector('#modal-addCustomer .modal-header h3').innerHTML = '<i class="fa fa-pen"></i> Sửa khách hàng';
+  setTimeout(() => {
+    fv('cName',c.name); fv('cPhone',c.phone); fv('cAddress',c.addr||c.address||'');
+    fv('cEmail',c.email||''); fv('cType',c.type); fv('cCapacity',c.cap||c.capacity||0);
+    fv('cStatus',c.status); fv('cNote',c.note||'');
+  }, 50);
+}
+function quickQuote(id) {
+  const c = S.customers.find(x => x.id===id);
+  gotoPage('quote', document.querySelectorAll('.nav-item')[3]);
+  setTimeout(() => {
+    if(c) { fv('q_Customer',id); fv('q_kh',c.name); fv('q_dc',c.addr||c.address||''); fv('q_cspv',c.cap||c.capacity||10); qAutoCalc(); }
+  }, 100);
+}
+
+// ══════════════════════════════════
+//  CONTRACTS
+// ══════════════════════════════════
+const KANBAN_STATS = ['Đã báo giá','Đang chốt','Đã ký hợp đồng','Đang thi công','Hoàn thành','Bảo hành'];
+function renderContracts() {
+  document.getElementById('kanbanBoard').innerHTML = KANBAN_STATS.map(st => {
+    const cards = S.contracts.filter(c => c.stat === st);
+    return `<div class="kanban-col"><div class="kanban-col-title">${st}<span class="kanban-cnt">${cards.length}</span></div>
+      ${cards.map(c=>`<div class="kanban-card"><div class="kc-name">${esc(c.custName||c.cname||'')}</div><div class="kc-val">${fM(c.val)}</div><div class="kc-meta">${c.id} • ${c.date}</div></div>`).join('')||'<div style="font-size:11px;color:var(--muted);text-align:center;padding:10px">Trống</div>'}
+    </div>`;
+  }).join('');
+  document.getElementById('contractBody').innerHTML = S.contracts.map(c => `<tr>
+    <td><b>${c.id}</b></td><td>${esc(c.custName||c.cname||'')}</td><td>${c.date}</td>
+    <td>${fV(c.val)}</td>
+    <td style="color:var(--green);font-weight:600">${fV(c.paid)}</td>
+    <td style="color:var(--red);font-weight:600">${fV((c.val||0)-(c.paid||0))}</td>
+    <td><div style="display:flex;align-items:center;gap:6px"><div class="prog-wrap"><div class="prog-fill" style="width:${c.prog||0}%"></div></div>${c.prog||0}%</div></td>
+    <td>${sbadge(c.stat)}</td>
+    <td>
+      <button class="btn-icon btn-icon-blue" onclick="updateProgress('${c.id}')"><i class="fa fa-percent"></i></button>
+      <button class="btn-icon btn-icon-red" onclick="deleteContract('${c.id}')"><i class="fa fa-trash"></i></button>
+    </td>
+  </tr>`).join('') || '<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--muted)">Chưa có hợp đồng</td></tr>';
+}
+async function addContract() {
+  const custId = gv('ctCustomer'); const cust = S.customers.find(c=>c.id===custId);
+  if (!custId) { toast('Chọn khách hàng!','error'); return; }
+  const data = { custId, custName: cust?.name||custId, date: gv('ctDate')||todayStr(), val: nv('ctValue'), paid: nv('ctDeposit'), stat: gv('ctStatus'), prog: nv('ctProgress'), note: gv('ctNote') };
+  setLoading(true);
+  try {
+    const r = await api('saveContract', data);
+    if (!r) return;
+    S.contracts.push(r.data);
+    closeModal(); renderContracts(); renderDashboard(); populateSelects();
+    toast('Đã tạo hợp đồng ' + r.data.id + '!');
+  } catch(e) { toast(e.message,'error'); }
+  finally { setLoading(false); }
+}
+async function updateProgress(id) {
+  const p = prompt('Nhập tiến độ (%):'); if (p===null) return;
+  const ct = S.contracts.find(c=>c.id===id); if (!ct) return;
+  ct.prog = Math.min(100, Math.max(0, parseInt(p)||0));
+  setLoading(true);
+  try {
+    await api('saveContract', ct);
+    renderContracts(); toast('Đã cập nhật tiến độ!');
+  } catch(e) { toast(e.message,'error'); }
+  finally { setLoading(false); }
+}
+async function deleteContract(id) {
+  if (!confirm('Xóa hợp đồng?')) return;
+  setLoading(true);
+  try {
+    await api('deleteContract', { id });
+    S.contracts = S.contracts.filter(c=>c.id!==id);
+    renderContracts(); renderDashboard(); toast('Đã xóa!');
+  } catch(e) { toast(e.message,'error'); }
+  finally { setLoading(false); }
+}
+
+// ══════════════════════════════════
+//  INVENTORY
+// ══════════════════════════════════
+function renderInventory(data) {
+  data = data || S.inventory;
+  const lows = S.inventory.filter(i => parseInt(i.qty||0) <= parseInt(i.min||0));
+  document.getElementById('stockAlerts').innerHTML = lows.map(i =>
+    `<div class="alert-item ${parseInt(i.qty)===0?'alert-error':'alert-warn'}"><i class="fa fa-${parseInt(i.qty)===0?'circle-xmark':'triangle-exclamation'}"></i><b>${esc(i.pname)}</b>: tồn ${i.qty} ${parseInt(i.qty)===0?'— HẾT HÀNG':'— sắp hết'} (min ${i.min})</div>`
+  ).join('');
+  document.getElementById('inv-pin').textContent = S.inventory.filter(i=>i.cat==='Tấm pin').reduce((s,i)=>s+parseInt(i.qty||0),0)+' tấm';
+  document.getElementById('inv-inv').textContent = S.inventory.filter(i=>i.cat==='Inverter').reduce((s,i)=>s+parseInt(i.qty||0),0)+' bộ';
+  document.getElementById('inv-bat').textContent = S.inventory.filter(i=>i.cat==='Pin lưu trữ').reduce((s,i)=>s+parseInt(i.qty||0),0)+' bộ';
+  document.getElementById('inventoryBody').innerHTML = data.map(i => {
+    const lo=parseInt(i.qty||0)<=parseInt(i.min||0), ze=parseInt(i.qty||0)===0;
+    const p=S.products.find(x=>x.id===i.pid)||{};
+    return `<tr>
+      <td><b>${esc(i.pid)}</b></td><td>${esc(i.pname)}</td><td><span class="badge badge-blue">${esc(i.cat)}</span></td>
+      <td>${esc(p.brand||'—')}</td><td>${esc(p.unit||'—')}</td>
+      <td style="font-weight:700;${lo?'color:var(--red)':''}">${i.qty}</td>
+      <td>${fV(i.avg)}</td><td>${i.min}</td>
+      <td><span class="badge ${ze?'badge-red':lo?'badge-orange':'badge-green'}">${ze?'Hết hàng':lo?'Sắp hết':'Còn hàng'}</span></td>
+    </tr>`;
+  }).join('');
+}
+function filterInventory() {
+  const q=gv('inventorySearch').toLowerCase(), cat=gv('inventoryCatFilter');
+  renderInventory(S.inventory.filter(i=>(!q||i.pname.toLowerCase().includes(q))&&(!cat||i.cat===cat)));
+}
+async function importStock() {
+  const pid=gv('isProduct'), qty=parseInt(gv('isQty'))||0, price=nv('isPrice');
+  if (!pid||qty<=0) { toast('Chọn sản phẩm và số lượng!','error'); return; }
+  setLoading(true);
+  try {
+    const r = await api('importStock', { pid, qty, price: price||0, supplier: gv('isSupplier'), note: gv('isNote') });
+    const i = S.inventory.find(x=>x.pid===pid);
+    if(i) { i.qty=r.newQty; i.avg=r.newAvg; }
+    closeModal(); renderInventory(); toast('Đã nhập kho!');
+  } catch(e) { toast(e.message,'error'); }
+  finally { setLoading(false); }
+}
+async function exportStockFn() {
+  const pid=gv('esProduct'), qty=parseInt(gv('esQty'))||0;
+  if (!pid||qty<=0) { toast('Chọn sản phẩm và số lượng!','error'); return; }
+  setLoading(true);
+  try {
+    const r = await api('exportStock', { pid, qty, hid: gv('esContract'), note: gv('esNote') });
+    const i = S.inventory.find(x=>x.pid===pid);
+    if(i) i.qty=r.newQty;
+    closeModal(); renderInventory(); toast('Đã xuất kho!');
+  } catch(e) { toast(e.message,'error'); }
+  finally { setLoading(false); }
+}
+
+// ══════════════════════════════════
+//  PRODUCTS
+// ══════════════════════════════════
+function renderProducts() {
+  document.getElementById('productBody').innerHTML = S.products.map(p => `<tr>
+    <td><b>${esc(p.id)}</b></td><td>${esc(p.name)}</td><td>${esc(p.model||'')}</td><td>${esc(p.brand||'')}</td>
+    <td><span class="badge badge-blue">${esc(p.cat)}</span></td><td>${esc(p.unit)}</td>
+    <td>${fV(p.buy)}</td><td>${fV(p.sell)}</td>
+    <td><button class="btn-icon btn-icon-red" onclick="deleteProd('${p.id}')"><i class="fa fa-trash"></i></button></td>
+  </tr>`).join('');
+}
+async function addProduct() {
+  const name = gv('pName').trim(); if(!name){toast('Nhập tên SP!','error');return;}
+  const data = { name, model:gv('pModel'), brand:gv('pBrand'), cat:gv('pCategory'), unit:gv('pUnit'), buy:nv('pBuyPrice'), sell:nv('pSellPrice') };
+  setLoading(true);
+  try {
+    const r = await api('saveProduct', data);
+    S.products.push(r.data);
+    S.inventory.push({ pid:r.data.id, pname:r.data.name, cat:r.data.cat, qty:0, avg:r.data.buy||0, min:5 });
+    closeModal(); renderProducts(); renderInventory(); toast('Đã thêm '+name+'!');
+  } catch(e) { toast(e.message,'error'); }
+  finally { setLoading(false); }
+}
+async function deleteProd(id) {
+  if(!confirm('Xóa sản phẩm?'))return;
+  setLoading(true);
+  try {
+    await api('deleteProduct', { id });
+    S.products   = S.products.filter(p=>p.id!==id);
+    S.inventory  = S.inventory.filter(i=>i.pid!==id);
+    renderProducts(); renderInventory(); toast('Đã xóa!');
+  } catch(e) { toast(e.message,'error'); }
+  finally { setLoading(false); }
+}
+
+// ══════════════════════════════════
+//  PAYMENTS
+// ══════════════════════════════════
+function renderPayments() {
+  document.getElementById('paymentBody').innerHTML = S.payments.map(p => `<tr>
+    <td><b>${esc(p.id)}</b></td><td>${esc(p.hid||p.contractId||'')}</td><td>${esc(p.cname||p.customerName||'')}</td>
+    <td style="color:var(--green);font-weight:700">${fV(p.amt||p.amount)}</td>
+    <td>${esc(p.date)}</td><td>${esc(p.meth||p.method||'')}</td><td>${esc(p.note||'')}</td>
+  </tr>`).join('');
+}
+async function addPayment() {
+  const hid=gv('pmContract'), amt=nv('pmAmount');
+  if(!hid||amt<=0){toast('Chọn HĐ và nhập số tiền!','error');return;}
+  const ct=S.contracts.find(c=>c.id===hid);
+  const data = { hid, cname:ct?.custName||ct?.cname||'', amt, date:gv('pmDate')||todayStr(), meth:gv('pmMethod'), note:gv('pmNote') };
+  setLoading(true);
+  try {
+    const r = await api('savePayment', data);
+    S.payments.push(r.data);
+    if(ct) ct.paid = Math.min(parseFloat(ct.val), (parseFloat(ct.paid)||0)+amt);
+    closeModal(); renderPayments(); renderDashboard(); toast('Đã ghi nhận '+fV(amt)+'!');
+  } catch(e) { toast(e.message,'error'); }
+  finally { setLoading(false); }
+}
+
+// ══════════════════════════════════
+//  USERS
+// ══════════════════════════════════
+function renderUsers() {
+  document.getElementById('userBody').innerHTML = S.users.map(u => `<tr>
+    <td><b>${esc(u.username)}</b></td><td>${esc(u.fullname)}</td><td>${esc(u.email||'—')}</td>
+    <td><span class="badge ${RM[u.role]||'bg-gray'}">${RL[u.role]||u.role}</span></td>
+    <td><span class="badge ${u.status==='active'?'badge-green':'badge-red'}">${u.status==='active'?'Hoạt động':'Khóa'}</span></td>
+    <td style="font-size:11px">${esc(u.lastLogin||'—')}</td>
+    <td>${u.id!==S.user?.id?`<button class="btn-icon btn-icon-red" onclick="deleteUserFn('${u.id}')"><i class="fa fa-trash"></i></button>`:'<span style="font-size:11px;color:var(--muted)">Tôi</span>'}</td>
+  </tr>`).join('') || '<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--muted)">Chỉ Admin xem được danh sách người dùng</td></tr>';
+}
+async function addUser() {
+  const un=gv('uUsername').trim(), fn=gv('uFullname').trim(), pw=gv('uPassword');
+  if(!un||!fn||!pw){toast('Điền đầy đủ!','error');return;}
+  setLoading(true);
+  try {
+    const r = await api('addUser', { username:un, fullname:fn, password:pw, email:gv('uEmail'), role:gv('uRole') });
+    S.users.push(r.user);
+    closeModal(); renderUsers(); toast('Đã tạo tài khoản '+un+'!');
+  } catch(e) { toast(e.message,'error'); }
+  finally { setLoading(false); }
+}
+async function deleteUserFn(id) {
+  if(!confirm('Xóa người dùng?'))return;
+  setLoading(true);
+  try {
+    await api('deleteUser', { id });
+    S.users = S.users.filter(u=>u.id!==id); renderUsers(); toast('Đã xóa!');
+  } catch(e) { toast(e.message,'error'); }
+  finally { setLoading(false); }
+}
+
+// ══════════════════════════════════
+//  CHANGE PASSWORD
+// ══════════════════════════════════
+async function changePassword() {
+  const oldPw=gv('oldPassword'), newPw=gv('newPassword'), conf=gv('confirmPassword');
+  if(!oldPw||!newPw){toast('Điền đủ thông tin!','error');return;}
+  if(newPw!==conf){toast('Mật khẩu mới không khớp!','error');return;}
+  if(newPw.length<6){toast('Mật khẩu mới ít nhất 6 ký tự!','error');return;}
+  setLoading(true);
+  try {
+    await api('changePassword', { oldPw, newPw });
+    fv('oldPassword',''); fv('newPassword',''); fv('confirmPassword','');
+    toast('Đổi mật khẩu thành công! Hãy đăng nhập lại.','success');
+    setTimeout(doLogout, 2000);
+  } catch(e) { toast(e.message,'error'); }
+  finally { setLoading(false); }
+}
+
+// ══════════════════════════════════
+//  LOGS
+// ══════════════════════════════════
+async function renderLogs() {
+  setLoading(true);
+  try {
+    const r = await api('getLogs');
+    document.getElementById('logBody').innerHTML = (r?.data||[]).map(l => `<tr>
+      <td style="font-size:11px;white-space:nowrap">${esc(l.time||l.t||'')}</td>
+      <td><b>${esc(l.user||l.u||'')}</b></td>
+      <td><span class="badge badge-blue">${esc(l.action||l.a||'')}</span></td>
+      <td>${esc(l.module||l.m||'')}</td>
+      <td style="color:var(--muted)">${esc(l.detail||l.d||'')}</td>
+    </tr>`).join('') || '<tr><td colspan="5" style="text-align:center;padding:24px;color:var(--muted)">Chưa có nhật ký</td></tr>';
+  } finally { setLoading(false); }
+}
+
+// ══════════════════════════════════
+//  QDATA — Device data tables
+// ══════════════════════════════════
+function switchQTab(id, el) {
+  document.querySelectorAll('.q-subpane').forEach(p=>p.classList.remove('act'));
+  document.querySelectorAll('.q-subtab').forEach(t=>t.classList.remove('act'));
+  document.getElementById(id)?.classList.add('act'); if(el)el.classList.add('act');
+}
+function renderQData() { renderDtPin(); renderDtInv(); renderDtBat(); renderDtVtp(); renderDtLabor(); }
+function renderDtPin() {
+  document.getElementById('dt-pin').innerHTML = S.pin.map((r,i)=>`<tr>
+    <td><input value="${esc(r.ma)}" onchange="S.pin[${i}].ma=this.value" style="width:115px"/></td>
+    <td><input value="${esc(r.ten)}" onchange="S.pin[${i}].ten=this.value" style="width:210px"/></td>
+    <td><input value="${esc(r.mo)}" onchange="S.pin[${i}].mo=this.value" style="width:170px"/></td>
+    <td><input value="${esc(r.cs)}" onchange="S.pin[${i}].cs=this.value" style="width:60px"/></td>
+    <td><input value="${esc(r.dvt)}" onchange="S.pin[${i}].dvt=this.value" style="width:44px"/></td>
+    <td><input type="number" value="${r.gia}" onchange="S.pin[${i}].gia=+this.value" style="width:100px"/></td>
+    <td><input value="${esc(r.bhVL)}" onchange="S.pin[${i}].bhVL=this.value" style="width:65px"/></td>
+    <td><input value="${esc(r.bhHS)}" onchange="S.pin[${i}].bhHS=this.value" style="width:65px"/></td>
+    <td><button class="btn btn-xs btn-red" onclick="delDevRow('pin',${i})">✕</button></td>
+  </tr>`).join('');
+}
+function renderDtInv() {
+  document.getElementById('dt-inv').innerHTML = S.inv.map((r,i)=>`<tr>
+    <td><input value="${esc(r.ma)}" onchange="S.inv[${i}].ma=this.value" style="width:125px"/></td>
+    <td><input value="${esc(r.ten)}" onchange="S.inv[${i}].ten=this.value" style="width:185px"/></td>
+    <td><input value="${esc(r.mo)}" onchange="S.inv[${i}].mo=this.value" style="width:170px"/></td>
+    <td><input value="${esc(r.cs)}" onchange="S.inv[${i}].cs=this.value" style="width:60px"/></td>
+    <td><input value="${esc(r.dvt)}" onchange="S.inv[${i}].dvt=this.value" style="width:44px"/></td>
+    <td><input type="number" value="${r.gia}" onchange="S.inv[${i}].gia=+this.value" style="width:100px"/></td>
+    <td><input value="${esc(r.bh)}" onchange="S.inv[${i}].bh=this.value" style="width:48px"/></td>
+    <td><select onchange="S.inv[${i}].loai=this.value" style="font-size:12px">
+      ${['Hybrid','Hòa lưới','Độc lập'].map(v=>`<option${r.loai===v?' selected':''}>${v}</option>`).join('')}
+    </select></td>
+    <td><button class="btn btn-xs btn-red" onclick="delDevRow('inv',${i})">✕</button></td>
+  </tr>`).join('');
+}
+function renderDtBat() {
+  document.getElementById('dt-bat').innerHTML = S.bat.map((r,i)=>`<tr>
+    <td><input value="${esc(r.ma)}" onchange="S.bat[${i}].ma=this.value" style="width:125px"/></td>
+    <td><input value="${esc(r.ten)}" onchange="S.bat[${i}].ten=this.value" style="width:185px"/></td>
+    <td><input value="${esc(r.mo)}" onchange="S.bat[${i}].mo=this.value" style="width:170px"/></td>
+    <td><input value="${esc(r.dl)}" onchange="S.bat[${i}].dl=this.value" style="width:65px"/></td>
+    <td><input value="${esc(r.dvt)}" onchange="S.bat[${i}].dvt=this.value" style="width:44px"/></td>
+    <td><input type="number" value="${r.gia}" onchange="S.bat[${i}].gia=+this.value" style="width:100px"/></td>
+    <td><input value="${esc(r.bh)}" onchange="S.bat[${i}].bh=this.value" style="width:65px"/></td>
+    <td><button class="btn btn-xs btn-red" onclick="delDevRow('bat',${i})">✕</button></td>
+  </tr>`).join('');
+}
+function renderDtVtp() {
+  document.getElementById('dt-vtp').innerHTML = S.vtp.map((r,i)=>`<tr>
+    <td><input value="${esc(r.ma)}" onchange="S.vtp[${i}].ma=this.value" style="width:88px"/></td>
+    <td><input value="${esc(r.ten)}" onchange="S.vtp[${i}].ten=this.value" style="width:185px"/></td>
+    <td><select onchange="S.vtp[${i}].loai=this.value" style="font-size:12px">
+      ${['Tất cả','Hòa lưới','Hybrid','Độc lập'].map(v=>`<option${r.loai===v?' selected':''}>${v}</option>`).join('')}
+    </select></td>
+    <td><input type="number" value="${r.csMin||0}" onchange="S.vtp[${i}].csMin=+this.value" style="width:65px"/></td>
+    <td><input type="number" value="${r.csMax||100}" onchange="S.vtp[${i}].csMax=+this.value" style="width:65px"/></td>
+    <td><input type="number" value="${r.gF||0}" onchange="S.vtp[${i}].gF=+this.value" style="width:92px"/></td>
+    <td><input type="number" value="${r.gK||r.giaKwp||0}" onchange="S.vtp[${i}].gK=+this.value" style="width:92px"/></td>
+    <td><input value="${esc(r.dvt)}" onchange="S.vtp[${i}].dvt=this.value" style="width:44px"/></td>
+    <td><button class="btn btn-xs btn-red" onclick="delDevRow('vtp',${i})">✕</button></td>
+  </tr>`).join('');
+}
+function renderDtLabor() {
+  document.getElementById('dt-labor').innerHTML = S.labor.map((r,i)=>`<tr>
+    <td><input value="${esc(r.ten)}" onchange="S.labor[${i}].ten=this.value" style="width:190px"/></td>
+    <td><select onchange="S.labor[${i}].loai=this.value" style="font-size:12px">
+      ${['Tất cả','Hòa lưới','Hybrid','Độc lập'].map(v=>`<option${r.loai===v?' selected':''}>${v}</option>`).join('')}
+    </select></td>
+    <td><input type="number" value="${r.csMin||0}" onchange="S.labor[${i}].csMin=+this.value" style="width:65px"/></td>
+    <td><input type="number" value="${r.csMax||100}" onchange="S.labor[${i}].csMax=+this.value" style="width:65px"/></td>
+    <td><input type="number" value="${r.gia||0}" onchange="S.labor[${i}].gia=+this.value" style="width:92px"/></td>
+    <td><button class="btn btn-xs btn-red" onclick="delDevRow('labor',${i})">✕</button></td>
+  </tr>`).join('');
+}
+function addDevRow(type) {
+  const df={pin:{ma:'',ten:'',mo:'',cs:'',dvt:'Tấm',gia:0,bhVL:'12 năm',bhHS:'25 năm'},inv:{ma:'',ten:'',mo:'',cs:'',dvt:'Bộ',gia:0,bh:'5',loai:'Hòa lưới'},bat:{ma:'',ten:'',mo:'',dl:'',dvt:'Bộ',gia:0,bh:'10'},vtp:{ma:'',ten:'',mo:'',loai:'Tất cả',csMin:0,csMax:100,gF:0,gK:0,dvt:'Hệ'},labor:{ten:'',loai:'Tất cả',csMin:0,csMax:100,gia:0}};
+  S[type].push({...df[type]});
+  ({pin:renderDtPin,inv:renderDtInv,bat:renderDtBat,vtp:renderDtVtp,labor:renderDtLabor})[type]?.();
+}
+function delDevRow(type, i) {
+  S[type].splice(i,1);
+  ({pin:renderDtPin,inv:renderDtInv,bat:renderDtBat,vtp:renderDtVtp,labor:renderDtLabor})[type]?.();
+  populateQSelects();
+}
+async function saveDevData(type) {
+  setLoading(true);
+  try {
+    await api('saveDevData', { type, rows: S[type] });
+    populateQSelects(); toast('Đã lưu data ' + type + '!');
+  } catch(e) { toast(e.message,'error'); }
+  finally { setLoading(false); }
+}
+
+// ══════════════════════════════════
+//  QUOTATION BUILDER
+// ══════════════════════════════════
+function populateSelects() { populateQSelects(); populateModalSelects(); }
+function populateQSelects() {
+  const loai=gv('q_loai'), cs=parseFloat(gv('q_cspv'))||0;
+  const khSel=document.getElementById('q_Customer');
+  if(khSel){const v=khSel.value;khSel.innerHTML='<option value="">— hoặc chọn KH —</option>'+S.customers.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('');khSel.value=v;}
+  const qp=document.getElementById('q_pin');
+  if(qp){const v=qp.value;qp.innerHTML='<option value="">— Chọn tấm pin —</option>'+S.pin.map((r,i)=>`<option value="${i}">${esc(r.ma)} – ${String(r.ten).slice(0,42)}</option>`).join('');qp.value=v;}
+  const qi=document.getElementById('q_inv2');
+  if(qi){const v=qi.value;qi.innerHTML='<option value="">— Chọn inverter —</option>'+S.inv.filter(r=>r.loai===loai||r.loai==='Tất cả').map(r=>`<option value="${S.inv.indexOf(r)}">${esc(r.ma)} – ${String(r.ten).slice(0,36)} (${r.loai})</option>`).join('');qi.value=v;}
+  const qb=document.getElementById('q_bat2');
+  if(qb){const v=qb.value;qb.innerHTML='<option value="">— Không dùng / Chọn —</option>'+S.bat.map((r,i)=>`<option value="${i}">${esc(r.ma)} – ${String(r.ten).slice(0,38)}</option>`).join('');qb.value=v;}
+  const qv=document.getElementById('q_vtp2');
+  if(qv){const opts=S.vtp.filter(r=>r.loai===loai||r.loai==='Tất cả');qv.innerHTML='<option value="">— Tự động —</option>'+opts.map(r=>`<option value="${S.vtp.indexOf(r)}">${esc(r.ma)} – ${String(r.ten).slice(0,46)}</option>`).join('');const au=opts.find(r=>cs>=(r.csMin||0)&&cs<(r.csMax||999));if(au){qv.value=S.vtp.indexOf(au);onQVtpChange();}}
+  const qn=document.getElementById('q_nc2');
+  if(qn){const opts=S.labor.filter(r=>r.loai===loai||r.loai==='Tất cả');qn.innerHTML='<option value="">— Chọn gói —</option>'+opts.map(r=>`<option value="${S.labor.indexOf(r)}">${esc(r.ten)}</option>`).join('');const au=opts.find(r=>cs>=(r.csMin||0)&&cs<=(r.csMax||999));if(au){qn.value=S.labor.indexOf(au);onQNcChange();}}
+}
+function populateModalSelects() {
+  const ctKH=document.getElementById('ctCustomer');if(ctKH)ctKH.innerHTML='<option value="">— Chọn KH —</option>'+S.customers.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('');
+  const pmCT=document.getElementById('pmContract');if(pmCT)pmCT.innerHTML=S.contracts.map(c=>`<option value="${c.id}">${c.id} – ${esc(c.custName||c.cname||'')}</option>`).join('');
+  const isSP=document.getElementById('isProduct');if(isSP)isSP.innerHTML=S.products.map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join('');
+  const esSP=document.getElementById('esProduct');if(esSP)esSP.innerHTML=S.products.map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join('');
+  const esCT=document.getElementById('esContract');if(esCT)esCT.innerHTML='<option value="">—</option>'+S.contracts.map(c=>`<option value="${c.id}">${c.id} – ${esc(c.custName||c.cname||'')}</option>`).join('');
+}
+function onKHSel(){const id=gv('q_Customer');const c=S.customers.find(x=>x.id===id);if(c){fv('q_kh',c.name);fv('q_dc',c.addr||c.address||'');fv('q_cspv',c.cap||c.capacity||10);qAutoCalc();}}
+function onQLoaiChange(){const l=gv('q_loai'),il=l!=='Hòa lưới';document.getElementById('bat_row').style.display=il?'block':'none';document.getElementById('fg_luu').style.display=il?'block':'none';populateQSelects();qAutoCalc();}
+function onQPinChange(){const i=gv('q_pin');if(i!=='')fv('q_gpin',S.pin[+i].gia);qAutoCalc();}
+function onQInvChange(){const i=gv('q_inv2');if(i!=='')fv('q_ginv',S.inv[+i].gia);qAutoCalc();}
+function onQBatChange(){const i=gv('q_bat2');if(i!=='')fv('q_gbat',S.bat[+i].gia);qAutoCalc();}
+function onQVtpChange(){const i=gv('q_vtp2');if(i==='')return;const r=S.vtp[+i];const cs=nv('q_cspv');fv('q_gvtp',r.gF>0?r.gF:Math.round((r.gK||r.giaKwp||0)*cs));qAutoCalc();}
+function onQNcChange(){const i=gv('q_nc2');if(i!=='')fv('q_gnc',S.labor[+i].gia);qAutoCalc();}
+function qAutoCalc(){if(!gv('q_sl'))document.getElementById('q_sl').placeholder=Math.round((nv('q_cspv')||0)*120)+' kWh (gợi ý)';populateQSelects();buildQPreview();}
+
+function getQData() {
+  const loai=gv('q_loai'),il=loai!=='Hòa lưới';
+  const cspv=nv('q_cspv'),csluu=nv('q_csluu'),vat=nv('q_vat')||8,ck=nv('q_ck');
+  const sl=gv('q_sl')||Math.round(cspv*120);
+  const pin=gv('q_pin')!==''?S.pin[+gv('q_pin')]:null;
+  const inv=gv('q_inv2')!==''?S.inv[+gv('q_inv2')]:null;
+  const bat=(il&&gv('q_bat2')!=='')?S.bat[+gv('q_bat2')]:null;
+  const vtpR=gv('q_vtp2')!==''?S.vtp[+gv('q_vtp2')]:null;
+  const labR=gv('q_nc2')!==''?S.labor[+gv('q_nc2')]:null;
+  const slpin=nv('q_slPin'),slinv=nv('q_slInv'),slbat=nv('q_slBat');
+  const gpin=nv('q_gpin'),ginv=nv('q_ginv'),gbat=nv('q_gbat'),gvtp=nv('q_gvtp'),gnc=nv('q_gnc');
+  const ttPin=gpin*slpin,ttInv=ginv*slinv,ttBat=il?gbat*slbat:0,ttVtp=gvtp,ttNc=gnc;
+  const sub=ttPin+ttInv+ttBat+ttVtp+ttNc-ck;
+  const tVat=Math.round(sub*vat/100);
+  return{loai,il,cspv,csluu,sl,vat,ck,pin,inv,bat,vtpR,labR,slpin,slinv,slbat,gpin,ginv,gbat,gvtp,gnc,
+    ttPin,ttInv,ttBat,ttVtp,ttNc,sub,tVat,total:sub+tVat,
+    kh:gv('q_kh'),dc:gv('q_dc'),ngay:gv('q_ngay'),ma:gv('q_ma'),nl:gv('q_nguoilap'),note:gv('q_note'),
+    csInv:inv?inv.cs:'—'};
+}
+function buildQPreview() {
+  const d=getQData();
+  document.getElementById('sq_tb').textContent=fM(d.ttPin+d.ttInv+d.ttBat);
+  document.getElementById('sq_vt').textContent=fM(d.ttVtp);
+  document.getElementById('sq_nc').textContent=fM(d.ttNc);
+  document.getElementById('sq_tot').textContent=fM(d.total);
+  const bRow=d.il&&d.bat?`<tr><td>3</td><td><b>${esc(d.bat.ma)}</b> – DL: ${esc(d.bat.dl)} – >8000 chu kỳ – BH: ${esc(d.bat.bh)} năm</td><td>${esc(d.bat.dvt)}</td><td>${d.slbat}</td><td>${fV(d.gbat)}</td><td><b>${fV(d.ttBat)}</b></td></tr>`:'';
+  const vRow=d.vtpR?`<tr><td>4</td><td><b>${esc(d.vtpR.ma)}</b> – ${esc(d.vtpR.mo||d.vtpR.ten)}</td><td>${esc(d.vtpR.dvt)}</td><td>1</td><td>${fV(d.gvtp)}</td><td><b>${fV(d.ttVtp)}</b></td></tr>`:`<tr><td>4</td><td><b>Hệ khung + phụ kiện</b></td><td>Hệ</td><td>1</td><td>${fV(d.gvtp)}</td><td><b>${fV(d.ttVtp)}</b></td></tr>`;
+  document.getElementById('quotePreview').innerHTML=`
+    <div style="text-align:center">
+      <div class="qp-co">☀️ HTSOLAR</div>
+      <div style="font-size:9px;color:var(--muted)">48 Vũ Quang, P.Thành Sen, Hà Tĩnh | MST: 3002289382 | 0945 371 686</div>
+      <div class="qp-ttl">Báo giá hệ thống điện mặt trời</div>
+      <div class="qp-meta">Mã: <b>${esc(d.ma)}</b> | Ngày: ${esc(d.ngay)} | NL: ${esc(d.nl)}</div>
+    </div>
+    <hr class="qp-div"/>
+    <table style="width:100%;font-size:10px;border-collapse:collapse;margin-bottom:6px">
+      <tr><td><b>Khách hàng:</b> ${esc(d.kh)}</td><td><b>Địa chỉ:</b> ${esc(d.dc)}</td></tr>
+      <tr><td><b>CS dàn Pin:</b> ${d.cspv} kWp</td><td><b>Sản lượng TB:</b> ${d.sl} kWh/tháng</td></tr>
+      <tr><td><b>CS Biến tần:</b> ${d.csInv} (${d.loai})</td><td><b>Lưu trữ:</b> ${d.il?d.csluu+' kWh':'—'}</td></tr>
+    </table>
+    <div class="qp-sec">1. THIẾT BỊ CHÍNH</div>
+    <table class="qp-tbl"><thead><tr><th>#</th><th>Tên thiết bị / Quy cách</th><th>ĐVT</th><th>SL</th><th>Đơn giá</th><th>Thành tiền</th></tr></thead><tbody>
+      <tr><td>1</td><td><b>${d.pin?esc(d.pin.ma):'—'}</b>${d.pin?` – ${esc(d.pin.cs)} – BH VL:${esc(d.pin.bhVL)};HS:${esc(d.pin.bhHS)}`:''}</td><td>${d.pin?esc(d.pin.dvt):'Tấm'}</td><td>${d.slpin}</td><td>${fV(d.gpin)}</td><td><b>${fV(d.ttPin)}</b></td></tr>
+      <tr><td>2</td><td><b>${d.inv?esc(d.inv.ma):'—'}</b>${d.inv?` – ${esc(d.inv.cs)} – BH:${esc(d.inv.bh)} năm`:''}</td><td>${d.inv?esc(d.inv.dvt):'Bộ'}</td><td>${d.slinv}</td><td>${fV(d.ginv)}</td><td><b>${fV(d.ttInv)}</b></td></tr>
+      ${bRow}
+    </tbody></table>
+    <div class="qp-sec">2. VẬT TƯ PHỤ & HỆ KHUNG GIÀN</div>
+    <table class="qp-tbl"><thead><tr><th>#</th><th>Tên vật tư</th><th>ĐVT</th><th>SL</th><th>Đơn giá</th><th>Thành tiền</th></tr></thead><tbody>
+      ${vRow}
+      <tr><td>5</td><td><b>Cáp điện chuyên dụng</b> – DC 4mm², AC 2×10mm²</td><td>Gói</td><td>1</td><td>—</td><td>—</td></tr>
+    </tbody></table>
+    <div class="qp-sec">3. NHÂN CÔNG & VẬN CHUYỂN</div>
+    <table class="qp-tbl"><thead><tr><th>#</th><th>Hạng mục</th><th>ĐVT</th><th>SL</th><th>Đơn giá</th><th>Thành tiền</th></tr></thead><tbody>
+      <tr><td>6</td><td><b>${d.labR?esc(d.labR.ten):'Nhân công lắp đặt, đấu nối, bảo trì'}</b></td><td>Gói</td><td>1</td><td>${fV(d.gnc)}</td><td><b>${fV(d.ttNc)}</b></td></tr>
+      <tr><td>7</td><td><b>Vận chuyển</b></td><td>Gói</td><td>1</td><td>—</td><td>—</td></tr>
+    </tbody></table>
+    <div class="qp-tot">
+      <div class="qp-tot-row">Tổng cộng (Chưa VAT): <b>${fV(d.sub)}</b></div>
+      <div class="qp-tot-row">Thuế GTGT (VAT ${d.vat}%): <b>${fV(d.tVat)}</b></div>
+      ${d.ck>0?`<div class="qp-tot-row" style="color:var(--red)">Chiết khấu: <b>-${fV(d.ck)}</b></div>`:''}
+      <div class="qp-tot-final">TỔNG CỘNG GIÁ TRỊ HỢP ĐỒNG: ${fV(d.total)}</div>
+    </div>
+    ${d.note?`<div style="margin-top:6px;font-size:9px;color:var(--muted)">📝 ${esc(d.note)}</div>`:''}
+    <div style="margin-top:8px;font-size:9px;color:#aaa">✅ Hiệu lực 07 ngày | TT 40% khi ký, 100% sau lắp | Thi công 2–5 ngày</div>`;
+}
+function renderQuotePage(){ buildQPreview(); renderQHistory(); populateQSelects(); }
+function renderQHistory() {
+  document.getElementById('qHistBody').innerHTML = [...S.quotations].reverse().map((q,ri)=>{
+    const i=S.quotations.length-1-ri;
+    return`<tr><td><b>${esc(q.ma||q.id||'')}</b></td><td>${esc(q.kh||'')}</td><td><span class="badge badge-blue">${esc(q.loai||'')}</span></td><td style="color:var(--orange);font-weight:700">${fV(q.total)}</td><td style="font-size:11px">${esc(q.ngay||q.createdAt||'')}</td><td><button class="btn btn-xs btn-red" onclick="deleteQuote(${i})">✕</button></td></tr>`;
+  }).join('') || '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:14px">Chưa có báo giá</td></tr>';
+}
+async function saveQuote() {
+  const d=getQData(); if(!d.kh){toast('Nhập tên khách hàng!','warn');return;}
+  setLoading(true);
+  try {
+    const r = await api('saveQuotation', d);
+    S.quotations.push(r.data||d);
+    renderQHistory(); toast('Đã lưu '+d.ma+'!');
+  } catch(e) { toast(e.message,'error'); }
+  finally { setLoading(false); }
+}
+async function deleteQuote(i) {
+  const q=S.quotations[i]; if(!q)return;
+  if(!confirm('Xóa báo giá này?'))return;
+  setLoading(true);
+  try {
+    if(q.id) await api('deleteQuotation',{id:q.id});
+    S.quotations.splice(i,1); renderQHistory(); toast('Đã xóa!');
+  } catch(e){ toast(e.message,'error'); }
+  finally{ setLoading(false); }
+}
+function resetQuote() {
+  ['q_kh','q_dc','q_sl','q_note','q_pin','q_inv2','q_bat2','q_gpin','q_ginv','q_gbat','q_gvtp','q_gnc','q_Customer'].forEach(id=>fv(id,''));
+  fv('q_cspv',10);fv('q_ck',0);fv('q_vat',8);fv('q_slPin',20);fv('q_slInv',1);fv('q_slBat',1);
+  fv('q_ngay',todayStr());fv('q_ma','BG-'+new Date().getFullYear()+'-'+String(Math.floor(Math.random()*900)+100));
+  qAutoCalc();toast('Đã làm mới!','info');
+}
+async function openContractFromQuote() {
+  const d=getQData();if(!d.kh){toast('Nhập thông tin khách hàng và báo giá trước!','warn');return;}
+  document.getElementById('ctq_info').innerHTML=`<i class="fa fa-file-invoice" style="color:var(--blue)"></i> <b>${esc(d.kh)}</b> — ${esc(d.loai)} ${d.cspv}kWp<br>Giá trị đề xuất: <b style="color:var(--orange)">${fV(d.total)}</b>`;
+  fv('ctq_date',todayStr());fv('ctq_dep',Math.round(d.total*0.4));
+  openModal('contractFromQuote');
+}
+async function saveContractFromQuote() {
+  const d=getQData();if(!d.kh){toast('Không có dữ liệu!','error');return;}
+  let custId=gv('q_Customer');
+  if(!custId){
+    const ex=S.customers.find(c=>c.name.toLowerCase()===d.kh.toLowerCase());
+    if(ex){custId=ex.id;}
+    else{
+      const r=await api('saveCustomer',{name:d.kh,phone:'',addr:d.dc,type:'Hộ gia đình',cap:d.cspv,status:'Đã ký HĐ',note:''});
+      if(r){S.customers.push(r.data);custId=r.data.id;}
+    }
+  }
+  const dep=nv('ctq_dep');
+  const ctData={custId,custName:d.kh,date:gv('ctq_date')||todayStr(),val:d.total,paid:dep,stat:'Đã ký hợp đồng',prog:0,note:gv('ctq_note')};
+  setLoading(true);
+  try{
+    const r=await api('saveContract',ctData);
+    S.contracts.push(r.data);closeModal();renderDashboard();populateSelects();
+    toast('Đã tạo hợp đồng '+r.data.id+' cho '+d.kh+'!');
+  }catch(e){toast(e.message,'error');}
+  finally{setLoading(false);}
+}
+
+
+// ══════════════════════════════════
+//  EXPORT DOCX (đúng mẫu HT-TEK)
+// ══════════════════════════════════
+function exportQDocx() {
+  const d=getQData();if(!d.kh){toast('Nhập tên khách hàng!','warn');return;}
+  if(!window.docx){toast('Thư viện DOCX chưa tải xong!','warn');return;}
+  const {Document,Packer,Paragraph,TextRun,Table,TableRow,TableCell,WidthType,BorderStyle,ShadingType,AlignmentType,VerticalAlign}=window.docx;
+  const W=9640;
+  const bS=(c,z)=>({style:BorderStyle.SINGLE,size:z||4,color:c||'CCCCCC'});
+  const bA=(c,z)=>{const b=bS(c,z);return{top:b,bottom:b,left:b,right:b};};
+  const bN={style:BorderStyle.NONE,size:0,color:'FFFFFF'};
+  const bAN={top:bN,bottom:bN,left:bN,right:bN};
+  const run=(t,sz,bo,co,it)=>new TextRun({text:String(t||''),size:sz||22,bold:!!bo,color:co||'1e293b',italics:!!it,font:'Times New Roman'});
+  const par=(ch,al)=>new Paragraph({children:ch,alignment:al||AlignmentType.LEFT,spacing:{before:0,after:40}});
+  const cel=(ch,w,sh,bd,sp,va)=>new TableCell({children:Array.isArray(ch)?ch:[par(ch)],width:{size:w,type:WidthType.DXA},shading:sh||undefined,borders:bd||bA('DDDDDD'),margins:{top:80,bottom:80,left:120,right:120},columnSpan:sp||undefined,verticalAlign:va||VerticalAlign.CENTER});
+  const hSh={fill:'0f2d5e',type:ShadingType.CLEAR},s1={fill:'e8f3fc',type:ShadingType.CLEAR},s2={fill:'f5f7fb',type:ShadingType.CLEAR};
+  const mkR=(n,nm,dv,sl,gia,tt,sh)=>new TableRow({children:[
+    cel([par([run(String(n),20)])],400,sh,bA('DDDDDD')),cel([par([run(nm,19)])],4500,sh,bA('DDDDDD')),
+    cel([par([run(dv,20)],AlignmentType.CENTER)],550,sh,bA('DDDDDD')),cel([par([run(String(sl),20)],AlignmentType.CENTER)],550,sh,bA('DDDDDD')),
+    cel([par([run(gia>0?fV(gia):'—',20)],AlignmentType.RIGHT)],1200,sh,bA('DDDDDD')),cel([par([run(tt>0?fV(tt):'—',20,true,'0a5c9e')],AlignmentType.RIGHT)],1440,sh,bA('DDDDDD')),
+  ]});
+  const secR=lb=>new TableRow({children:[cel([par([run(lb,20,true,'0a5c9e')])],W,s1,bA('0a5c9e'),6)]});
+  const hRow=new TableRow({children:[
+    cel([par([run('TT',20,true,'FFFFFF')],AlignmentType.CENTER)],400,hSh,bA('0a5c9e')),
+    cel([par([run('Tên thiết bị / Quy cách',20,true,'FFFFFF')])],4500,hSh,bA('0a5c9e')),
+    cel([par([run('ĐVT',20,true,'FFFFFF')],AlignmentType.CENTER)],550,hSh,bA('0a5c9e')),
+    cel([par([run('SL',20,true,'FFFFFF')],AlignmentType.CENTER)],550,hSh,bA('0a5c9e')),
+    cel([par([run('Đơn giá (đ)',20,true,'FFFFFF')],AlignmentType.RIGHT)],1200,hSh,bA('0a5c9e')),
+    cel([par([run('Thành tiền (đ)',20,true,'FFFFFF')],AlignmentType.RIGHT)],1440,hSh,bA('0a5c9e')),
+  ]});
+  const rows=[hRow,secR('1. THIẾT BỊ CHÍNH (Bảo hành theo tiêu chuẩn NSX)')];
+  const pN=d.pin?`${d.pin.ma} - Công suất: ${d.pin.cs} - Loại: n-type TOPCon Series, 2 mặt kính - BH vật lý: ${d.pin.bhVL}; BH hiệu suất: ${d.pin.bhHS}${d.pin.mo?'\n'+d.pin.mo:''}`:'—';
+  rows.push(mkR(1,pN,d.pin?d.pin.dvt:'Tấm',d.slpin,d.gpin,d.ttPin,null));
+  const iN=d.inv?`${d.inv.ma} - Công suất: ${d.inv.cs} - ${d.inv.ten||''} - Bảo hành: ${d.inv.bh} năm${d.inv.mo?'\n'+d.inv.mo:''}`:'—';
+  rows.push(mkR(2,iN,d.inv?d.inv.dvt:'Bộ',d.slinv,d.ginv,d.ttInv,s2));
+  if(d.il&&d.bat){rows.push(mkR(3,`${d.bat.ma} - Dung lượng: ${d.bat.dl} - Vòng đời > 8000 lần - BH: ${d.bat.bh} năm`,d.bat.dvt,d.slbat,d.gbat,d.ttBat,null));}
+  rows.push(secR('2. VẬT TƯ PHỤ & HỆ KHUNG GIÀN'));
+  rows.push(mkR(4,d.vtpR?`${d.vtpR.ma} - ${d.vtpR.mo||d.vtpR.ten}`:'Hệ khung chuyên dụng, kẹp biên/giữa, tủ điện, CB, cắt sét, tiếp địa, máng cáp','Hệ',1,d.gvtp,d.ttVtp,s2));
+  rows.push(mkR(5,'Hệ thống cáp điện chuyên dụng - Dây DC 4mm², dây AC 2×10mm², ống ruột gà lõi thép','Gói',1,0,0,null));
+  rows.push(mkR(6,'Vật tư khác','Gói',1,0,0,s2));
+  rows.push(secR('3. NHÂN CÔNG & VẬN CHUYỂN'));
+  rows.push(mkR(7,d.labR?d.labR.ten:'Nhân công lắp đặt, đấu nối, bảo hành bảo trì hệ thống','Gói',1,d.gnc,d.ttNc,null));
+  rows.push(mkR(8,'Vận chuyển','Gói',1,0,0,s2));
+  const sR=(lb,v,bo,co)=>new TableRow({children:[
+    cel([par([run(lb,21,bo)])],7440,null,{top:bN,bottom:bS('DDDDDD'),left:bAN.left,right:bAN.right}),
+    cel([par([run(v,21,bo,co||'0a5c9e')],AlignmentType.RIGHT)],2200,null,{top:bN,bottom:bS('DDDDDD'),left:bAN.left,right:bAN.right}),
+  ]});
+  const doc=new Document({styles:{default:{document:{run:{font:'Times New Roman',size:22}}}},sections:[{properties:{page:{size:{width:11906,height:16838},margin:{top:1134,bottom:1134,left:1134,right:1134}}},children:[
+    new Table({width:{size:W,type:WidthType.DXA},columnWidths:[1900,7740],rows:[new TableRow({children:[
+      cel([par([run('HTSOLAR',28,true,'0f2d5e')]),par([run('CÔNG TY TNHH HT-TEK',18)])],1900,null,bAN,undefined,VerticalAlign.CENTER),
+      cel([par([run('BÁO GIÁ HỆ THỐNG ĐIỆN MẶT TRỜI',24,true,'0f2d5e')],AlignmentType.CENTER),par([run('48 Đường Vũ Quang, Phường Thành Sen, Tỉnh Hà Tĩnh',18,false,'888888')],AlignmentType.CENTER)],7740,null,bAN),
+    ]})]}),[],
+    new Table({width:{size:W,type:WidthType.DXA},columnWidths:[4820,4820],rows:[new TableRow({children:[
+      cel([par([run('Khách hàng: ',20,true),run(d.kh,20)]),par([run('Địa chỉ: ',20,true),run(d.dc||'',20)]),par([run('Ngày báo giá: ',20,true),run(d.ngay,20)])],4820),
+      cel([par([run('Đơn vị: ',20,true),run('CÔNG TY TNHH HT-TEK',20)]),par([run('MST: ',20,true),run('3002289382',20)]),par([run('Hotline: ',20,true),run('0945 371 686',20)])],4820),
+    ]})]}),[],
+    new Table({width:{size:W,type:WidthType.DXA},columnWidths:[W],rows:[new TableRow({children:[cel([par([run('THÔNG SỐ KỸ THUẬT HỆ THỐNG',22,true,'FFFFFF')])],W,hSh,bA('0f2d5e'),1)]})]}),
+    new Table({width:{size:W,type:WidthType.DXA},columnWidths:[2000,2820,2000,2820],rows:[
+      new TableRow({children:[cel([par([run('Công suất dàn Pin (PV):',20)])],2000,s1),cel([par([run(d.cspv+' kWp',22,true,'0a5c9e')])],2820),cel([par([run('Sản lượng điện TB/tháng:',20)])],2000,s1),cel([par([run(d.sl+' kWh',22,true,'0a5c9e')])],2820)]}),
+      new TableRow({children:[cel([par([run('Công suất Biến tần:',20)])],2000,s2),cel([par([run(d.csInv+' kW ('+d.loai+')',22,true,'0a5c9e')])],2820),cel([par([run('Dung lượng lưu trữ:',20)])],2000,s2),cel([par([run(d.il?d.csluu+' kWh':'—',22,true,'0a5c9e')])],2820)]}),
+    ]}),[],
+    new Table({width:{size:W,type:WidthType.DXA},columnWidths:[W],rows:[new TableRow({children:[cel([par([run('CHI TIẾT THIẾT BỊ VÀ VẬT TƯ',22,true,'FFFFFF')])],W,hSh,bA('0f2d5e'),1)]})]}),
+    new Table({width:{size:W,type:WidthType.DXA},columnWidths:[400,4500,550,550,1200,1440],rows}),[],
+    new Table({width:{size:W,type:WidthType.DXA},columnWidths:[7440,2200],rows:[
+      sR('Tổng cộng giá trị thiết bị & vật tư (Chưa VAT):',fV(d.sub)),
+      sR('Thuế GTGT (VAT '+d.vat+'%):',fV(d.tVat)),
+      ...(d.ck>0?[sR('Chiết khấu:','-'+fV(d.ck),false,'dc2626')]:[]),
+      sR('TỔNG CỘNG GIÁ TRỊ HỢP ĐỒNG:',fV(d.total),true,'f97316'),
+    ]}),[],
+    new Table({width:{size:W,type:WidthType.DXA},columnWidths:[W],rows:[
+      new TableRow({children:[cel([par([run('ĐIỀU KHOẢN THƯƠNG MẠI',22,true,'FFFFFF')])],W,hSh,bA('0f2d5e'),1)]}),
+      new TableRow({children:[cel([par([run('- Báo giá có hiệu lực trong vòng 07 ngày kể từ ngày phát hành.',20)]),par([run('- Phương thức thanh toán: Tạm ứng 40% sau khi ký hợp đồng, thanh toán 100% sau khi lắp đặt hoàn thiện.',20)]),par([run('- Tiến độ thi công: Dự kiến 02 - 05 ngày làm việc tùy quy mô dự án.',20)]),...(d.note?[par([run('- Ghi chú: '+d.note,20,false,'888888',true)])]:[])],W,null,bA('DDDDDD'))]})
+    ]}),[],
+    par([run('THÔNG TIN THANH TOÁN',22,true,'0f2d5e')]),par([run('Chủ tài khoản: CÔNG TY TNHH HT-TEK',20)]),par([run('STK: 8613633688 | Ngân hàng: BIDV chi nhánh Hà Tĩnh',22,true,'0a5c9e')]),
+    new Paragraph({children:[]}),
+    new Table({width:{size:W,type:WidthType.DXA},columnWidths:[W/2,W/2],rows:[new TableRow({children:[
+      cel([par([run('KHÁCH HÀNG',20,true)],AlignmentType.CENTER),par([run('(Ký, ghi rõ họ tên)',18,false,'888888')],AlignmentType.CENTER),par([run(' ',18)]),par([run(d.kh,18,false,'888888')],AlignmentType.CENTER)],W/2,null,bAN),
+      cel([par([run('ĐẠI DIỆN HT-TEK',20,true,'0f2d5e')],AlignmentType.CENTER),par([run('Đã ký điện tử',18,false,'888888')],AlignmentType.CENTER),par([run(' ',18)]),par([run('Trần Văn Túy – Giám đốc',18,false,'888888')],AlignmentType.CENTER)],W/2,null,bAN),
+    ]})]}),
+  ]}]});
+  Packer.toBlob(doc).then(blob=>{
+    const url=URL.createObjectURL(blob);const a=document.createElement('a');
+    a.href=url;a.download=`BaoGia_${d.ma}_${d.kh.replace(/\s+/g,'_')}.docx`;
+    a.click();URL.revokeObjectURL(url);toast('Đã tải: '+a.download);
+  }).catch(e=>toast('Lỗi DOCX: '+e.message,'error'));
+}
+
+// ══════════════════════════════════
+//  MODAL
+// ══════════════════════════════════
+function openModal(name) {
+  if(name==='quotationContract'){openContractFromQuote();return;}
+  const ov=document.getElementById('modalOverlay');
+  document.querySelectorAll('.modal').forEach(m=>{m.style.display='none';m.classList.remove('visible');});
+  const m=document.getElementById('modal-'+name);
+  if(m){m.style.display='block';setTimeout(()=>m.classList.add('visible'),10);}
+  ov.classList.add('open');
+  if(name==='addCustomer'){delete document.getElementById('modal-addCustomer').dataset.editId;document.querySelector('#modal-addCustomer .modal-header h3').innerHTML='<i class="fa fa-user-plus"></i> Thêm khách hàng mới';}
+  if(['addContract','addPayment','importStock','exportStock'].includes(name))populateModalSelects();
+}
+function closeModal(e) {
+  if(e&&e.target!==document.getElementById('modalOverlay'))return;
+  document.getElementById('modalOverlay').classList.remove('open');
+  document.querySelectorAll('.modal').forEach(m=>{m.style.display='none';m.classList.remove('visible');});
+}
+
+// ══════════════════════════════════
+//  KEYBOARD & BOOT
+// ══════════════════════════════════
+document.addEventListener('keydown', e => {
+  if(e.key==='Enter' && document.getElementById('loginPage').style.display!=='none') doLogin();
+  if(e.key==='Escape') closeModal();
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  // Kiểm tra còn session không
+  if(loadSession()) {
+    document.getElementById('loginPage').style.display = 'none';
+    document.getElementById('mainApp').style.display   = 'flex';
+    document.getElementById('uAv').textContent   = S.user.fullname[0];
+    document.getElementById('uName').textContent = S.user.fullname;
+    document.getElementById('uRole').textContent = RL[S.user.role] || S.user.role;
+    fv('q_nguoilap', S.user.fullname);
+    initApp();
+    loadAllData();
+  }
+});
+</script>
+</body>
+</html>
