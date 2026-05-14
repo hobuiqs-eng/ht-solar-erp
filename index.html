@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>HT Solar – ERP System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+<!-- ===== LOGIN PAGE ===== -->
+<div id="loginPage" class="login-page">
+  <div class="login-bg">
+    <div class="sun-ring r1"></div>
+    <div class="sun-ring r2"></div>
+    <div class="sun-ring r3"></div>
+  </div>
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="logo-icon"><i class="fa-solid fa-solar-panel"></i></div>
+      <div>
+        <h1>HT Solar</h1>
+        <p>Energy Management System</p>
+      </div>
+    </div>
+    <div class="login-form">
+      <div class="form-group">
+        <label>Tài khoản</label>
+        <div class="input-wrap"><i class="fa fa-user"></i>
+          <input type="text" id="loginUser" placeholder="Nhập tên đăng nhập" autocomplete="off"/>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Mật khẩu</label>
+        <div class="input-wrap"><i class="fa fa-lock"></i>
+          <input type="password" id="loginPass" placeholder="Nhập mật khẩu"/>
+        </div>
+      </div>
+      <div id="loginError" class="login-error" style="display:none"></div>
+      <button class="btn-login" onclick="doLogin()">
+        <span>Đăng nhập</span><i class="fa fa-arrow-right"></i>
+      </button>
+    </div>
+    <p class="login-hint">Demo: admin / 123456</p>
+  </div>
+</div>
+
+<!-- ===== MAIN APP ===== -->
+<div id="mainApp" class="app-layout" style="display:none">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">
+        <i class="fa-solid fa-solar-panel"></i>
+        <span>HT Solar</span>
+      </div>
+      <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fa fa-bars"></i></button>
+    </div>
+
+    <div class="user-badge">
+      <div class="user-avatar" id="userAvatar">A</div>
+      <div class="user-info">
+        <div id="userDisplayName" class="user-name">Admin</div>
+        <div id="userRole" class="user-role-badge">Quản trị</div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Tổng quan</div>
+      <a href="#" class="nav-item active" onclick="showPage('dashboard',this)">
+        <i class="fa fa-chart-pie"></i><span>Dashboard</span>
+      </a>
+
+      <div class="nav-section-label">Kinh doanh</div>
+      <a href="#" class="nav-item" onclick="showPage('customers',this)">
+        <i class="fa fa-users"></i><span>Khách hàng</span>
+      </a>
+      <a href="#" class="nav-item" onclick="showPage('contracts',this)">
+        <i class="fa fa-file-contract"></i><span>Hợp đồng</span>
+      </a>
+      <a href="#" class="nav-item" onclick="showPage('quotations',this)">
+        <i class="fa fa-bolt"></i><span>Báo giá nhanh</span>
+      </a>
+
+      <div class="nav-section-label">Kho vận</div>
+      <a href="#" class="nav-item" onclick="showPage('inventory',this)">
+        <i class="fa fa-boxes-stacked"></i><span>Kho hàng</span>
+      </a>
+      <a href="#" class="nav-item" onclick="showPage('products',this)">
+        <i class="fa fa-microchip"></i><span>Sản phẩm</span>
+      </a>
+
+      <div class="nav-section-label">Hệ thống</div>
+      <a href="#" class="nav-item" onclick="showPage('payments',this)">
+        <i class="fa fa-money-bill-wave"></i><span>Thanh toán</span>
+      </a>
+      <a href="#" class="nav-item" onclick="showPage('users',this)">
+        <i class="fa fa-user-shield"></i><span>Người dùng</span>
+      </a>
+      <a href="#" class="nav-item" onclick="showPage('logs',this)">
+        <i class="fa fa-list-check"></i><span>Nhật ký</span>
+      </a>
+    </nav>
+
+    <button class="btn-logout" onclick="doLogout()">
+      <i class="fa fa-right-from-bracket"></i><span>Đăng xuất</span>
+    </button>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <div class="main-content">
+    <header class="topbar">
+      <button class="topbar-menu-btn" onclick="toggleSidebar()"><i class="fa fa-bars"></i></button>
+      <div class="topbar-title" id="pageTitle">Dashboard</div>
+      <div class="topbar-right">
+        <div class="topbar-date" id="topbarDate"></div>
+        <div class="topbar-notif"><i class="fa fa-bell"></i><span class="notif-dot"></span></div>
+      </div>
+    </header>
+
+    <!-- PAGES -->
+    <div class="page-content">
+
+      <!-- DASHBOARD -->
+      <section id="page-dashboard" class="page active">
+        <div class="page-header">
+          <h2>Tổng quan hệ thống</h2>
+          <span class="page-sub">Dữ liệu cập nhật real-time từ Google Sheets</span>
+        </div>
+        <div class="stat-grid">
+          <div class="stat-card accent-orange">
+            <div class="stat-icon"><i class="fa fa-circle-dollar-to-slot"></i></div>
+            <div class="stat-body">
+              <div class="stat-label">Doanh thu tháng</div>
+              <div class="stat-value" id="statRevenue">2.4 tỷ</div>
+              <div class="stat-change up"><i class="fa fa-arrow-trend-up"></i> +12% so với tháng trước</div>
+            </div>
+          </div>
+          <div class="stat-card accent-blue">
+            <div class="stat-icon"><i class="fa fa-file-signature"></i></div>
+            <div class="stat-body">
+              <div class="stat-label">Hợp đồng đang thi công</div>
+              <div class="stat-value" id="statContracts">14</div>
+              <div class="stat-change up"><i class="fa fa-arrow-trend-up"></i> +3 hợp đồng mới</div>
+            </div>
+          </div>
+          <div class="stat-card accent-red">
+            <div class="stat-icon"><i class="fa fa-clock-rotate-left"></i></div>
+            <div class="stat-body">
+              <div class="stat-label">Công nợ còn lại</div>
+              <div class="stat-value" id="statDebt">850tr</div>
+              <div class="stat-change down"><i class="fa fa-arrow-trend-down"></i> Cần thu hồi</div>
+            </div>
+          </div>
+          <div class="stat-card accent-green">
+            <div class="stat-icon"><i class="fa fa-boxes-stacked"></i></div>
+            <div class="stat-body">
+              <div class="stat-label">Tồn kho (SKU)</div>
+              <div class="stat-value" id="statInventory">38</div>
+              <div class="stat-change"><i class="fa fa-triangle-exclamation"></i> 3 sắp hết hàng</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="chart-grid">
+          <div class="chart-card wide">
+            <div class="chart-title">Doanh thu 6 tháng gần nhất</div>
+            <canvas id="revenueChart" height="120"></canvas>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">Phân loại hợp đồng</div>
+            <canvas id="contractPieChart" height="180"></canvas>
+          </div>
+        </div>
+
+        <div class="chart-grid">
+          <div class="chart-card">
+            <div class="chart-title">Top sản phẩm bán chạy</div>
+            <canvas id="topProductChart" height="160"></canvas>
+          </div>
+          <div class="chart-card wide">
+            <div class="chart-title">Hợp đồng mới nhất</div>
+            <div id="recentContracts" class="mini-table-wrap"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- CUSTOMERS -->
+      <section id="page-customers" class="page">
+        <div class="page-header">
+          <h2>Quản lý khách hàng</h2>
+          <button class="btn-primary" onclick="openModal('addCustomer')">
+            <i class="fa fa-plus"></i> Thêm khách hàng
+          </button>
+        </div>
+        <div class="filter-bar">
+          <div class="search-box">
+            <i class="fa fa-search"></i>
+            <input type="text" id="customerSearch" placeholder="Tìm khách hàng..." oninput="filterCustomers()"/>
+          </div>
+          <select id="customerStatusFilter" onchange="filterCustomers()" class="filter-select">
+            <option value="">Tất cả trạng thái</option>
+            <option value="Khách mới">Khách mới</option>
+            <option value="Đã báo giá">Đã báo giá</option>
+            <option value="Đang chốt">Đang chốt</option>
+            <option value="Đã ký HĐ">Đã ký HĐ</option>
+            <option value="Hoàn thành">Hoàn thành</option>
+          </select>
+          <select id="customerTypeFilter" onchange="filterCustomers()" class="filter-select">
+            <option value="">Tất cả loại</option>
+            <option value="Hộ gia đình">Hộ gia đình</option>
+            <option value="Doanh nghiệp">Doanh nghiệp</option>
+            <option value="Nông nghiệp">Nông nghiệp</option>
+          </select>
+        </div>
+        <div class="table-card">
+          <table class="data-table" id="customerTable">
+            <thead>
+              <tr>
+                <th>Mã KH</th><th>Họ tên</th><th>SĐT</th><th>Địa chỉ</th>
+                <th>Loại công trình</th><th>Công suất</th><th>Trạng thái</th><th>Thao tác</th>
+              </tr>
+            </thead>
+            <tbody id="customerBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- CONTRACTS -->
+      <section id="page-contracts" class="page">
+        <div class="page-header">
+          <h2>Quản lý hợp đồng</h2>
+          <button class="btn-primary" onclick="openModal('addContract')">
+            <i class="fa fa-plus"></i> Tạo hợp đồng
+          </button>
+        </div>
+        <div class="kanban-board" id="kanbanBoard"></div>
+        <div class="table-card" style="margin-top:24px">
+          <div class="chart-title" style="padding:16px 20px 0">Danh sách hợp đồng</div>
+          <table class="data-table" id="contractTable">
+            <thead>
+              <tr>
+                <th>Mã HĐ</th><th>Khách hàng</th><th>Ngày ký</th>
+                <th>Giá trị</th><th>Đã TT</th><th>Còn nợ</th>
+                <th>Tiến độ</th><th>Trạng thái</th><th>Thao tác</th>
+              </tr>
+            </thead>
+            <tbody id="contractBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- QUOTATIONS -->
+      <section id="page-quotations" class="page">
+        <div class="page-header">
+          <h2>Báo giá nhanh tự động</h2>
+          <span class="page-sub">Tạo báo giá PDF chuyên nghiệp trong vài giây</span>
+        </div>
+        <div class="quote-builder">
+          <div class="quote-form-card">
+            <h3><i class="fa fa-bolt"></i> Thông tin hệ thống</h3>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Loại hệ thống</label>
+                <select id="qSystemType" onchange="updateQuoteCalc()" class="form-control">
+                  <option value="hoaluo">Hòa lưới (Grid-tie)</option>
+                  <option value="hybrid">Hybrid (Hybrid)</option>
+                  <option value="offgrid">Độc lập (Off-grid)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Công suất hệ thống (kWp)</label>
+                <input type="number" id="qCapacity" value="5" min="1" max="1000" onchange="updateQuoteCalc()" class="form-control"/>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Số tấm pin</label>
+                <input type="number" id="qPanels" value="10" min="1" onchange="updateQuoteCalc()" class="form-control"/>
+              </div>
+              <div class="form-group">
+                <label>Model tấm pin</label>
+                <select id="qPanelModel" onchange="updateQuoteCalc()" class="form-control">
+                  <option value="longi">LONGi Hi-MO X6 550W</option>
+                  <option value="jinko">Jinko Tiger Neo 580W</option>
+                  <option value="canadian">Canadian Solar 400W</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Inverter</label>
+                <select id="qInverter" onchange="updateQuoteCalc()" class="form-control">
+                  <option value="sungrow5">Sungrow SG5RS 5kW</option>
+                  <option value="sungrow10">Sungrow SG10RS 10kW</option>
+                  <option value="huawei5">Huawei SUN2000-5KTL 5kW</option>
+                  <option value="growatt">Growatt MID 10KTL3-X 10kW</option>
+                  <option value="goodwe">GoodWe GW5000D-NS 5kW</option>
+                </select>
+              </div>
+              <div class="form-group" id="batteryGroup">
+                <label>Pin lưu trữ</label>
+                <select id="qBattery" onchange="updateQuoteCalc()" class="form-control">
+                  <option value="none">Không có</option>
+                  <option value="pylontech5">Pylontech US5000 5kWh</option>
+                  <option value="pylontech10">Pylontech US5000 10kWh</option>
+                  <option value="byd">BYD Battery-Box 10kWh</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Khách hàng</label>
+                <select id="qCustomer" class="form-control">
+                  <option value="">-- Chọn hoặc nhập mới --</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Chi phí thi công (%)</label>
+                <input type="number" id="qInstall" value="15" min="0" max="50" onchange="updateQuoteCalc()" class="form-control"/>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Ghi chú báo giá</label>
+              <textarea id="qNote" class="form-control" rows="2" placeholder="Ghi chú thêm..."></textarea>
+            </div>
+          </div>
+
+          <div class="quote-preview-card">
+            <h3><i class="fa fa-file-invoice"></i> Bảng báo giá tự động</h3>
+            <div id="quotePreview" class="quote-preview"></div>
+            <div class="quote-actions">
+              <button class="btn-primary" onclick="generateQuotePDF()">
+                <i class="fa fa-file-pdf"></i> Xuất PDF
+              </button>
+              <button class="btn-secondary" onclick="sendQuoteEmail()">
+                <i class="fa fa-envelope"></i> Gửi Email
+              </button>
+              <button class="btn-outline" onclick="saveQuote()">
+                <i class="fa fa-floppy-disk"></i> Lưu báo giá
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="table-card" style="margin-top:24px">
+          <div class="chart-title" style="padding:16px 20px 8px">Lịch sử báo giá</div>
+          <table class="data-table">
+            <thead>
+              <tr><th>Mã BG</th><th>Khách hàng</th><th>Hệ thống</th><th>Tổng tiền</th><th>Ngày tạo</th><th>Trạng thái</th><th>File</th></tr>
+            </thead>
+            <tbody id="quoteHistory"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- INVENTORY -->
+      <section id="page-inventory" class="page">
+        <div class="page-header">
+          <h2>Quản lý kho hàng</h2>
+          <div class="btn-group">
+            <button class="btn-primary" onclick="openModal('importStock')">
+              <i class="fa fa-arrow-down"></i> Nhập kho
+            </button>
+            <button class="btn-secondary" onclick="openModal('exportStock')">
+              <i class="fa fa-arrow-up"></i> Xuất kho
+            </button>
+          </div>
+        </div>
+
+        <!-- Cảnh báo tồn kho -->
+        <div id="stockAlerts" class="alert-bar"></div>
+
+        <div class="stat-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:20px">
+          <div class="stat-card accent-blue" style="padding:16px">
+            <div class="stat-icon" style="font-size:1.4rem"><i class="fa fa-solar-panel"></i></div>
+            <div class="stat-body"><div class="stat-label">Tấm pin</div><div class="stat-value" id="invPanel">0</div></div>
+          </div>
+          <div class="stat-card accent-orange" style="padding:16px">
+            <div class="stat-icon" style="font-size:1.4rem"><i class="fa fa-bolt"></i></div>
+            <div class="stat-body"><div class="stat-label">Inverter</div><div class="stat-value" id="invInverter">0</div></div>
+          </div>
+          <div class="stat-card accent-green" style="padding:16px">
+            <div class="stat-icon" style="font-size:1.4rem"><i class="fa fa-battery-full"></i></div>
+            <div class="stat-body"><div class="stat-label">Pin lưu trữ</div><div class="stat-value" id="invBattery">0</div></div>
+          </div>
+        </div>
+
+        <div class="table-card">
+          <div class="filter-bar" style="padding:12px 16px;border-bottom:1px solid var(--border)">
+            <div class="search-box">
+              <i class="fa fa-search"></i>
+              <input type="text" id="inventorySearch" placeholder="Tìm vật tư..." oninput="filterInventory()"/>
+            </div>
+            <select id="inventoryCatFilter" onchange="filterInventory()" class="filter-select">
+              <option value="">Tất cả danh mục</option>
+              <option value="Tấm pin">Tấm pin</option>
+              <option value="Inverter">Inverter</option>
+              <option value="Pin lưu trữ">Pin lưu trữ</option>
+              <option value="Khung giá đỡ">Khung giá đỡ</option>
+              <option value="Phụ kiện">Phụ kiện</option>
+            </select>
+          </div>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Mã SP</th><th>Tên sản phẩm</th><th>Danh mục</th><th>Hãng</th>
+                <th>ĐVT</th><th>Tồn kho</th><th>Giá nhập</th><th>Giá bán</th><th>Trạng thái</th><th>Thao tác</th>
+              </tr>
+            </thead>
+            <tbody id="inventoryBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- PRODUCTS -->
+      <section id="page-products" class="page">
+        <div class="page-header">
+          <h2>Danh mục sản phẩm</h2>
+          <button class="btn-primary" onclick="openModal('addProduct')">
+            <i class="fa fa-plus"></i> Thêm sản phẩm
+          </button>
+        </div>
+        <div class="table-card">
+          <table class="data-table">
+            <thead>
+              <tr><th>Mã</th><th>Tên sản phẩm</th><th>Model</th><th>Hãng</th><th>Danh mục</th><th>ĐVT</th><th>Giá nhập</th><th>Giá bán</th><th>Thao tác</th></tr>
+            </thead>
+            <tbody id="productBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- PAYMENTS -->
+      <section id="page-payments" class="page">
+        <div class="page-header">
+          <h2>Quản lý thanh toán</h2>
+          <button class="btn-primary" onclick="openModal('addPayment')">
+            <i class="fa fa-plus"></i> Ghi nhận TT
+          </button>
+        </div>
+        <div class="table-card">
+          <table class="data-table">
+            <thead>
+              <tr><th>Mã TT</th><th>Mã HĐ</th><th>Khách hàng</th><th>Số tiền</th><th>Ngày TT</th><th>Hình thức</th><th>Ghi chú</th></tr>
+            </thead>
+            <tbody id="paymentBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- USERS -->
+      <section id="page-users" class="page">
+        <div class="page-header">
+          <h2>Quản lý người dùng</h2>
+          <button class="btn-primary" onclick="openModal('addUser')">
+            <i class="fa fa-plus"></i> Thêm người dùng
+          </button>
+        </div>
+        <div class="table-card">
+          <table class="data-table">
+            <thead>
+              <tr><th>Tài khoản</th><th>Họ tên</th><th>Email</th><th>Phân quyền</th><th>Trạng thái</th><th>Đăng nhập cuối</th><th>Thao tác</th></tr>
+            </thead>
+            <tbody id="userBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- LOGS -->
+      <section id="page-logs" class="page">
+        <div class="page-header">
+          <h2>Nhật ký hoạt động</h2>
+        </div>
+        <div class="table-card">
+          <table class="data-table">
+            <thead>
+              <tr><th>Thời gian</th><th>Người dùng</th><th>Hành động</th><th>Module</th><th>Chi tiết</th><th>IP</th></tr>
+            </thead>
+            <tbody id="logBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+    </div><!-- /page-content -->
+  </div><!-- /main-content -->
+</div><!-- /mainApp -->
+
+<!-- ===== MODALS ===== -->
+<div id="modalOverlay" class="modal-overlay" onclick="closeModal(event)">
+
+  <!-- Add Customer -->
+  <div class="modal" id="modal-addCustomer">
+    <div class="modal-header">
+      <h3><i class="fa fa-user-plus"></i> Thêm khách hàng mới</h3>
+      <button class="modal-close" onclick="closeModal()"><i class="fa fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group"><label>Họ tên *</label><input type="text" id="cName" class="form-control" placeholder="Nguyễn Văn A"/></div>
+        <div class="form-group"><label>Số điện thoại *</label><input type="text" id="cPhone" class="form-control" placeholder="0901234567"/></div>
+      </div>
+      <div class="form-group"><label>Địa chỉ</label><input type="text" id="cAddress" class="form-control" placeholder="Số nhà, đường, phường/xã, tỉnh/TP"/></div>
+      <div class="form-row">
+        <div class="form-group"><label>Email</label><input type="email" id="cEmail" class="form-control"/></div>
+        <div class="form-group"><label>Loại công trình</label>
+          <select id="cType" class="form-control">
+            <option>Hộ gia đình</option><option>Doanh nghiệp</option><option>Nông nghiệp</option><option>Trang trại</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Công suất (kWp)</label><input type="number" id="cCapacity" class="form-control" placeholder="5"/></div>
+        <div class="form-group"><label>Trạng thái</label>
+          <select id="cStatus" class="form-control">
+            <option>Khách mới</option><option>Đã báo giá</option><option>Đang chốt</option><option>Đã ký HĐ</option><option>Hoàn thành</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group"><label>Ghi chú</label><textarea id="cNote" class="form-control" rows="2"></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-outline" onclick="closeModal()">Hủy</button>
+      <button class="btn-primary" onclick="addCustomer()"><i class="fa fa-floppy-disk"></i> Lưu</button>
+    </div>
+  </div>
+
+  <!-- Add Contract -->
+  <div class="modal" id="modal-addContract">
+    <div class="modal-header">
+      <h3><i class="fa fa-file-signature"></i> Tạo hợp đồng mới</h3>
+      <button class="modal-close" onclick="closeModal()"><i class="fa fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group"><label>Khách hàng *</label>
+          <select id="ctCustomer" class="form-control"><option value="">-- Chọn khách hàng --</option></select>
+        </div>
+        <div class="form-group"><label>Ngày ký</label><input type="date" id="ctDate" class="form-control"/></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Giá trị HĐ (VNĐ)</label><input type="number" id="ctValue" class="form-control" placeholder="150000000"/></div>
+        <div class="form-group"><label>Đặt cọc (VNĐ)</label><input type="number" id="ctDeposit" class="form-control" placeholder="50000000"/></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Trạng thái</label>
+          <select id="ctStatus" class="form-control">
+            <option>Đã ký hợp đồng</option><option>Đang thi công</option><option>Hoàn thành</option><option>Bảo hành</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Tiến độ (%)</label><input type="number" id="ctProgress" class="form-control" value="0" min="0" max="100"/></div>
+      </div>
+      <div class="form-group"><label>Ghi chú</label><textarea id="ctNote" class="form-control" rows="2"></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-outline" onclick="closeModal()">Hủy</button>
+      <button class="btn-primary" onclick="addContract()"><i class="fa fa-floppy-disk"></i> Lưu</button>
+    </div>
+  </div>
+
+  <!-- Import Stock -->
+  <div class="modal" id="modal-importStock">
+    <div class="modal-header">
+      <h3><i class="fa fa-arrow-down"></i> Nhập kho</h3>
+      <button class="modal-close" onclick="closeModal()"><i class="fa fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group"><label>Sản phẩm *</label>
+          <select id="isProduct" class="form-control"></select>
+        </div>
+        <div class="form-group"><label>Số lượng *</label><input type="number" id="isQty" class="form-control" min="1" value="1"/></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Giá nhập (VNĐ)</label><input type="number" id="isPrice" class="form-control"/></div>
+        <div class="form-group"><label>Nhà cung cấp</label><input type="text" id="isSupplier" class="form-control"/></div>
+      </div>
+      <div class="form-group"><label>Ghi chú</label><textarea id="isNote" class="form-control" rows="2"></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-outline" onclick="closeModal()">Hủy</button>
+      <button class="btn-primary" onclick="importStock()"><i class="fa fa-floppy-disk"></i> Nhập kho</button>
+    </div>
+  </div>
+
+  <!-- Add Product -->
+  <div class="modal" id="modal-addProduct">
+    <div class="modal-header">
+      <h3><i class="fa fa-microchip"></i> Thêm sản phẩm mới</h3>
+      <button class="modal-close" onclick="closeModal()"><i class="fa fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group"><label>Tên sản phẩm *</label><input type="text" id="pName" class="form-control"/></div>
+        <div class="form-group"><label>Model</label><input type="text" id="pModel" class="form-control"/></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Hãng</label><input type="text" id="pBrand" class="form-control"/></div>
+        <div class="form-group"><label>Danh mục</label>
+          <select id="pCategory" class="form-control">
+            <option>Tấm pin</option><option>Inverter</option><option>Pin lưu trữ</option><option>Khung giá đỡ</option><option>Phụ kiện</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Đơn vị</label><input type="text" id="pUnit" class="form-control" value="Tấm"/></div>
+        <div class="form-group"><label>Giá nhập</label><input type="number" id="pBuyPrice" class="form-control"/></div>
+        <div class="form-group"><label>Giá bán</label><input type="number" id="pSellPrice" class="form-control"/></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-outline" onclick="closeModal()">Hủy</button>
+      <button class="btn-primary" onclick="addProduct()"><i class="fa fa-floppy-disk"></i> Lưu</button>
+    </div>
+  </div>
+
+  <!-- Add Payment -->
+  <div class="modal" id="modal-addPayment">
+    <div class="modal-header">
+      <h3><i class="fa fa-money-bill-wave"></i> Ghi nhận thanh toán</h3>
+      <button class="modal-close" onclick="closeModal()"><i class="fa fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group"><label>Mã hợp đồng *</label>
+          <select id="pmContract" class="form-control"></select>
+        </div>
+        <div class="form-group"><label>Số tiền (VNĐ) *</label><input type="number" id="pmAmount" class="form-control"/></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Ngày thanh toán</label><input type="date" id="pmDate" class="form-control"/></div>
+        <div class="form-group"><label>Hình thức</label>
+          <select id="pmMethod" class="form-control">
+            <option>Chuyển khoản</option><option>Tiền mặt</option><option>Ví điện tử</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group"><label>Ghi chú</label><textarea id="pmNote" class="form-control" rows="2"></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-outline" onclick="closeModal()">Hủy</button>
+      <button class="btn-primary" onclick="addPayment()"><i class="fa fa-floppy-disk"></i> Lưu</button>
+    </div>
+  </div>
+
+  <!-- Add User -->
+  <div class="modal" id="modal-addUser">
+    <div class="modal-header">
+      <h3><i class="fa fa-user-shield"></i> Thêm người dùng</h3>
+      <button class="modal-close" onclick="closeModal()"><i class="fa fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group"><label>Tài khoản *</label><input type="text" id="uUsername" class="form-control"/></div>
+        <div class="form-group"><label>Họ tên *</label><input type="text" id="uFullname" class="form-control"/></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Email</label><input type="email" id="uEmail" class="form-control"/></div>
+        <div class="form-group"><label>Mật khẩu *</label><input type="password" id="uPassword" class="form-control"/></div>
+      </div>
+      <div class="form-group"><label>Phân quyền</label>
+        <select id="uRole" class="form-control">
+          <option value="admin">Admin</option>
+          <option value="ketoan">Kế toán</option>
+          <option value="kinhdoanh">Kinh doanh</option>
+          <option value="kho">Kho</option>
+          <option value="kythuat">Kỹ thuật</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-outline" onclick="closeModal()">Hủy</button>
+      <button class="btn-primary" onclick="addUser()"><i class="fa fa-floppy-disk"></i> Lưu</button>
+    </div>
+  </div>
+
+</div><!-- /modalOverlay -->
+
+<!-- Toast Notification -->
+<div id="toast" class="toast"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
