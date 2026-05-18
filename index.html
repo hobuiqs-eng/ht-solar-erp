@@ -796,8 +796,16 @@ textarea.fc{resize:vertical}
           <h2>Quản lý thanh toán</h2>
           <button class="btn btn-primary" onclick="openModal('addPayment')"><i class="fa fa-plus"></i> Ghi nhận TT</button>
         </div>
+        <!-- Stat tổng theo người nhận -->
+        <div class="stat-grid" id="payRecvStats" style="grid-template-columns:repeat(5,1fr);margin-bottom:16px"></div>
+        <div class="filter-bar">
+          <select class="flt-sel" id="payRecvFilter" onchange="filterPay()">
+            <option value="">Tất cả người nhận</option>
+            <option>Công ty</option><option>Túy</option><option>Hồ</option><option>Thương</option><option>Tiền mặt</option>
+          </select>
+        </div>
         <div class="tbl-card"><table class="data-tbl"><thead><tr>
-          <th>Mã TT</th><th>Mã HĐ</th><th>Khách hàng</th><th>Số tiền</th><th>Ngày TT</th><th>Hình thức</th><th>Ghi chú</th>
+          <th>Mã TT</th><th>Mã HĐ</th><th>Khách hàng</th><th>Số tiền</th><th>Ngày TT</th><th>Hình thức</th><th>Người nhận</th><th>Ghi chú</th>
         </tr></thead><tbody id="payBody"></tbody></table></div>
       </section>
 
@@ -925,6 +933,7 @@ textarea.fc{resize:vertical}
     <div class="modal-body">
       <div class="fr2"><div class="fg"><label>Hợp đồng *</label><select id="m_pmct" class="fc"></select></div><div class="fg"><label>Số tiền (đ) *</label><input id="m_pmamt" class="fc" type="number"/></div></div>
       <div class="fr2"><div class="fg"><label>Ngày TT</label><input id="m_pmdate" type="date" class="fc"/></div><div class="fg"><label>Hình thức</label><select id="m_pmmeth" class="fc"><option>Chuyển khoản</option><option>Tiền mặt</option><option>Ví điện tử</option></select></div></div>
+      <div class="fg"><label>Người nhận *</label><select id="m_pmrecv" class="fc"><option value="Công ty">Công ty (TK chung)</option><option value="Túy">Túy</option><option value="Hồ">Hồ</option><option value="Thương">Thương</option><option value="Tiền mặt">Tiền mặt (chưa nộp quỹ)</option></select></div>
       <div class="fg"><label>Ghi chú</label><textarea id="m_pmnote" class="fc" rows="2"></textarea></div>
     </div>
     <div class="modal-ft"><button class="btn btn-outline" onclick="closeModal()">Hủy</button><button class="btn btn-primary" onclick="savePayment()"><i class="fa fa-floppy-disk"></i> Lưu</button></div>
@@ -1283,6 +1292,7 @@ async function loadAllDataGAS() {
       amt: parseFloat(r.amt||r.amount||0),
       hid: r.hid||r.ctId||r.contractId||'',
       cname: r.cname||r.custName||'',
+      recv: r.recv||'Công ty',
     }));
     persist();
     const active = document.querySelector('.page.active')?.id?.replace('page-','');
@@ -1631,20 +1641,35 @@ async function delProduct(id){
 // ══════════════════════════════════════════════════════════
 //  PAYMENTS
 // ══════════════════════════════════════════════════════════
-function renderPayments(){
-  document.getElementById('payBody').innerHTML=S.payments.map(p=>`<tr>
-    <td><b>${p.id}</b></td><td>${p.hid||p.ctId||''}</td><td>${esc(p.custName)}</td>
+function renderPayments(filter){
+  const list=filter?S.payments.filter(p=>(p.recv||'Công ty')===filter):S.payments;
+  // Stat tổng theo từng người nhận
+  const recvList=['Công ty','Túy','Hồ','Thương','Tiền mặt'];
+  const colorMap={'Công ty':'c-blue','Túy':'c-orange','Hồ':'c-green','Thương':'c-teal','Tiền mặt':'c-red'};
+  const sums={};recvList.forEach(r=>sums[r]=0);
+  S.payments.forEach(p=>{const r=p.recv||'Công ty';if(sums[r]!==undefined)sums[r]+=parseFloat(p.amt)||0;});
+  document.getElementById('payRecvStats').innerHTML=recvList.map(r=>`
+    <div class="stat-card ${colorMap[r]||'c-blue'}" style="padding:14px"><div class="stat-icon"><i class="fa fa-user-tag"></i></div>
+    <div><div class="stat-lbl">${r}</div><div class="stat-val" style="font-size:16px">${fmtM(sums[r])}</div></div></div>`).join('');
+  document.getElementById('payBody').innerHTML=list.map(p=>{
+    const r=p.recv||'Công ty';
+    const badge={'Công ty':'bg-blue','Túy':'bg-orange','Hồ':'bg-green','Thương':'bg-teal','Tiền mặt':'bg-red'}[r]||'bg-gray';
+    return`<tr>
+    <td><b>${p.id}</b></td><td>${p.hid||p.ctId||''}</td><td>${esc(p.cname||p.custName||'')}</td>
     <td style="color:var(--green);font-weight:700">${fmtV(p.amt)}</td>
-    <td>${p.date}</td><td>${esc(p.meth)}</td><td>${esc(p.note)}</td>
-  </tr>`).join('');
+    <td>${p.date}</td><td>${esc(p.meth)}</td>
+    <td><span class="badge ${badge}">${esc(r)}</span></td>
+    <td style="font-size:12px;color:var(--muted)">${esc(p.note)}</td>
+  </tr>`;}).join('')||'<tr><td colspan="8" style="text-align:center;padding:24px;color:var(--muted)">Chưa có thanh toán</td></tr>';
 }
+function filterPay(){renderPayments(val('payRecvFilter'));}
 async function savePayment(){
   const ctId=val('m_pmct'),amt=nval('m_pmamt');
   if(!ctId||amt<=0){toast('Chọn HĐ và nhập số tiền!','error');return;}
   const ct=S.contracts.find(c=>c.id===ctId);
   if(ct)ct.paid=Math.min(ct.val,(parseFloat(ct.paid)||0)+amt);
   const py={id:nid('TT'),hid:ctId,ctId,cname:ct?.cname||ct?.custName||'',custName:ct?.cname||ct?.custName||'',
-    amt,date:val('m_pmdate')||todayStr(),meth:val('m_pmmeth'),note:val('m_pmnote')};
+    amt,date:val('m_pmdate')||todayStr(),meth:val('m_pmmeth'),recv:val('m_pmrecv')||'Công ty',note:val('m_pmnote')};
   S.payments.push(py); log('ADD_PAYMENT','Thanh toán',fmtV(amt)+' HĐ '+ctId);
   try { await gasCall('savePayment',py); } catch(e) { toast('⚠️ '+e.message,'warn'); }
   persist(); closeModal(); renderPayments(); renderDashboard(); toast('Đã ghi nhận '+fmtV(amt)+'!');
