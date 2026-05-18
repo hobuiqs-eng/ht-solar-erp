@@ -1015,7 +1015,7 @@ function seedAll(){
       {id:'U002',username:'ketoan',   pw:'__HASH_KyThuat@2024', fullname:'Nguyễn Kế Toán', role:'ketoan',   status:'active',last:''},
       {id:'U003',username:'sales1',   pw:'__HASH_Sales@2024', fullname:'Lê Kinh Doanh',  role:'kinhdoanh',status:'active',last:''},
       {id:'U004',username:'kho1',     pw:'__HASH_Kho@2024', fullname:'Phạm Thủ Kho',   role:'kho',      status:'active',last:''},
-      {id:'U005',username:'kythuat1', pw:'kt2024', fullname:'Võ Kỹ Thuật',    role:'kythuat',  status:'active',last:''},
+      {id:'U005',username:'kythuat1', pw:'__HASH_KyThuat@2024', fullname:'Võ Kỹ Thuật',    role:'kythuat',  status:'active',last:''},
     ];
     S.cnt.U=5;
   }
@@ -1130,7 +1130,7 @@ function nval(id){return parseFloat(val(id))||0;}
 
 // ── AUTH ───────────────────────────────────────────────
 // ═══ GAS API ═══════════════════════════════════════
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbxGpw3rPe9QCkTl5RQAaC3tvIbXvLzhrzdQx4-MfggGuCIDLWc8gSZhUD_HS6dfoB4/exec';
+const GAS_URL = 'https://script.google.com/macros/s/AKfycby03ouBneVKgzBCZFQIszzFNYrOdyg_RtcPy4yTpe8Bf_MIrLMmQrDXbCEHxSWhys3v7A/exec';
 
 async function gasCall(action, data) {
   data = data || {};
@@ -1384,16 +1384,24 @@ function initApp(){
 // ══════════════════════════════════════════════════════════
 let _charts={};
 function renderDashboard(){
-  const totalPaid=S.payments.reduce((s,p)=>s+p.amt,0);
-  const debt=S.contracts.reduce((s,c)=>s+(c.val-c.paid),0);
-  const active=S.contracts.filter(c=>c.status==='Đang thi công').length;
+  const totalPaid=S.payments.reduce((s,p)=>s+(parseFloat(p.amt)||0),0);
+  const debt=S.contracts.reduce((s,c)=>s+((parseFloat(c.val)||0)-(parseFloat(c.paid)||0)),0);
+  const active=S.contracts.filter(c=>(c.stat||c.status)==='Đang thi công').length;
   document.getElementById('stRevenue').textContent=fmtM(totalPaid);
   document.getElementById('stContracts').textContent=active;
   document.getElementById('stDebt').textContent=fmtM(debt);
   document.getElementById('stQuotes').textContent=S.quotations.length;
   renderRevenueChart(); renderPieChart();
-  // Recent contracts
-  const rows=S.contracts.slice(-5).reverse().map(c=>`<tr><td><b>${c.id}</b></td><td>${esc(c.cname||c.custName||'')}</td><td>${fmtV(c.val)}</td><td>${sbadge(c.status)}</td><td><div style="display:flex;align-items:center;gap:6px"><div class="prog-wrap"><div class="prog-fill" style="width:${c.prog}%"></div></div>${c.prog}%</div></td></tr>`).join('');
+  // Recent contracts — sort theo createdAt/date desc rồi lấy 5
+  const sorted=[...S.contracts].sort((a,b)=>{
+    const da=String(a.createdAt||a.date||'');
+    const db=String(b.createdAt||b.date||'');
+    return db.localeCompare(da);
+  }).slice(0,5);
+  const rows=sorted.map(c=>{
+    const st=c.stat||c.status||'';
+    return`<tr><td><b>${c.id}</b></td><td>${esc(c.cname||c.custName||'')}</td><td>${fmtV(c.val)}</td><td>${sbadge(st)}</td><td><div style="display:flex;align-items:center;gap:6px"><div class="prog-wrap"><div class="prog-fill" style="width:${c.prog||0}%"></div></div>${c.prog||0}%</div></td></tr>`;
+  }).join('');
   document.getElementById('dashContracts').innerHTML=`<table class="mini-tbl"><thead><tr><th>Mã HĐ</th><th>Khách hàng</th><th>Giá trị</th><th>Trạng thái</th><th>Tiến độ</th></tr></thead><tbody>${rows}</tbody></table>`;
 }
 function renderRevenueChart(){
@@ -1404,7 +1412,7 @@ function renderRevenueChart(){
 function renderPieChart(){
   const ctx=document.getElementById('cPie');if(!ctx)return;
   if(_charts.pie)_charts.pie.destroy();
-  const cnts={};S.contracts.forEach(c=>{cnts[c.status]=(cnts[c.status]||0)+1;});
+  const cnts={};S.contracts.forEach(c=>{const st=c.stat||c.status||'(chưa có)';cnts[st]=(cnts[st]||0)+1;});
   _charts.pie=new Chart(ctx,{type:'doughnut',data:{labels:Object.keys(cnts),datasets:[{data:Object.values(cnts),backgroundColor:['#1a56db','#f97316','#16a34a','#dc2626','#0891b2'],borderWidth:2,borderColor:'#fff'}]},options:{responsive:true,plugins:{legend:{position:'bottom',labels:{font:{family:'Be Vietnam Pro',size:11}}}},cutout:'60%'}});
 }
 
@@ -1436,20 +1444,25 @@ async function saveCust(){
   if(!name||!phone){toast('Vui lòng nhập Họ tên và SĐT','error');return;}
   const editing=document.getElementById('modal-addCust').dataset.editId;
   const data={name,phone,addr:val('m_caddr'),email:val('m_cemail'),type:val('m_ctype'),cap:nval('m_ccap'),status:val('m_cstat'),note:val('m_cnote')};
+  // Nếu đang sửa → gửi id để GAS update; nếu thêm mới → KHÔNG gửi id, để GAS gen id riêng (tránh silent fail trong updateWhere)
   if(editing) data.id=editing;
-  // Lưu local trước
+  let localRecord=null;
   if(editing){
-    const c=S.customers.find(x=>x.id===editing);
-    if(c) Object.assign(c,data);
+    localRecord=S.customers.find(x=>x.id===editing);
+    if(localRecord) Object.assign(localRecord,data);
     log('EDIT_CUSTOMER','Khách hàng','Sửa KH: '+name);
   }else{
-    data.id=nid('KH');
-    S.customers.push(data);
+    // Tạo bản tạm với id local, sau khi GAS trả về sẽ thay bằng id GAS
+    localRecord={...data,id:nid('KH')};
+    S.customers.push(localRecord);
     log('ADD_CUSTOMER','Khách hàng','Thêm KH: '+name);
   }
-  // Ghi lên GAS trước, sau đó mới đóng modal
   try {
-    await gasCall('saveCustomer',data);
+    const r=await gasCall('saveCustomer',data);
+    // GAS trả về data với id thật → đồng bộ lại
+    if(r&&r.data&&r.data.id&&!editing&&localRecord){
+      localRecord.id=r.data.id;
+    }
   } catch(e) { toast('⚠️ Chưa sync Sheets: '+e.message,'warn'); }
   persist(); closeModal(); renderCust(); populateQSelects();
   toast(editing?'Đã cập nhật '+name:'Đã thêm khách hàng '+name);
@@ -1506,11 +1519,16 @@ async function saveContract(){
   const custId=val('m_ctcust');const cust=S.customers.find(x=>x.id===custId);
   if(!custId){toast('Chọn khách hàng!','error');return;}
   const v=nval('m_ctval'),dep=nval('m_ctdep');
-  const ct={id:nid('HD'),custId,cname:cust?.name||custId,custName:cust?.name||custId,
+  // KHÔNG gửi id khi tạo mới → để GAS tự gen, tránh updateWhere silent fail
+  const payload={custId,custName:cust?.name||custId,cname:cust?.name||custId,
     date:val('m_ctdate')||todayStr(),val:v,paid:dep,stat:val('m_ctstat'),
     prog:nval('m_ctprog'),note:val('m_ctnote')};
+  const ct={...payload,id:nid('HD')};
   S.contracts.push(ct); log('ADD_CONTRACT','Hợp đồng','Tạo HĐ: '+ct.id);
-  try { await gasCall('saveContract',ct); } catch(e) { toast('⚠️ '+e.message,'warn'); }
+  try {
+    const r=await gasCall('saveContract',payload);
+    if(r&&r.data&&r.data.id){ ct.id=r.data.id; }
+  } catch(e) { toast('⚠️ '+e.message,'warn'); }
   persist(); closeModal(); renderContracts(); renderDashboard(); toast('Đã tạo '+ct.id+'!');
 }
 async function editContractProg(id){
@@ -1564,7 +1582,7 @@ async function doImportStock(){
   const pid=val('m_isprod'),qty=parseInt(val('m_isqty'))||0,price=nval('m_isprice');
   if(!pid||qty<=0){toast('Chọn sản phẩm và số lượng!','error');return;}
   const inv=S.inventory.find(i=>i.pid===pid);
-  if(inv){const np=price||inv.avg||inv.avgCost||0;inv.avg=Math.round((inv.avg||0)*inv.qty+np*qty)/(inv.qty+qty);inv.qty+=qty;}
+  if(inv){const np=price||inv.avg||inv.avgCost||0;const oldQ=parseFloat(inv.qty)||0;const oldA=parseFloat(inv.avg)||0;const newQ=oldQ+qty;inv.avg=newQ>0?Math.round(((oldA*oldQ)+(np*qty))/newQ):oldA;inv.qty=newQ;}
   const p=S.products.find(x=>x.id===pid);
   log('IMPORT_STOCK','Kho','Nhập '+qty+' '+(p?.name||pid));
   try { await gasCall('importStock',{pid,qty,price:price||0,supplier:val('m_issup'),note:val('m_isnote')}); } catch(e) { toast('⚠️ '+e.message,'warn'); }
@@ -1649,8 +1667,14 @@ function renderUsers(){
 async function delUser(id){
   if(S.user?.id===id){toast('Không thể xóa tài khoản đang đăng nhập!','error');return;}
   if(!confirm('Xóa người dùng này?'))return;
-  try { await gasCall('deleteUser',{id}); } catch(e) { toast('⚠️ '+e.message,'warn'); }
-  S.users=S.users.filter(u=>u.id!==id); persist(); renderUsers(); toast('Đã xóa!');
+  // Sync GAS TRƯỚC, chỉ xóa local nếu thành công
+  try {
+    await gasCall('deleteUser',{id});
+    S.users=S.users.filter(u=>u.id!==id);
+    persist(); renderUsers(); toast('Đã xóa!');
+  } catch(e) {
+    toast('⚠️ Không xóa được trên Sheets: '+e.message,'error');
+  }
 }
 
 // ══════════════════════════════════════════════════════════
@@ -2145,6 +2169,35 @@ document.addEventListener('DOMContentLoaded', async () => {
   restore();
   seedAll();
   await hashPendingPasswords();
+  // Auto-restore session nếu token còn hiệu lực
+  try {
+    const sess = localStorage.getItem('hts_sess');
+    if (sess) {
+      const obj = JSON.parse(sess);
+      if (obj && obj.token && obj.user) {
+        // Decode token để check exp (token = base64(payload|sig))
+        try {
+          const decoded = atob(obj.token);
+          const sep = decoded.lastIndexOf('|');
+          const payload = JSON.parse(decoded.slice(0, sep));
+          if (payload.exp && payload.exp > Date.now()) {
+            S.token = obj.token;
+            S.user = obj.user;
+            document.getElementById('loginPage').style.display = 'none';
+            document.getElementById('mainApp').style.display = 'flex';
+            document.getElementById('uAv').textContent = S.user.fullname[0];
+            document.getElementById('uName').textContent = S.user.fullname;
+            document.getElementById('uRole').textContent = RLBL[S.user.role] || S.user.role;
+            const qn = document.getElementById('q_nguoilap'); if (qn) qn.value = S.user.fullname;
+            initApp();
+            loadAllDataGAS();
+          } else {
+            localStorage.removeItem('hts_sess');
+          }
+        } catch(e) { localStorage.removeItem('hts_sess'); }
+      }
+    }
+  } catch(e) {}
 });
 </script>
 </body>
