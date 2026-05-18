@@ -564,7 +564,7 @@ textarea.fc{resize:vertical}
         <div class="tbl-card">
           <div style="padding:14px 16px 0;font-family:'Syne',sans-serif;font-size:13px;font-weight:700">Danh sách hợp đồng</div>
           <table class="data-tbl"><thead><tr>
-            <th>Mã HĐ</th><th>Khách hàng</th><th>Ngày ký</th><th>Giá trị</th><th>Đã TT</th><th>Còn nợ</th><th>Tiến độ</th><th>Trạng thái</th><th>Thao tác</th>
+            <th>Mã HĐ</th><th>Khách hàng</th><th>Ngày ký</th><th>Giá trị</th><th>Đã TT</th><th>Còn nợ</th><th>Tiến độ</th><th>Trạng thái</th><th>VAT</th><th>Thao tác</th>
           </tr></thead><tbody id="contractBody"></tbody></table>
         </div>
       </section>
@@ -879,6 +879,10 @@ textarea.fc{resize:vertical}
       <div class="fr2"><div class="fg"><label>Khách hàng *</label><select id="m_ctcust" class="fc"><option value="">-- Chọn KH --</option></select></div><div class="fg"><label>Ngày ký</label><input id="m_ctdate" type="date" class="fc"/></div></div>
       <div class="fr2"><div class="fg"><label>Giá trị HĐ (đ)</label><input id="m_ctval" class="fc" type="number"/></div><div class="fg"><label>Đặt cọc (đ)</label><input id="m_ctdep" class="fc" type="number" value="0"/></div></div>
       <div class="fr2"><div class="fg"><label>Trạng thái</label><select id="m_ctstat" class="fc"><option>Đã ký hợp đồng</option><option>Đang thi công</option><option>Hoàn thành</option><option>Bảo hành</option></select></div><div class="fg"><label>Tiến độ (%)</label><input id="m_ctprog" class="fc" type="number" value="0" min="0" max="100"/></div></div>
+      <div class="fg" style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--blue-xl);border-radius:8px;cursor:pointer" onclick="document.getElementById('m_ctvat').click()">
+        <input id="m_ctvat" type="checkbox" style="width:18px;height:18px;cursor:pointer;accent-color:var(--blue)"/>
+        <label for="m_ctvat" style="margin:0;font-size:13px;font-weight:600;color:var(--navy);cursor:pointer;text-transform:none;letter-spacing:0">Có xuất hóa đơn VAT</label>
+      </div>
       <div class="fg"><label>Ghi chú</label><textarea id="m_ctnote" class="fc" rows="2"></textarea></div>
     </div>
     <div class="modal-ft"><button class="btn btn-outline" onclick="closeModal()">Hủy</button><button class="btn btn-primary" onclick="saveContract()"><i class="fa fa-floppy-disk"></i> Lưu</button></div>
@@ -1286,6 +1290,7 @@ async function loadAllDataGAS() {
       prog: parseFloat(r.prog||0),
       stat: r.stat||r.status||'',
       cname: r.cname||r.custName||'',
+      vat:  (r.vat==='Có'||r.vat===true||r.vat===1) ? 'Có' : 'Không',
     }));
     S.payments = S.payments.map(r => ({
       ...r,
@@ -1510,36 +1515,72 @@ function renderContracts(){
   }).join('');
   // Table
   document.getElementById('contractBody').innerHTML=S.contracts.map(c=>{
-    const debt=c.val-c.paid;
+    const debt=(parseFloat(c.val)||0)-(parseFloat(c.paid)||0);
+    const hasVat=c.vat==='Có'||c.vat===true||c.vat===1;
     return`<tr>
       <td><b>${c.id}</b></td><td>${esc(c.cname||c.custName||'')}</td><td>${c.date}</td>
       <td>${fmtV(c.val)}</td>
       <td style="color:var(--green);font-weight:600">${fmtV(c.paid)}</td>
       <td style="color:var(--red);font-weight:600">${fmtV(debt)}</td>
-      <td><div style="display:flex;align-items:center;gap:6px"><div class="prog-wrap"><div class="prog-fill" style="width:${c.prog}%"></div></div>${c.prog}%</div></td>
-      <td>${sbadge(c.stat)}</td>
+      <td><div style="display:flex;align-items:center;gap:6px"><div class="prog-wrap"><div class="prog-fill" style="width:${c.prog||0}%"></div></div>${c.prog||0}%</div></td>
+      <td>${sbadge(c.stat||c.status||'')}</td>
+      <td><span class="badge ${hasVat?'bg-green':'bg-gray'}">${hasVat?'Có VAT':'Không'}</span></td>
       <td>
-        <button class="btn-icon bi-blue" onclick="editContractProg('${c.id}')"><i class="fa fa-percent"></i></button>
-        <button class="btn-icon bi-red" onclick="delContract('${c.id}')"><i class="fa fa-trash"></i></button>
+        <button class="btn-icon bi-orange" title="Sửa HĐ" onclick="editContract('${c.id}')"><i class="fa fa-pen"></i></button>
+        <button class="btn-icon bi-blue" title="Cập nhật tiến độ" onclick="editContractProg('${c.id}')"><i class="fa fa-percent"></i></button>
+        <button class="btn-icon bi-red" title="Xóa" onclick="delContract('${c.id}')"><i class="fa fa-trash"></i></button>
       </td>
     </tr>`;
-  }).join('')||'<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--muted)">Chưa có hợp đồng</td></tr>';
+  }).join('')||'<tr><td colspan="10" style="text-align:center;padding:24px;color:var(--muted)">Chưa có hợp đồng</td></tr>';
 }
 async function saveContract(){
   const custId=val('m_ctcust');const cust=S.customers.find(x=>x.id===custId);
   if(!custId){toast('Chọn khách hàng!','error');return;}
   const v=nval('m_ctval'),dep=nval('m_ctdep');
-  // KHÔNG gửi id khi tạo mới → để GAS tự gen, tránh updateWhere silent fail
+  const editing=document.getElementById('modal-addContract').dataset.editId;
+  const hasVat=document.getElementById('m_ctvat').checked;
   const payload={custId,custName:cust?.name||custId,cname:cust?.name||custId,
     date:val('m_ctdate')||todayStr(),val:v,paid:dep,stat:val('m_ctstat'),
-    prog:nval('m_ctprog'),note:val('m_ctnote')};
-  const ct={...payload,id:nid('HD')};
-  S.contracts.push(ct); log('ADD_CONTRACT','Hợp đồng','Tạo HĐ: '+ct.id);
-  try {
-    const r=await gasCall('saveContract',payload);
-    if(r&&r.data&&r.data.id){ ct.id=r.data.id; }
-  } catch(e) { toast('⚠️ '+e.message,'warn'); }
-  persist(); closeModal(); renderContracts(); renderDashboard(); toast('Đã tạo '+ct.id+'!');
+    prog:nval('m_ctprog'),vat:hasVat?'Có':'Không',note:val('m_ctnote')};
+  if(editing) payload.id=editing;
+  if(editing){
+    // Update local record
+    const idx=S.contracts.findIndex(c=>c.id===editing);
+    if(idx>=0) S.contracts[idx]={...S.contracts[idx],...payload};
+    log('EDIT_CONTRACT','Hợp đồng','Sửa HĐ: '+editing);
+    try { await gasCall('saveContract',payload); }
+    catch(e){ toast('⚠️ '+e.message,'warn'); }
+    persist(); closeModal(); renderContracts(); renderDashboard();
+    toast('✅ Đã cập nhật '+editing);
+  } else {
+    const ct={...payload,id:nid('HD')};
+    S.contracts.push(ct); log('ADD_CONTRACT','Hợp đồng','Tạo HĐ: '+ct.id);
+    try {
+      const r=await gasCall('saveContract',payload);
+      if(r&&r.data&&r.data.id){ ct.id=r.data.id; }
+    } catch(e) { toast('⚠️ '+e.message,'warn'); }
+    persist(); closeModal(); renderContracts(); renderDashboard(); toast('Đã tạo '+ct.id+'!');
+  }
+}
+
+// Mở modal edit HĐ với dữ liệu sẵn
+function editContract(id){
+  const ct=S.contracts.find(c=>c.id===id);if(!ct)return;
+  openModal('addContract');
+  const modal=document.getElementById('modal-addContract');
+  modal.dataset.editId=id;
+  const titleEl=modal.querySelector('.modal-hd h3');
+  if(titleEl) titleEl.innerHTML='<i class="fa fa-pen"></i> Chỉnh sửa hợp đồng '+id;
+  setTimeout(()=>{
+    fill('m_ctcust',ct.custId||'');
+    fill('m_ctdate',ct.date||todayStr());
+    fill('m_ctval',ct.val||0);
+    fill('m_ctdep',ct.paid||0);
+    fill('m_ctstat',ct.stat||ct.status||'Đã ký hợp đồng');
+    fill('m_ctprog',ct.prog||0);
+    fill('m_ctnote',ct.note||'');
+    document.getElementById('m_ctvat').checked=(ct.vat==='Có'||ct.vat===true||ct.vat===1);
+  },50);
 }
 async function editContractProg(id){
   const p=prompt('Cập nhật tiến độ (%):');if(p===null)return;
@@ -2171,7 +2212,20 @@ function openModal(name){
   if(m){m.style.display='block';setTimeout(()=>m.classList.add('vis'),10);}
   ov.classList.add('open');
   if(name==='addCust'){delete document.getElementById('modal-addCust').dataset.editId;document.querySelector('#modal-addCust .modal-hd h3').innerHTML='<i class="fa fa-user-plus"></i> Thêm khách hàng mới';}
-  if(name==='addContract'||name==='addPayment'||name==='importStock'||name==='exportStock'){populateQSelects();}
+  if(name==='addContract'){
+    // Reset edit mode khi mở từ nút "+ Tạo hợp đồng" (chỉ reset nếu chưa có editId được set sẵn)
+    const m=document.getElementById('modal-addContract');
+    // Lưu ý: editContract() set dataset.editId AFTER openModal, nên openModal phải clear trước
+    delete m.dataset.editId;
+    const titleEl=m.querySelector('.modal-hd h3');
+    if(titleEl) titleEl.innerHTML='<i class="fa fa-file-signature"></i> Tạo hợp đồng mới';
+    // Reset form fields
+    fill('m_ctcust','');fill('m_ctdate',todayStr());fill('m_ctval','');fill('m_ctdep','0');
+    fill('m_ctstat','Đã ký hợp đồng');fill('m_ctprog','0');fill('m_ctnote','');
+    const vatCb=document.getElementById('m_ctvat'); if(vatCb) vatCb.checked=false;
+    populateQSelects();
+  }
+  if(name==='addPayment'||name==='importStock'||name==='exportStock'){populateQSelects();}
 }
 function closeModal(e){
   if(e&&e.target!==document.getElementById('overlay'))return;
