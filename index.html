@@ -617,17 +617,20 @@ textarea.fc{resize:vertical}
                 <div class="fg"><label>Số lượng tấm</label><input id="q_slpin" type="number" class="fc" value="20" min="1" oninput="qAutoCalc()"/></div>
                 <div class="fg"><label>Đơn giá (đ)</label><input id="q_gpin" type="number" class="fc" oninput="qAutoCalc()"/></div>
               </div>
+              <div class="fg" style="margin-top:4px"><label>Ghi chú Tấm pin (in vào báo giá)</label><input id="q_notePin" class="fc" placeholder="VD: Hiệu suất 21.3%, kháng PID..."/></div>
               <div class="fg" style="margin-top:6px"><label>Biến tần (Inverter)</label><select id="q_inv" class="fc" onchange="onQInvChange()"><option value="">-- Chọn inverter --</option></select></div>
               <div class="fr2">
                 <div class="fg"><label>Số lượng bộ</label><input id="q_slinv" type="number" class="fc" value="1" min="1" oninput="qAutoCalc()"/></div>
                 <div class="fg"><label>Đơn giá (đ)</label><input id="q_ginv" type="number" class="fc" oninput="qAutoCalc()"/></div>
               </div>
+              <div class="fg" style="margin-top:4px"><label>Ghi chú Inverter</label><input id="q_noteInv" class="fc" placeholder="VD: Hybrid 3 pha, hỗ trợ Wi-Fi, MPPT x3..."/></div>
               <div id="bat_row" style="margin-top:6px">
                 <div class="fg"><label>Pin lưu trữ</label><select id="q_bat" class="fc" onchange="onQBatChange()"><option value="">-- Không dùng / Chọn --</option></select></div>
                 <div class="fr2">
                   <div class="fg"><label>Số lượng bộ</label><input id="q_slbat" type="number" class="fc" value="1" min="1" oninput="qAutoCalc()"/></div>
                   <div class="fg"><label>Đơn giá (đ)</label><input id="q_gbat" type="number" class="fc" oninput="qAutoCalc()"/></div>
                 </div>
+                <div class="fg" style="margin-top:4px"><label>Ghi chú Pin lưu trữ</label><input id="q_noteBat" class="fc" placeholder="VD: LiFePO4, BMS thông minh..."/></div>
               </div>
             </div>
             <div class="q-card">
@@ -1960,7 +1963,8 @@ function getQData(){
   const tienVat=Math.round(sub*vat/100);
   const total=sub+tienVat;
   return{loai,isLuu,cspv,csluu,sl,vat,ck,pin,inv,bat,vtp,labor,slpin,slinv,slbat,gpin,ginv,gbat,gvtp,gnc,ttPin,ttInv,ttBat,ttVtp,ttNc,sub,tienVat,total,
-    kh:val('q_kh'),dc:val('q_dc'),ngay:val('q_ngay'),ma:val('q_ma'),nguoilap:val('q_nguoilap'),note:val('q_note'),csInv:inv?inv.cs:'—'};
+    kh:val('q_kh'),dc:val('q_dc'),ngay:val('q_ngay'),ma:val('q_ma'),nguoilap:val('q_nguoilap'),note:val('q_note'),csInv:inv?inv.cs:'—',
+    notePin:val('q_notePin'),noteInv:val('q_noteInv'),noteBat:val('q_noteBat')};
 }
 function buildQPreview(){
   const d=getQData();
@@ -2015,7 +2019,7 @@ function renderQuotePage(){buildQPreview();renderQHistory();}
 function printQuote(){
   const d=getQData();
   if(!d.kh){toast('Vui lòng nhập tên khách hàng trước!','warn');return;}
-  // Thông tin công ty (có thể đổi sau qua const COMPANY ở đây)
+  // Thông tin công ty
   const COMPANY = {
     name: 'CÔNG TY TNHH HT-TEK',
     logo: 'HTSOLAR',
@@ -2027,68 +2031,110 @@ function printQuote(){
     director: 'Trần Văn Túy',
     title: 'Giám đốc'
   };
-  const batRow = d.isLuu && d.bat ? `<tr>
-    <td>3</td>
-    <td><b>${esc(d.bat.ma)}</b><div class="qd-sub">- Dung lượng: ${esc(d.bat.dl)}</div><div class="qd-sub">- Vòng đời > 8000 lần sạc xả</div><div class="qd-sub">- Bảo hành: ${esc(d.bat.bh)} năm</div></td>
-    <td>${esc(d.bat.dvt||'Bộ')}</td><td>${d.slbat}</td><td class="qd-num">${fmtV(d.gbat)}</td><td class="qd-num"><b>${fmtV(d.ttBat)}</b></td>
-  </tr>` : '';
-  const vtpRow = d.vtp ? `<tr>
-    <td>4</td>
-    <td><b>${esc(d.vtp.ma)}</b><div class="qd-sub">- ${esc(d.vtp.moTa||d.vtp.ten||'Hệ khung chuyên dụng, kẹp biên/giữa, tủ điện, cắt sét lan truyền, tiếp địa, máng cáp')}</div></td>
-    <td>${esc(d.vtp.dvt||'Hệ')}</td><td>${d.slvtp||1}</td><td class="qd-num">${fmtV(d.gvtp)}</td><td class="qd-num"><b>${fmtV(d.ttVtp)}</b></td>
-  </tr>` : `<tr>
-    <td>4</td>
-    <td><b>Hệ khung + phụ kiện</b><div class="qd-sub">- Hệ khung chuyên dụng, kẹp biên, kẹp giữa, tủ điện, thiết bị bảo vệ, cắt sét lan truyền, tiếp địa, máng cáp</div></td>
-    <td>Hệ</td><td>1</td><td class="qd-num">${fmtV(d.gvtp)}</td><td class="qd-num"><b>${fmtV(d.ttVtp)}</b></td>
+  // SVG icon placeholder cho từng loại thiết bị (60x60px)
+  const ICON_PIN = '<svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" style="width:46px;height:46px"><rect x="6" y="6" width="48" height="48" rx="4" fill="#1a56db" stroke="#0f2d5e" stroke-width="2"/><g stroke="#fff" stroke-width="1" opacity=".5"><line x1="6" y1="18" x2="54" y2="18"/><line x1="6" y1="30" x2="54" y2="30"/><line x1="6" y1="42" x2="54" y2="42"/><line x1="18" y1="6" x2="18" y2="54"/><line x1="30" y1="6" x2="30" y2="54"/><line x1="42" y1="6" x2="42" y2="54"/></g></svg>';
+  const ICON_INV = '<svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" style="width:46px;height:46px"><rect x="8" y="10" width="44" height="40" rx="4" fill="#f97316" stroke="#c2410c" stroke-width="2"/><rect x="14" y="16" width="32" height="14" rx="2" fill="#fff7ed"/><text x="30" y="26" font-family="Arial" font-size="8" font-weight="bold" fill="#c2410c" text-anchor="middle">DEYE</text><circle cx="20" cy="40" r="3" fill="#fff"/><circle cx="30" cy="40" r="3" fill="#fff"/><circle cx="40" cy="40" r="3" fill="#fff"/></svg>';
+  const ICON_BAT = '<svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" style="width:46px;height:46px"><rect x="10" y="12" width="40" height="40" rx="3" fill="#16a34a" stroke="#15803d" stroke-width="2"/><rect x="22" y="8" width="16" height="6" rx="1" fill="#15803d"/><rect x="16" y="20" width="28" height="6" rx="1" fill="#fff" opacity=".8"/><rect x="16" y="30" width="28" height="6" rx="1" fill="#fff" opacity=".6"/><rect x="16" y="40" width="28" height="6" rx="1" fill="#fff" opacity=".4"/></svg>';
+  // Row builder: row có ảnh + ghi chú riêng
+  const buildMainRow = (tt, icon, ma, specs, noteUser, dvt, sl, gia, tt2) => `<tr>
+    <td class="qd-c-tt">${tt}</td>
+    <td class="qd-c-img"><div class="qd-img-box">${icon}</div></td>
+    <td class="qd-c-name"><b>${esc(ma)}</b>${specs}</td>
+    <td class="qd-c-note">${noteUser?esc(noteUser):'<span class="qd-mute">—</span>'}</td>
+    <td class="qd-c-dvt">${esc(dvt)}</td>
+    <td class="qd-c-sl">${sl}</td>
+    <td class="qd-c-num">${fmtV(gia)}</td>
+    <td class="qd-c-num"><b>${fmtV(tt2)}</b></td>
   </tr>`;
+
+  const pinSpecs = d.pin?`<div class="qd-sub">CS: ${esc(d.pin.cs)} • ${esc(d.pin.moTa||d.pin.ten||'n-type TOPCon, 2 mặt kính')}</div><div class="qd-sub">BH vật lý: ${esc(d.pin.bhVL)}; BH hiệu suất: ${esc(d.pin.bhHS)}</div>`:'';
+  const invSpecs = d.inv?`<div class="qd-sub">CS: ${esc(d.inv.cs)} • ${esc(d.inv.moTa||d.inv.ten||'')}</div><div class="qd-sub">BH: ${esc(d.inv.bh)} năm</div>`:'';
+  const batSpecs = d.bat?`<div class="qd-sub">Dung lượng: ${esc(d.bat.dl)} • Vòng đời > 8000 lần</div><div class="qd-sub">BH: ${esc(d.bat.bh)} năm</div>`:'';
+
+  const pinRow = buildMainRow(1, ICON_PIN, d.pin?d.pin.ma:'—', pinSpecs, d.notePin, d.pin?d.pin.dvt:'Tấm', d.slpin, d.gpin, d.ttPin);
+  const invRow = buildMainRow(2, ICON_INV, d.inv?d.inv.ma:'—', invSpecs, d.noteInv, d.inv?d.inv.dvt:'Bộ', d.slinv, d.ginv, d.ttInv);
+  const batRow = (d.isLuu && d.bat) ? buildMainRow(3, ICON_BAT, d.bat.ma, batSpecs, d.noteBat, d.bat.dvt||'Bộ', d.slbat, d.gbat, d.ttBat) : '';
+
+  const vtpDesc = d.vtp ? esc(d.vtp.moTa||d.vtp.ten||'Hệ khung chuyên dụng') : 'Hệ khung chuyên dụng, kẹp biên/giữa, tủ điện, thiết bị bảo vệ, cắt sét lan truyền, tiếp địa, máng cáp';
+  const vtpMa   = d.vtp ? esc(d.vtp.ma) : 'Hệ khung + phụ kiện';
+  const vtpDvt  = d.vtp ? esc(d.vtp.dvt||'Hệ') : 'Hệ';
   const html = `<!DOCTYPE html><html lang="vi"><head><meta charset="UTF-8"/><title>Báo giá ${esc(d.ma)} - ${esc(d.kh)}</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 <style>
+/* === Stable system fonts — không cần load remote, không bao giờ méo === */
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Be Vietnam Pro',sans-serif;color:#1e293b;background:#e5e7eb;padding:24px 0;font-size:12px}
-.page{width:210mm;min-height:297mm;background:#fff;margin:0 auto 20px;padding:18mm 16mm;box-shadow:0 6px 24px rgba(0,0,0,.15)}
-.qd-hdr{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #f97316;padding-bottom:12px;margin-bottom:14px}
-.qd-logo{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:#f97316;letter-spacing:1px}
-.qd-co-name{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:#0f2d5e;margin-top:2px}
-.qd-co-info{font-size:10.5px;color:#64748b;margin-top:2px}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;color:#1e293b;background:#e5e7eb;padding:60px 0 24px;font-size:11px;line-height:1.35;-webkit-font-smoothing:antialiased}
+.page{width:210mm;height:297mm;background:#fff;margin:0 auto;padding:10mm 10mm;box-shadow:0 6px 24px rgba(0,0,0,.15);overflow:hidden;display:flex;flex-direction:column}
+
+/* === Header === */
+.qd-hdr{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2.5px solid #f97316;padding-bottom:6px;margin-bottom:8px;flex-shrink:0}
+.qd-logo{font-size:22px;font-weight:800;color:#f97316;letter-spacing:0.5px;line-height:1}
+.qd-co-name{font-size:11px;font-weight:700;color:#0f2d5e;margin-top:3px}
+.qd-co-info{font-size:9.5px;color:#64748b;margin-top:1px}
 .qd-r{text-align:right}
-.qd-title{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:#0f2d5e}
-.qd-sub-title{font-size:11px;color:#64748b;margin-top:3px}
-.qd-meta{display:grid;grid-template-columns:1fr 1fr;gap:8px 24px;margin-bottom:14px;font-size:12px}
-.qd-meta div{padding:4px 0}
+.qd-title{font-size:18px;font-weight:800;color:#0f2d5e;line-height:1;letter-spacing:0.3px}
+.qd-sub-title{font-size:9.5px;color:#64748b;margin-top:2px}
+.qd-r .meta-num{font-size:10px;margin-top:3px;color:#374151}
+
+/* === Meta info === */
+.qd-meta{display:grid;grid-template-columns:1fr 1fr;gap:2px 18px;margin-bottom:7px;font-size:10.5px;flex-shrink:0}
+.qd-meta div{padding:1px 0}
 .qd-meta b{color:#0f2d5e}
-.qd-section{background:linear-gradient(90deg,#1a56db,#0f2d5e);color:#fff;padding:7px 12px;font-weight:700;font-size:12px;margin:14px 0 0;border-radius:4px 4px 0 0}
-.qd-specs{background:#eff6ff;border:1px solid #dbeafe;border-top:none;padding:10px 12px;display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;font-size:12px;border-radius:0 0 4px 4px;margin-bottom:14px}
-.qd-tbl{width:100%;border-collapse:collapse;margin-bottom:6px;font-size:11px}
-.qd-tbl th{background:#0f2d5e;color:#fff;padding:7px 8px;font-weight:600;text-align:left;border:1px solid #0f2d5e}
+
+/* === Section header === */
+.qd-section{background:linear-gradient(90deg,#1a56db,#0f2d5e);color:#fff;padding:4px 9px;font-weight:700;font-size:10px;margin:6px 0 0;border-radius:3px 3px 0 0;letter-spacing:0.3px;flex-shrink:0}
+.qd-specs{background:#eff6ff;border:1px solid #dbeafe;border-top:none;padding:6px 9px;display:grid;grid-template-columns:1fr 1fr;gap:2px 14px;font-size:10px;border-radius:0 0 3px 3px;margin-bottom:6px;flex-shrink:0}
+
+/* === Table chi tiết === */
+.qd-tbl{width:100%;border-collapse:collapse;margin-bottom:4px;font-size:9.5px;flex-shrink:0}
+.qd-tbl th{background:#0f2d5e;color:#fff;padding:4px 5px;font-weight:600;text-align:left;border:1px solid #0f2d5e;font-size:9px;letter-spacing:0.2px}
 .qd-tbl th.qd-num{text-align:right}
-.qd-tbl td{padding:7px 8px;border:1px solid #e5e7eb;vertical-align:top}
-.qd-tbl td.qd-num{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
-.qd-tbl-sub{background:#dbeafe;font-weight:700;color:#0f2d5e}
-.qd-sub{color:#64748b;font-size:10px;margin-top:2px;padding-left:4px}
-.qd-tot{margin-top:14px;padding:12px 16px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px}
-.qd-tot-row{display:flex;justify-content:space-between;padding:3px 0;font-size:12px}
-.qd-tot-final{display:flex;justify-content:space-between;padding-top:10px;margin-top:6px;border-top:2px solid #f97316;font-family:'Syne',sans-serif;font-weight:800;font-size:15px;color:#f97316}
-.qd-terms{margin-top:16px;padding:12px 16px;background:#fff7ed;border-left:4px solid #f97316;font-size:11px}
-.qd-terms h4{font-family:'Syne',sans-serif;font-size:13px;color:#c2410c;margin-bottom:6px}
-.qd-terms ul{padding-left:18px}
-.qd-bank{margin-top:10px;padding:12px 16px;background:#ecfdf5;border-left:4px solid #16a34a;font-size:11px}
-.qd-bank h4{font-family:'Syne',sans-serif;font-size:13px;color:#15803d;margin-bottom:4px}
-.qd-sign{margin-top:24px;display:grid;grid-template-columns:1fr 1fr;gap:20px;text-align:center;font-size:11px}
-.qd-sign-box{padding:10px}
-.qd-sign-box .role{font-weight:700;text-transform:uppercase;color:#0f2d5e;margin-bottom:50px}
-.qd-sign-box .esign{color:#16a34a;font-style:italic;margin-bottom:4px}
-.qd-sign-box .name{font-weight:700}
-.qd-print-bar{position:fixed;top:0;left:0;right:0;background:#0f2d5e;color:#fff;padding:10px 20px;display:flex;justify-content:space-between;align-items:center;z-index:1000;box-shadow:0 2px 8px rgba(0,0,0,.2)}
-.qd-print-bar button{padding:8px 16px;font-weight:600;border:none;border-radius:6px;cursor:pointer;font-size:13px}
+.qd-tbl td{padding:4px 5px;border:1px solid #e5e7eb;vertical-align:top;font-size:9.5px}
+.qd-tbl-sub td{background:#dbeafe!important;font-weight:700;color:#0f2d5e;padding:4px 9px;font-size:9.5px}
+.qd-c-tt{width:24px;text-align:center;font-weight:600}
+.qd-c-img{width:52px;text-align:center;padding:2px!important}
+.qd-c-name{width:auto}
+.qd-c-note{width:80px;font-size:9px;color:#475569}
+.qd-c-dvt{width:30px;text-align:center}
+.qd-c-sl{width:24px;text-align:center}
+.qd-c-num{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;width:70px}
+.qd-img-box{width:46px;height:46px;display:flex;align-items:center;justify-content:center;background:#f8fafc;border-radius:4px;margin:0 auto}
+.qd-sub{color:#64748b;font-size:8.5px;margin-top:1px;line-height:1.3}
+.qd-mute{color:#cbd5e1;font-size:9px}
+
+/* === Tổng cộng === */
+.qd-tot{margin-top:6px;padding:6px 10px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:4px;flex-shrink:0}
+.qd-tot-row{display:flex;justify-content:space-between;padding:1px 0;font-size:10.5px}
+.qd-tot-final{display:flex;justify-content:space-between;padding-top:5px;margin-top:3px;border-top:1.5px solid #f97316;font-weight:800;font-size:12.5px;color:#f97316}
+
+/* === Điều khoản + bank === */
+.qd-bottom{margin-top:6px;display:grid;grid-template-columns:1.4fr 1fr;gap:6px;flex-shrink:0}
+.qd-terms{padding:6px 9px;background:#fff7ed;border-left:3px solid #f97316;font-size:9.5px;border-radius:2px}
+.qd-terms h4{font-size:10px;color:#c2410c;margin-bottom:3px;font-weight:700}
+.qd-terms ul{padding-left:14px;line-height:1.45}
+.qd-bank{padding:6px 9px;background:#ecfdf5;border-left:3px solid #16a34a;font-size:9.5px;border-radius:2px}
+.qd-bank h4{font-size:10px;color:#15803d;margin-bottom:3px;font-weight:700}
+
+/* === Chữ ký === */
+.qd-sign{margin-top:auto;padding-top:6px;display:grid;grid-template-columns:1fr 1fr;gap:16px;text-align:center;font-size:9.5px;flex-shrink:0}
+.qd-sign-box{padding:4px}
+.qd-sign-box .role{font-weight:700;text-transform:uppercase;color:#0f2d5e;margin-bottom:28px;font-size:10px}
+.qd-sign-box .esign{color:#16a34a;font-style:italic;margin-bottom:2px;font-size:9px}
+.qd-sign-box .name{font-weight:700;font-size:10px}
+.qd-sign-box .sub{color:#64748b;font-size:8.5px}
+
+/* === Print toolbar === */
+.qd-print-bar{position:fixed;top:0;left:0;right:0;background:#0f2d5e;color:#fff;padding:10px 20px;display:flex;justify-content:space-between;align-items:center;z-index:1000;box-shadow:0 2px 8px rgba(0,0,0,.2);font-family:inherit}
+.qd-print-bar button{padding:8px 16px;font-weight:600;border:none;border-radius:6px;cursor:pointer;font-size:13px;font-family:inherit}
 .qd-print-bar .btn-print{background:#f97316;color:#fff}
 .qd-print-bar .btn-close{background:#475569;color:#fff;margin-left:8px}
+
 @media print {
-  body{background:#fff;padding:0;font-size:11px}
-  .page{box-shadow:none;margin:0;width:auto;min-height:auto;padding:8mm 12mm}
+  body{background:#fff;padding:0;font-size:9.5px}
+  .page{box-shadow:none;margin:0;width:210mm;height:297mm;page-break-after:avoid;page-break-inside:avoid}
   .qd-print-bar{display:none}
-  @page{size:A4;margin:0}
+  @page{size:A4 portrait;margin:0}
+  /* Đảm bảo gradient + màu nền in được */
+  *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;color-adjust:exact!important}
 }
 </style></head>
 <body>
@@ -2099,12 +2145,11 @@ body{font-family:'Be Vietnam Pro',sans-serif;color:#1e293b;background:#e5e7eb;pa
     <button class="btn-close" onclick="window.close()">✕ Đóng</button>
   </div>
 </div>
-<div style="height:54px"></div>
 
 <div class="page">
   <div class="qd-hdr">
     <div>
-      <div class="qd-logo">☀️ ${esc(COMPANY.logo)}</div>
+      <div class="qd-logo">☀ ${esc(COMPANY.logo)}</div>
       <div class="qd-co-name">${esc(COMPANY.name)}</div>
       <div class="qd-co-info">${esc(COMPANY.addr)}</div>
       <div class="qd-co-info">MST: ${esc(COMPANY.mst)} • Hotline: ${esc(COMPANY.hotline)}</div>
@@ -2112,8 +2157,8 @@ body{font-family:'Be Vietnam Pro',sans-serif;color:#1e293b;background:#e5e7eb;pa
     <div class="qd-r">
       <div class="qd-title">BÁO GIÁ</div>
       <div class="qd-sub-title">HỆ THỐNG ĐIỆN MẶT TRỜI</div>
-      <div style="margin-top:6px;font-size:11px"><b>Số:</b> ${esc(d.ma)}</div>
-      <div style="font-size:11px"><b>Ngày:</b> ${esc(d.ngay)}</div>
+      <div class="meta-num"><b>Số:</b> ${esc(d.ma)}</div>
+      <div class="meta-num"><b>Ngày:</b> ${esc(d.ngay)}</div>
     </div>
   </div>
 
@@ -2134,66 +2179,64 @@ body{font-family:'Be Vietnam Pro',sans-serif;color:#1e293b;background:#e5e7eb;pa
   <div class="qd-section">📋 CHI TIẾT THIẾT BỊ VÀ VẬT TƯ</div>
   <table class="qd-tbl">
     <thead><tr>
-      <th style="width:36px">TT</th><th>Tên thiết bị / Quy cách</th>
-      <th style="width:40px">ĐVT</th><th style="width:40px">SL</th>
-      <th class="qd-num" style="width:90px">Đơn giá (đ)</th><th class="qd-num" style="width:100px">Thành tiền (đ)</th>
+      <th class="qd-c-tt">TT</th>
+      <th class="qd-c-img">Ảnh</th>
+      <th>Tên thiết bị / Quy cách</th>
+      <th class="qd-c-note">Ghi chú</th>
+      <th class="qd-c-dvt">ĐVT</th>
+      <th class="qd-c-sl">SL</th>
+      <th class="qd-num">Đơn giá (đ)</th>
+      <th class="qd-num">Thành tiền (đ)</th>
     </tr></thead>
     <tbody>
-      <tr class="qd-tbl-sub"><td colspan="6">1. THIẾT BỊ CHÍNH (Bảo hành theo tiêu chuẩn NSX)</td></tr>
-      <tr>
-        <td>1</td>
-        <td><b>${d.pin?esc(d.pin.ma):'—'}</b>${d.pin?`<div class="qd-sub">- Công suất: ${esc(d.pin.cs)}</div><div class="qd-sub">- ${esc(d.pin.moTa||d.pin.ten||'n-type TOPCon, 2 mặt kính')}</div><div class="qd-sub">- Bảo hành vật lý: ${esc(d.pin.bhVL)}; BH hiệu suất: ${esc(d.pin.bhHS)}</div>`:''}</td>
-        <td>${d.pin?esc(d.pin.dvt):'Tấm'}</td><td>${d.slpin}</td><td class="qd-num">${fmtV(d.gpin)}</td><td class="qd-num"><b>${fmtV(d.ttPin)}</b></td>
-      </tr>
-      <tr>
-        <td>2</td>
-        <td><b>${d.inv?esc(d.inv.ma):'—'}</b>${d.inv?`<div class="qd-sub">- Công suất: ${esc(d.inv.cs)}</div><div class="qd-sub">- ${esc(d.inv.moTa||d.inv.ten||'')}</div><div class="qd-sub">- Bảo hành: ${esc(d.inv.bh)} năm</div>`:''}</td>
-        <td>${d.inv?esc(d.inv.dvt):'Bộ'}</td><td>${d.slinv}</td><td class="qd-num">${fmtV(d.ginv)}</td><td class="qd-num"><b>${fmtV(d.ttInv)}</b></td>
-      </tr>
+      <tr class="qd-tbl-sub"><td colspan="8">1. THIẾT BỊ CHÍNH (Bảo hành theo tiêu chuẩn NSX)</td></tr>
+      ${pinRow}
+      ${invRow}
       ${batRow}
-      <tr class="qd-tbl-sub"><td colspan="6">2. VẬT TƯ PHỤ & HỆ KHUNG GIÀN</td></tr>
-      ${vtpRow}
-      <tr><td>5</td><td><b>Hệ thống cáp điện chuyên dụng</b><div class="qd-sub">- Dây DC 4mm², dây AC 2×10mm², ống ruột gà lõi thép</div></td><td>Gói</td><td>1</td><td class="qd-num">—</td><td class="qd-num">—</td></tr>
-      <tr><td>6</td><td><b>Vật tư khác</b></td><td>Gói</td><td>1</td><td class="qd-num">—</td><td class="qd-num">—</td></tr>
-      <tr class="qd-tbl-sub"><td colspan="6">3. NHÂN CÔNG & VẬN CHUYỂN</td></tr>
-      <tr><td>7</td><td><b>${d.labor?esc(d.labor.ten):'Nhân công lắp đặt, đấu nối, bảo hành bảo trì hệ thống'}</b></td><td>Gói</td><td>1</td><td class="qd-num">${fmtV(d.gnc)}</td><td class="qd-num"><b>${fmtV(d.ttNc)}</b></td></tr>
-      <tr><td>8</td><td><b>Vận chuyển</b></td><td>Gói</td><td>1</td><td class="qd-num">—</td><td class="qd-num">—</td></tr>
+      <tr class="qd-tbl-sub"><td colspan="8">2. VẬT TƯ PHỤ &amp; HỆ KHUNG GIÀN</td></tr>
+      <tr><td class="qd-c-tt">4</td><td class="qd-c-img"></td><td><b>${vtpMa}</b><div class="qd-sub">${vtpDesc}</div></td><td class="qd-c-note"><span class="qd-mute">—</span></td><td class="qd-c-dvt">${vtpDvt}</td><td class="qd-c-sl">1</td><td class="qd-c-num">${fmtV(d.gvtp)}</td><td class="qd-c-num"><b>${fmtV(d.ttVtp)}</b></td></tr>
+      <tr><td class="qd-c-tt">5</td><td class="qd-c-img"></td><td><b>Hệ thống cáp điện chuyên dụng</b><div class="qd-sub">Dây DC 4mm², dây AC 2×10mm², ống ruột gà lõi thép</div></td><td class="qd-c-note"><span class="qd-mute">—</span></td><td class="qd-c-dvt">Gói</td><td class="qd-c-sl">1</td><td class="qd-c-num">—</td><td class="qd-c-num">—</td></tr>
+      <tr class="qd-tbl-sub"><td colspan="8">3. NHÂN CÔNG &amp; VẬN CHUYỂN</td></tr>
+      <tr><td class="qd-c-tt">6</td><td class="qd-c-img"></td><td><b>${d.labor?esc(d.labor.ten):'Nhân công lắp đặt, đấu nối, bảo hành bảo trì'}</b></td><td class="qd-c-note"><span class="qd-mute">—</span></td><td class="qd-c-dvt">Gói</td><td class="qd-c-sl">1</td><td class="qd-c-num">${fmtV(d.gnc)}</td><td class="qd-c-num"><b>${fmtV(d.ttNc)}</b></td></tr>
+      <tr><td class="qd-c-tt">7</td><td class="qd-c-img"></td><td><b>Vận chuyển</b></td><td class="qd-c-note"><span class="qd-mute">—</span></td><td class="qd-c-dvt">Gói</td><td class="qd-c-sl">1</td><td class="qd-c-num">—</td><td class="qd-c-num">—</td></tr>
     </tbody>
   </table>
 
   <div class="qd-tot">
-    <div class="qd-tot-row"><span>Tổng cộng giá trị thiết bị & vật tư (Chưa VAT):</span><b>${fmtV(d.sub)} đ</b></div>
+    <div class="qd-tot-row"><span>Tổng cộng giá trị thiết bị &amp; vật tư (Chưa VAT):</span><b>${fmtV(d.sub)} đ</b></div>
     <div class="qd-tot-row"><span>Thuế GTGT (VAT ${d.vat}%):</span><b>${fmtV(d.tienVat)} đ</b></div>
     ${d.ck>0?`<div class="qd-tot-row" style="color:#dc2626"><span>Chiết khấu:</span><b>- ${fmtV(d.ck)} đ</b></div>`:''}
     <div class="qd-tot-final"><span>TỔNG CỘNG GIÁ TRỊ HỢP ĐỒNG:</span><span>${fmtV(d.total)} đ</span></div>
   </div>
 
-  <div class="qd-terms">
-    <h4>📌 ĐIỀU KHOẢN THƯƠNG MẠI</h4>
-    <ul>
-      <li>Báo giá có hiệu lực trong vòng <b>07 ngày</b> kể từ ngày phát hành.</li>
-      <li>Phương thức thanh toán: <b>Tạm ứng 40%</b> sau khi ký hợp đồng, thanh toán <b>100%</b> sau khi lắp đặt hoàn thiện.</li>
-      <li>Tiến độ thi công: Dự kiến <b>02 - 05 ngày</b> làm việc tùy quy mô dự án.</li>
-      ${d.note?`<li><b>Ghi chú:</b> ${esc(d.note)}</li>`:''}
-    </ul>
-  </div>
-
-  <div class="qd-bank">
-    <h4>🏦 THÔNG TIN THANH TOÁN</h4>
-    <div><b>Chủ tài khoản:</b> ${esc(COMPANY.name)}</div>
-    <div><b>STK:</b> ${esc(COMPANY.stk)} • <b>Ngân hàng:</b> ${esc(COMPANY.bank)}</div>
+  <div class="qd-bottom">
+    <div class="qd-terms">
+      <h4>📌 ĐIỀU KHOẢN THƯƠNG MẠI</h4>
+      <ul>
+        <li>Báo giá có hiệu lực <b>07 ngày</b> kể từ ngày phát hành.</li>
+        <li>Thanh toán: <b>Tạm ứng 40%</b> sau ký HĐ, <b>100%</b> sau khi lắp đặt.</li>
+        <li>Tiến độ thi công: <b>02–05 ngày</b> tùy quy mô dự án.</li>
+        ${d.note?`<li><b>Ghi chú:</b> ${esc(d.note)}</li>`:''}
+      </ul>
+    </div>
+    <div class="qd-bank">
+      <h4>🏦 THÔNG TIN THANH TOÁN</h4>
+      <div><b>Chủ TK:</b> ${esc(COMPANY.name)}</div>
+      <div><b>STK:</b> ${esc(COMPANY.stk)}</div>
+      <div><b>NH:</b> ${esc(COMPANY.bank)}</div>
+    </div>
   </div>
 
   <div class="qd-sign">
     <div class="qd-sign-box">
       <div class="role">Khách hàng</div>
-      <div style="color:#94a3b8">(Ký, ghi rõ họ tên)</div>
+      <div class="sub">(Ký, ghi rõ họ tên)</div>
     </div>
     <div class="qd-sign-box">
       <div class="role">Đại diện ${esc(COMPANY.logo)}</div>
       <div class="esign">Đã ký điện tử</div>
       <div class="name">${esc(COMPANY.director)}</div>
-      <div style="color:#64748b">${esc(COMPANY.title)}</div>
+      <div class="sub">${esc(COMPANY.title)}</div>
     </div>
   </div>
 </div>
