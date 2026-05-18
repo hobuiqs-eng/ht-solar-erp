@@ -662,6 +662,7 @@ textarea.fc{resize:vertical}
               <h3><i class="fa fa-eye"></i> Xem trước báo giá</h3>
               <div class="qp-box" id="qPreview"><div style="text-align:center;color:var(--muted);padding:40px 0">Điền thông tin để xem preview…</div></div>
               <div class="btn-group">
+                <button class="btn btn-red" onclick="printQuote()"><i class="fa fa-file-pdf"></i> In / Xuất PDF</button>
                 <button class="btn btn-green" onclick="exportQDocx()"><i class="fa fa-file-word"></i> Xuất DOCX</button>
                 <button class="btn btn-orange" onclick="saveQuote()"><i class="fa fa-floppy-disk"></i> Lưu báo giá</button>
                 <button class="btn btn-primary" onclick="openModal('addContractFromQuote')"><i class="fa fa-file-signature"></i> Tạo HĐ</button>
@@ -2009,6 +2010,205 @@ function buildQPreview(){
     <div style="margin-top:8px;font-size:9px;color:#aaa">✅ Hiệu lực 07 ngày | TT 40% khi ký HĐ, 100% sau lắp đặt | Thi công 2–5 ngày</div>`;
 }
 function renderQuotePage(){buildQPreview();renderQHistory();}
+
+// Print báo giá ra cửa sổ A4 đẹp theo mẫu HT-TEK → user nhấn Cmd+P/Ctrl+P để lưu PDF
+function printQuote(){
+  const d=getQData();
+  if(!d.kh){toast('Vui lòng nhập tên khách hàng trước!','warn');return;}
+  // Thông tin công ty (có thể đổi sau qua const COMPANY ở đây)
+  const COMPANY = {
+    name: 'CÔNG TY TNHH HT-TEK',
+    logo: 'HTSOLAR',
+    addr: '48 Đường Vũ Quang, Phường Thành Sen, Tỉnh Hà Tĩnh',
+    mst: '3002289382',
+    hotline: '0945 371 686',
+    stk: '8613633688',
+    bank: 'BIDV chi nhánh Hà Tĩnh',
+    director: 'Trần Văn Túy',
+    title: 'Giám đốc'
+  };
+  const batRow = d.isLuu && d.bat ? `<tr>
+    <td>3</td>
+    <td><b>${esc(d.bat.ma)}</b><div class="qd-sub">- Dung lượng: ${esc(d.bat.dl)}</div><div class="qd-sub">- Vòng đời > 8000 lần sạc xả</div><div class="qd-sub">- Bảo hành: ${esc(d.bat.bh)} năm</div></td>
+    <td>${esc(d.bat.dvt||'Bộ')}</td><td>${d.slbat}</td><td class="qd-num">${fmtV(d.gbat)}</td><td class="qd-num"><b>${fmtV(d.ttBat)}</b></td>
+  </tr>` : '';
+  const vtpRow = d.vtp ? `<tr>
+    <td>4</td>
+    <td><b>${esc(d.vtp.ma)}</b><div class="qd-sub">- ${esc(d.vtp.moTa||d.vtp.ten||'Hệ khung chuyên dụng, kẹp biên/giữa, tủ điện, cắt sét lan truyền, tiếp địa, máng cáp')}</div></td>
+    <td>${esc(d.vtp.dvt||'Hệ')}</td><td>${d.slvtp||1}</td><td class="qd-num">${fmtV(d.gvtp)}</td><td class="qd-num"><b>${fmtV(d.ttVtp)}</b></td>
+  </tr>` : `<tr>
+    <td>4</td>
+    <td><b>Hệ khung + phụ kiện</b><div class="qd-sub">- Hệ khung chuyên dụng, kẹp biên, kẹp giữa, tủ điện, thiết bị bảo vệ, cắt sét lan truyền, tiếp địa, máng cáp</div></td>
+    <td>Hệ</td><td>1</td><td class="qd-num">${fmtV(d.gvtp)}</td><td class="qd-num"><b>${fmtV(d.ttVtp)}</b></td>
+  </tr>`;
+  const html = `<!DOCTYPE html><html lang="vi"><head><meta charset="UTF-8"/><title>Báo giá ${esc(d.ma)} - ${esc(d.kh)}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Be Vietnam Pro',sans-serif;color:#1e293b;background:#e5e7eb;padding:24px 0;font-size:12px}
+.page{width:210mm;min-height:297mm;background:#fff;margin:0 auto 20px;padding:18mm 16mm;box-shadow:0 6px 24px rgba(0,0,0,.15)}
+.qd-hdr{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #f97316;padding-bottom:12px;margin-bottom:14px}
+.qd-logo{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:#f97316;letter-spacing:1px}
+.qd-co-name{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:#0f2d5e;margin-top:2px}
+.qd-co-info{font-size:10.5px;color:#64748b;margin-top:2px}
+.qd-r{text-align:right}
+.qd-title{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:#0f2d5e}
+.qd-sub-title{font-size:11px;color:#64748b;margin-top:3px}
+.qd-meta{display:grid;grid-template-columns:1fr 1fr;gap:8px 24px;margin-bottom:14px;font-size:12px}
+.qd-meta div{padding:4px 0}
+.qd-meta b{color:#0f2d5e}
+.qd-section{background:linear-gradient(90deg,#1a56db,#0f2d5e);color:#fff;padding:7px 12px;font-weight:700;font-size:12px;margin:14px 0 0;border-radius:4px 4px 0 0}
+.qd-specs{background:#eff6ff;border:1px solid #dbeafe;border-top:none;padding:10px 12px;display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;font-size:12px;border-radius:0 0 4px 4px;margin-bottom:14px}
+.qd-tbl{width:100%;border-collapse:collapse;margin-bottom:6px;font-size:11px}
+.qd-tbl th{background:#0f2d5e;color:#fff;padding:7px 8px;font-weight:600;text-align:left;border:1px solid #0f2d5e}
+.qd-tbl th.qd-num{text-align:right}
+.qd-tbl td{padding:7px 8px;border:1px solid #e5e7eb;vertical-align:top}
+.qd-tbl td.qd-num{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+.qd-tbl-sub{background:#dbeafe;font-weight:700;color:#0f2d5e}
+.qd-sub{color:#64748b;font-size:10px;margin-top:2px;padding-left:4px}
+.qd-tot{margin-top:14px;padding:12px 16px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px}
+.qd-tot-row{display:flex;justify-content:space-between;padding:3px 0;font-size:12px}
+.qd-tot-final{display:flex;justify-content:space-between;padding-top:10px;margin-top:6px;border-top:2px solid #f97316;font-family:'Syne',sans-serif;font-weight:800;font-size:15px;color:#f97316}
+.qd-terms{margin-top:16px;padding:12px 16px;background:#fff7ed;border-left:4px solid #f97316;font-size:11px}
+.qd-terms h4{font-family:'Syne',sans-serif;font-size:13px;color:#c2410c;margin-bottom:6px}
+.qd-terms ul{padding-left:18px}
+.qd-bank{margin-top:10px;padding:12px 16px;background:#ecfdf5;border-left:4px solid #16a34a;font-size:11px}
+.qd-bank h4{font-family:'Syne',sans-serif;font-size:13px;color:#15803d;margin-bottom:4px}
+.qd-sign{margin-top:24px;display:grid;grid-template-columns:1fr 1fr;gap:20px;text-align:center;font-size:11px}
+.qd-sign-box{padding:10px}
+.qd-sign-box .role{font-weight:700;text-transform:uppercase;color:#0f2d5e;margin-bottom:50px}
+.qd-sign-box .esign{color:#16a34a;font-style:italic;margin-bottom:4px}
+.qd-sign-box .name{font-weight:700}
+.qd-print-bar{position:fixed;top:0;left:0;right:0;background:#0f2d5e;color:#fff;padding:10px 20px;display:flex;justify-content:space-between;align-items:center;z-index:1000;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+.qd-print-bar button{padding:8px 16px;font-weight:600;border:none;border-radius:6px;cursor:pointer;font-size:13px}
+.qd-print-bar .btn-print{background:#f97316;color:#fff}
+.qd-print-bar .btn-close{background:#475569;color:#fff;margin-left:8px}
+@media print {
+  body{background:#fff;padding:0;font-size:11px}
+  .page{box-shadow:none;margin:0;width:auto;min-height:auto;padding:8mm 12mm}
+  .qd-print-bar{display:none}
+  @page{size:A4;margin:0}
+}
+</style></head>
+<body>
+<div class="qd-print-bar">
+  <div><b>Báo giá ${esc(d.ma)}</b> — ${esc(d.kh)}</div>
+  <div>
+    <button class="btn-print" onclick="window.print()">🖨️ In / Lưu PDF</button>
+    <button class="btn-close" onclick="window.close()">✕ Đóng</button>
+  </div>
+</div>
+<div style="height:54px"></div>
+
+<div class="page">
+  <div class="qd-hdr">
+    <div>
+      <div class="qd-logo">☀️ ${esc(COMPANY.logo)}</div>
+      <div class="qd-co-name">${esc(COMPANY.name)}</div>
+      <div class="qd-co-info">${esc(COMPANY.addr)}</div>
+      <div class="qd-co-info">MST: ${esc(COMPANY.mst)} • Hotline: ${esc(COMPANY.hotline)}</div>
+    </div>
+    <div class="qd-r">
+      <div class="qd-title">BÁO GIÁ</div>
+      <div class="qd-sub-title">HỆ THỐNG ĐIỆN MẶT TRỜI</div>
+      <div style="margin-top:6px;font-size:11px"><b>Số:</b> ${esc(d.ma)}</div>
+      <div style="font-size:11px"><b>Ngày:</b> ${esc(d.ngay)}</div>
+    </div>
+  </div>
+
+  <div class="qd-meta">
+    <div><b>Khách hàng:</b> ${esc(d.kh)}</div>
+    <div><b>Người lập:</b> ${esc(d.nguoilap)}</div>
+    <div style="grid-column:span 2"><b>Địa chỉ:</b> ${esc(d.dc||'—')}</div>
+  </div>
+
+  <div class="qd-section">⚡ THÔNG SỐ KỸ THUẬT HỆ THỐNG</div>
+  <div class="qd-specs">
+    <div><b>Công suất dàn Pin (PV):</b> ${d.cspv} kWp</div>
+    <div><b>Sản lượng điện TB/tháng:</b> ${d.sl} kWh</div>
+    <div><b>Công suất Biến tần:</b> ${esc(d.csInv)} (${esc(d.loai)})</div>
+    <div><b>Dung lượng lưu trữ:</b> ${d.isLuu ? d.csluu + ' kWh' : '— (không có)'}</div>
+  </div>
+
+  <div class="qd-section">📋 CHI TIẾT THIẾT BỊ VÀ VẬT TƯ</div>
+  <table class="qd-tbl">
+    <thead><tr>
+      <th style="width:36px">TT</th><th>Tên thiết bị / Quy cách</th>
+      <th style="width:40px">ĐVT</th><th style="width:40px">SL</th>
+      <th class="qd-num" style="width:90px">Đơn giá (đ)</th><th class="qd-num" style="width:100px">Thành tiền (đ)</th>
+    </tr></thead>
+    <tbody>
+      <tr class="qd-tbl-sub"><td colspan="6">1. THIẾT BỊ CHÍNH (Bảo hành theo tiêu chuẩn NSX)</td></tr>
+      <tr>
+        <td>1</td>
+        <td><b>${d.pin?esc(d.pin.ma):'—'}</b>${d.pin?`<div class="qd-sub">- Công suất: ${esc(d.pin.cs)}</div><div class="qd-sub">- ${esc(d.pin.moTa||d.pin.ten||'n-type TOPCon, 2 mặt kính')}</div><div class="qd-sub">- Bảo hành vật lý: ${esc(d.pin.bhVL)}; BH hiệu suất: ${esc(d.pin.bhHS)}</div>`:''}</td>
+        <td>${d.pin?esc(d.pin.dvt):'Tấm'}</td><td>${d.slpin}</td><td class="qd-num">${fmtV(d.gpin)}</td><td class="qd-num"><b>${fmtV(d.ttPin)}</b></td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td><b>${d.inv?esc(d.inv.ma):'—'}</b>${d.inv?`<div class="qd-sub">- Công suất: ${esc(d.inv.cs)}</div><div class="qd-sub">- ${esc(d.inv.moTa||d.inv.ten||'')}</div><div class="qd-sub">- Bảo hành: ${esc(d.inv.bh)} năm</div>`:''}</td>
+        <td>${d.inv?esc(d.inv.dvt):'Bộ'}</td><td>${d.slinv}</td><td class="qd-num">${fmtV(d.ginv)}</td><td class="qd-num"><b>${fmtV(d.ttInv)}</b></td>
+      </tr>
+      ${batRow}
+      <tr class="qd-tbl-sub"><td colspan="6">2. VẬT TƯ PHỤ & HỆ KHUNG GIÀN</td></tr>
+      ${vtpRow}
+      <tr><td>5</td><td><b>Hệ thống cáp điện chuyên dụng</b><div class="qd-sub">- Dây DC 4mm², dây AC 2×10mm², ống ruột gà lõi thép</div></td><td>Gói</td><td>1</td><td class="qd-num">—</td><td class="qd-num">—</td></tr>
+      <tr><td>6</td><td><b>Vật tư khác</b></td><td>Gói</td><td>1</td><td class="qd-num">—</td><td class="qd-num">—</td></tr>
+      <tr class="qd-tbl-sub"><td colspan="6">3. NHÂN CÔNG & VẬN CHUYỂN</td></tr>
+      <tr><td>7</td><td><b>${d.labor?esc(d.labor.ten):'Nhân công lắp đặt, đấu nối, bảo hành bảo trì hệ thống'}</b></td><td>Gói</td><td>1</td><td class="qd-num">${fmtV(d.gnc)}</td><td class="qd-num"><b>${fmtV(d.ttNc)}</b></td></tr>
+      <tr><td>8</td><td><b>Vận chuyển</b></td><td>Gói</td><td>1</td><td class="qd-num">—</td><td class="qd-num">—</td></tr>
+    </tbody>
+  </table>
+
+  <div class="qd-tot">
+    <div class="qd-tot-row"><span>Tổng cộng giá trị thiết bị & vật tư (Chưa VAT):</span><b>${fmtV(d.sub)} đ</b></div>
+    <div class="qd-tot-row"><span>Thuế GTGT (VAT ${d.vat}%):</span><b>${fmtV(d.tienVat)} đ</b></div>
+    ${d.ck>0?`<div class="qd-tot-row" style="color:#dc2626"><span>Chiết khấu:</span><b>- ${fmtV(d.ck)} đ</b></div>`:''}
+    <div class="qd-tot-final"><span>TỔNG CỘNG GIÁ TRỊ HỢP ĐỒNG:</span><span>${fmtV(d.total)} đ</span></div>
+  </div>
+
+  <div class="qd-terms">
+    <h4>📌 ĐIỀU KHOẢN THƯƠNG MẠI</h4>
+    <ul>
+      <li>Báo giá có hiệu lực trong vòng <b>07 ngày</b> kể từ ngày phát hành.</li>
+      <li>Phương thức thanh toán: <b>Tạm ứng 40%</b> sau khi ký hợp đồng, thanh toán <b>100%</b> sau khi lắp đặt hoàn thiện.</li>
+      <li>Tiến độ thi công: Dự kiến <b>02 - 05 ngày</b> làm việc tùy quy mô dự án.</li>
+      ${d.note?`<li><b>Ghi chú:</b> ${esc(d.note)}</li>`:''}
+    </ul>
+  </div>
+
+  <div class="qd-bank">
+    <h4>🏦 THÔNG TIN THANH TOÁN</h4>
+    <div><b>Chủ tài khoản:</b> ${esc(COMPANY.name)}</div>
+    <div><b>STK:</b> ${esc(COMPANY.stk)} • <b>Ngân hàng:</b> ${esc(COMPANY.bank)}</div>
+  </div>
+
+  <div class="qd-sign">
+    <div class="qd-sign-box">
+      <div class="role">Khách hàng</div>
+      <div style="color:#94a3b8">(Ký, ghi rõ họ tên)</div>
+    </div>
+    <div class="qd-sign-box">
+      <div class="role">Đại diện ${esc(COMPANY.logo)}</div>
+      <div class="esign">Đã ký điện tử</div>
+      <div class="name">${esc(COMPANY.director)}</div>
+      <div style="color:#64748b">${esc(COMPANY.title)}</div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Tự động trigger print sau khi load (commented để user chủ động)
+// setTimeout(()=>window.print(), 800);
+</script>
+</body></html>`;
+  const w = window.open('', '_blank', 'width=900,height=1100');
+  if (!w) { toast('Trình duyệt chặn popup. Cho phép popup cho trang này.','error'); return; }
+  w.document.write(html);
+  w.document.close();
+  log('EXPORT_PDF','Báo giá','Mở print dialog: '+d.ma);
+}
 function renderQHistory(){
   document.getElementById('qHistBody').innerHTML=S.quotations.slice().reverse().map((q,ri)=>{
     const i=S.quotations.length-1-ri;
