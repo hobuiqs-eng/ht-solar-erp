@@ -6,7 +6,8 @@
 <meta http-equiv="Pragma" content="no-cache"/>
 <meta http-equiv="Expires" content="0"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>HT Solar ERP v2.1</title>
+<title>HT-TEK ERP — Quản lý năng lượng mặt trời</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 280 100'><g transform='translate(8,50) skewX(-30)'><rect width='40' height='30' fill='%231e3a5f'/></g><circle cx='195' cy='35' r='14' fill='%23f97316'/><g fill='%231e3a5f'><polygon points='80,25 100,25 100,90 80,90'/><polygon points='130,25 150,25 150,90 130,90'/><rect x='100' y='50' width='30' height='14'/><rect x='155' y='35' width='40' height='10'/><rect x='167' y='45' width='16' height='45'/></g></svg>"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
@@ -414,9 +415,9 @@ textarea.fc{resize:vertical}
     <div class="sun-ring r3"></div>
   </div>
   <div class="login-card">
-    <div class="login-logo">
-      <div class="logo-icon-wrap"><i class="fa-solid fa-solar-panel"></i></div>
-      <div><h1>HT Solar</h1><p>Energy Management System</p></div>
+    <div class="login-logo" style="flex-direction:column;align-items:center;text-align:center;gap:6px">
+      <div data-logo="httek-dark" style="width:240px;max-width:100%"></div>
+      <div style="margin-top:4px"><h1 style="font-size:18px">CÔNG TY TNHH HT-TEK</h1><p>Năng lượng mặt trời • ERP</p></div>
     </div>
     <div class="lf-group">
       <label>Tài khoản</label>
@@ -451,7 +452,7 @@ textarea.fc{resize:vertical}
   <!-- SIDEBAR -->
   <aside class="sidebar" id="sidebar">
     <div class="sb-header">
-      <div class="sb-logo"><i class="fa-solid fa-solar-panel"></i><span>HT Solar</span></div>
+      <div class="sb-logo" data-logo="httek-light"></div>
       <button class="sb-toggle" onclick="toggleSidebar()"><i class="fa fa-bars"></i></button>
     </div>
     <div class="user-badge">
@@ -585,13 +586,14 @@ textarea.fc{resize:vertical}
                 <div class="fg"><label>Chọn từ DS khách hàng</label><select id="q_kh_sel" class="fc" onchange="onKHSel()"><option value="">-- Chọn hoặc nhập tay --</option></select></div>
               </div>
               <div class="fr2">
+                <div class="fg"><label>SĐT khách hàng</label><input id="q_sdt" class="fc" placeholder="0900..."/></div>
                 <div class="fg"><label>Địa chỉ</label><input id="q_dc" class="fc" placeholder="Địa chỉ lắp đặt"/></div>
-                <div class="fg"><label>Ngày báo giá</label><input id="q_ngay" type="date" class="fc"/></div>
               </div>
               <div class="fr2">
+                <div class="fg"><label>Ngày báo giá</label><input id="q_ngay" type="date" class="fc"/></div>
                 <div class="fg"><label>Mã báo giá</label><input id="q_ma" class="fc"/></div>
-                <div class="fg"><label>Người lập</label><input id="q_nguoilap" class="fc" readonly/></div>
               </div>
+              <div class="fg"><label>Người lập</label><input id="q_nguoilap" class="fc" readonly/></div>
             </div>
             <div class="q-card">
               <h3><i class="fa fa-gear"></i> Thông số hệ thống</h3>
@@ -617,20 +619,36 @@ textarea.fc{resize:vertical}
                 <div class="fg"><label>Số lượng tấm</label><input id="q_slpin" type="number" class="fc" value="20" min="1" oninput="qAutoCalc()"/></div>
                 <div class="fg"><label>Đơn giá (đ)</label><input id="q_gpin" type="number" class="fc" oninput="qAutoCalc()"/></div>
               </div>
-              <div class="fg" style="margin-top:4px"><label>Ghi chú Tấm pin (in vào báo giá)</label><input id="q_notePin" class="fc" placeholder="VD: Hiệu suất 21.3%, kháng PID..."/></div>
+              <div class="fr2" style="margin-top:4px">
+                <div class="fg"><label>Ghi chú Tấm pin</label><input id="q_notePin" class="fc" placeholder="VD: Hiệu suất 21.3%, kháng PID..."/></div>
+                <div class="fg"><label>Ảnh Tấm pin <span id="q_imgPin_status" style="font-size:10px;color:var(--muted)"></span></label><input id="q_imgPinFile" type="file" accept="image/*" class="fc" onchange="readImg(this,'q_imgPin','q_imgPin_status')"/></div>
+              </div>
               <div class="fg" style="margin-top:6px"><label>Biến tần (Inverter)</label><select id="q_inv" class="fc" onchange="onQInvChange()"><option value="">-- Chọn inverter --</option></select></div>
               <div class="fr2">
                 <div class="fg"><label>Số lượng bộ</label><input id="q_slinv" type="number" class="fc" value="1" min="1" oninput="qAutoCalc()"/></div>
                 <div class="fg"><label>Đơn giá (đ)</label><input id="q_ginv" type="number" class="fc" oninput="qAutoCalc()"/></div>
               </div>
-              <div class="fg" style="margin-top:4px"><label>Ghi chú Inverter</label><input id="q_noteInv" class="fc" placeholder="VD: Hybrid 3 pha, hỗ trợ Wi-Fi, MPPT x3..."/></div>
+              <div class="fr2" style="margin-top:4px">
+                <div class="fg"><label>Ghi chú Inverter</label><input id="q_noteInv" class="fc" placeholder="VD: Hybrid 3 pha, hỗ trợ Wi-Fi, MPPT x3..."/></div>
+                <div class="fg"><label>Ảnh Inverter <span id="q_imgInv_status" style="font-size:10px;color:var(--muted)"></span></label><input id="q_imgInvFile" type="file" accept="image/*" class="fc" onchange="readImg(this,'q_imgInv','q_imgInv_status')"/></div>
+              </div>
               <div id="bat_row" style="margin-top:6px">
                 <div class="fg"><label>Pin lưu trữ</label><select id="q_bat" class="fc" onchange="onQBatChange()"><option value="">-- Không dùng / Chọn --</option></select></div>
                 <div class="fr2">
                   <div class="fg"><label>Số lượng bộ</label><input id="q_slbat" type="number" class="fc" value="1" min="1" oninput="qAutoCalc()"/></div>
                   <div class="fg"><label>Đơn giá (đ)</label><input id="q_gbat" type="number" class="fc" oninput="qAutoCalc()"/></div>
                 </div>
-                <div class="fg" style="margin-top:4px"><label>Ghi chú Pin lưu trữ</label><input id="q_noteBat" class="fc" placeholder="VD: LiFePO4, BMS thông minh..."/></div>
+                <div class="fr2" style="margin-top:4px">
+                  <div class="fg"><label>Ghi chú Pin lưu trữ</label><input id="q_noteBat" class="fc" placeholder="VD: LiFePO4, BMS thông minh..."/></div>
+                  <div class="fg"><label>Ảnh Pin lưu trữ <span id="q_imgBat_status" style="font-size:10px;color:var(--muted)"></span></label><input id="q_imgBatFile" type="file" accept="image/*" class="fc" onchange="readImg(this,'q_imgBat','q_imgBat_status')"/></div>
+                </div>
+              </div>
+              <div style="margin-top:10px;padding-top:8px;border-top:1px dashed var(--border)">
+                <div class="fr2">
+                  <div class="fg"><label>Ảnh Hệ khung/Vật tư phụ <span id="q_imgVtp_status" style="font-size:10px;color:var(--muted)"></span></label><input id="q_imgVtpFile" type="file" accept="image/*" class="fc" onchange="readImg(this,'q_imgVtp','q_imgVtp_status')"/></div>
+                  <div class="fg"><label>Vật tư khác (nếu có)</label><input id="q_vtKhac" class="fc" placeholder="VD: Tủ điện DC/AC bổ sung..."/></div>
+                </div>
+                <div class="fg" style="margin-top:4px"><label>Bổ sung khác (mục IV — nếu có)</label><input id="q_bsKhac" class="fc" placeholder="VD: Bảo hiểm tài sản 1 năm, dịch vụ vệ sinh định kỳ..."/></div>
               </div>
             </div>
             <div class="q-card">
@@ -642,7 +660,21 @@ textarea.fc{resize:vertical}
                 <div class="fg"><label>Đơn giá vật tư phụ (đ)</label><input id="q_gvtp" type="number" class="fc" oninput="qAutoCalc()"/></div>
                 <div class="fg"><label>Gói nhân công</label><select id="q_nc" class="fc" onchange="onQNcChange()"><option value="">-- Chọn gói --</option></select></div>
               </div>
-              <div class="fg"><label>Đơn giá nhân công (đ)</label><input id="q_gnc" type="number" class="fc" oninput="qAutoCalc()"/></div>
+              <div class="fr2">
+                <div class="fg"><label>Đơn giá nhân công / kWp</label><input id="q_giaNcKw" type="number" class="fc" value="1500000" oninput="qAutoCalc()" placeholder="VD: 1,500,000đ/kWp"/></div>
+                <div class="fg"><label>Tổng nhân công (tự tính)</label><input id="q_gnc" type="number" class="fc" readonly style="background:#f1f5f9" title="= Đơn giá/kWp × CS dàn Pin"/></div>
+              </div>
+              <div class="fg"><label>Chi phí vận chuyển (đ)</label><input id="q_giaVc" type="number" class="fc" value="0" oninput="qAutoCalc()" placeholder="0 = miễn phí"/></div>
+
+              <!-- Cáp điện & phụ kiện kèm theo (multi-row động) -->
+              <div style="margin-top:12px;padding-top:8px;border-top:1px dashed var(--border)">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+                  <div style="font-size:11px;font-weight:700;color:var(--navy)"><i class="fa fa-bolt" style="color:var(--orange)"></i> Cáp điện & phụ kiện điện</div>
+                  <button type="button" class="btn btn-sm btn-outline" onclick="addCapRow()"><i class="fa fa-plus"></i> Thêm dòng</button>
+                </div>
+                <div style="font-size:10px;color:var(--muted);margin-bottom:6px;font-style:italic">Chọn vật tư từ Data vật tư phụ (VTP_DATA). Mỗi loại cáp/ống là 1 dòng riêng. Nhập đủ Tên + SL + Đơn giá.</div>
+                <div id="q_capRows"></div>
+              </div>
             </div>
             <div class="q-card">
               <h3><i class="fa fa-percent"></i> Thuế & điều chỉnh</h3>
@@ -655,10 +687,18 @@ textarea.fc{resize:vertical}
           </div>
           <!-- PREVIEW RIGHT -->
           <div>
+            <!-- Hàng 1: Thông số kỹ thuật hệ thống -->
+            <div class="sum-strip" style="background:linear-gradient(90deg,#1a56db,#0f2d5e);margin-bottom:8px">
+              <div class="sum-it"><div class="sum-lbl">CS dàn Pin</div><div class="sum-v" id="sq_cspv">0 kWp</div></div>
+              <div class="sum-it"><div class="sum-lbl">Sản lượng TB/tháng</div><div class="sum-v" id="sq_sl">0 kWh</div></div>
+              <div class="sum-it"><div class="sum-lbl">CS Biến tần</div><div class="sum-v" id="sq_csinv">—</div></div>
+              <div class="sum-it"><div class="sum-lbl">Lưu trữ</div><div class="sum-v" id="sq_csluu">—</div></div>
+            </div>
+            <!-- Hàng 2: Tài chính -->
             <div class="sum-strip">
               <div class="sum-it"><div class="sum-lbl">Thiết bị chính</div><div class="sum-v" id="sq_tb">0đ</div></div>
-              <div class="sum-it"><div class="sum-lbl">Vật tư phụ</div><div class="sum-v" id="sq_vt">0đ</div></div>
-              <div class="sum-it"><div class="sum-lbl">Nhân công</div><div class="sum-v" id="sq_nc">0đ</div></div>
+              <div class="sum-it"><div class="sum-lbl">Vật tư + Cáp</div><div class="sum-v" id="sq_vt">0đ</div></div>
+              <div class="sum-it"><div class="sum-lbl">Nhân công + VC</div><div class="sum-v" id="sq_nc">0đ</div></div>
               <div class="sum-it"><div class="sum-lbl">Tổng (có VAT)</div><div class="sum-v" id="sq_tot" style="color:#ffd166">0đ</div></div>
             </div>
             <div class="q-card">
@@ -705,7 +745,7 @@ textarea.fc{resize:vertical}
         </div>
           <div class="tbl-card" style="overflow-x:auto">
           <table class="data-tbl"><thead><tr>
-            <th>Mã SP</th><th>Tên / Quy cách</th><th>Mô tả thêm</th><th>Công suất</th><th>ĐVT</th><th>Đơn giá (đ)</th><th>BH vật lý</th><th>BH hiệu suất</th><th></th>
+            <th>Mã SP</th><th>Tên / Quy cách</th><th>Mô tả thêm</th><th>Công suất</th><th>ĐVT</th><th style="background:#fff7ed;color:#c2410c">Giá nhập (NCC)</th><th style="background:#ecfdf5;color:#15803d">Giá bán (đ)</th><th>BH vật lý</th><th>BH hiệu suất</th><th></th>
           </tr></thead><tbody id="dt-pin"></tbody></table></div>
         </div>
 
@@ -716,7 +756,7 @@ textarea.fc{resize:vertical}
         </div>
           <div class="tbl-card" style="overflow-x:auto">
           <table class="data-tbl"><thead><tr>
-            <th>Mã SP</th><th>Tên / Model</th><th>Mô tả thêm</th><th>Công suất</th><th>ĐVT</th><th>Đơn giá (đ)</th><th>BH (năm)</th><th>Loại hệ thống</th><th></th>
+            <th>Mã SP</th><th>Tên / Model</th><th>Mô tả thêm</th><th>Công suất</th><th>ĐVT</th><th style="background:#fff7ed;color:#c2410c">Giá nhập (NCC)</th><th style="background:#ecfdf5;color:#15803d">Giá bán (đ)</th><th>BH (năm)</th><th>Loại hệ thống</th><th></th>
           </tr></thead><tbody id="dt-inv"></tbody></table></div>
         </div>
 
@@ -727,7 +767,7 @@ textarea.fc{resize:vertical}
         </div>
           <div class="tbl-card" style="overflow-x:auto">
           <table class="data-tbl"><thead><tr>
-            <th>Mã SP</th><th>Tên / Quy cách</th><th>Mô tả</th><th>Dung lượng</th><th>ĐVT</th><th>Đơn giá (đ)</th><th>BH (năm)</th><th></th>
+            <th>Mã SP</th><th>Tên / Quy cách</th><th>Mô tả</th><th>Dung lượng</th><th>ĐVT</th><th style="background:#fff7ed;color:#c2410c">Giá nhập (NCC)</th><th style="background:#ecfdf5;color:#15803d">Giá bán (đ)</th><th>BH (năm)</th><th></th>
           </tr></thead><tbody id="dt-bat"></tbody></table></div>
         </div>
 
@@ -738,7 +778,7 @@ textarea.fc{resize:vertical}
         </div>
           <div class="tbl-card" style="overflow-x:auto">
           <table class="data-tbl"><thead><tr>
-            <th>Mã</th><th>Tên gói vật tư</th><th>Áp dụng hệ thống</th><th>kWp tối thiểu</th><th>kWp tối đa</th><th>Giá cố định (đ)</th><th>Giá / kWp (đ)</th><th>ĐVT</th><th></th>
+            <th>Mã</th><th>Tên gói vật tư</th><th>Loại</th><th>kWp min</th><th>kWp max</th><th style="background:#fff7ed;color:#c2410c">Giá nhập (NCC)</th><th style="background:#ecfdf5;color:#15803d">Giá bán cố định (đ)</th><th style="background:#ecfdf5;color:#15803d">Giá bán / kWp</th><th>ĐVT</th><th></th>
           </tr></thead><tbody id="dt-vtp"></tbody></table></div>
         </div>
 
@@ -1268,11 +1308,16 @@ async function loadAllDataGAS() {
       ...r,
       csMin:   parseFloat(r.csMin||r.csmin||0),
       csMax:   parseFloat(r.csMax||r.csmax||100),
+      buy:     parseFloat(r.buy||0),
       giaFix:  parseFloat(r.giaFix||r.gF||r.giafix||0),
       giaKwp:  parseFloat(r.giaKwp||r.gK||r.giakwp||0),
       loai:    r.loai||'Tất cả',
       dvt:     r.dvt||'Hệ',
     }));
+    // Normalize buy cho pin/inv/bat
+    S.pin = (S.pin||[]).map(r => ({...r, buy: parseFloat(r.buy||0), gia: parseFloat(r.gia||0)}));
+    S.inv = (S.inv||[]).map(r => ({...r, buy: parseFloat(r.buy||0), gia: parseFloat(r.gia||0)}));
+    S.bat = (S.bat||[]).map(r => ({...r, buy: parseFloat(r.buy||0), gia: parseFloat(r.gia||0)}));
     S.labor = S.labor.map(r => ({
       ...r,
       csMin: parseFloat(r.csMin||r.csmin||0),
@@ -1772,10 +1817,11 @@ function renderDtPin(){
   document.getElementById('dt-pin').innerHTML=S.pin.map((r,i)=>`<tr>
     <td><input value="${esc(r.ma)}" onchange="S.pin[${i}].ma=this.value;persist();debounceSyncDev('pin')" style="width:120px"/></td>
     <td><input value="${esc(r.ten)}" onchange="S.pin[${i}].ten=this.value;persist();populateQSelects()" style="width:220px"/></td>
-    <td><input value="${esc(r.moTa)}" onchange="S.pin[${i}].moTa=this.value;persist();debounceSyncDev('pin')" style="width:180px"/></td>
+    <td><input value="${esc(r.moTa||r.mo||'')}" onchange="S.pin[${i}].moTa=this.value;S.pin[${i}].mo=this.value;persist();debounceSyncDev('pin')" style="width:180px"/></td>
     <td><input value="${esc(r.cs)}" onchange="S.pin[${i}].cs=this.value;persist();debounceSyncDev('pin')" style="width:65px"/></td>
     <td><input value="${esc(r.dvt)}" onchange="S.pin[${i}].dvt=this.value;persist();debounceSyncDev('pin')" style="width:45px"/></td>
-    <td><input type="number" value="${r.gia}" onchange="S.pin[${i}].gia=+this.value;persist();debounceSyncDev('pin')" style="width:105px"/></td>
+    <td><input type="number" value="${r.buy||0}" onchange="S.pin[${i}].buy=+this.value;persist();debounceSyncDev('pin')" style="width:105px;background:#fff7ed" title="Giá nhập NCC"/></td>
+    <td><input type="number" value="${r.gia}" onchange="S.pin[${i}].gia=+this.value;persist();debounceSyncDev('pin')" style="width:105px;background:#ecfdf5" title="Giá bán"/></td>
     <td><input value="${esc(r.bhVL)}" onchange="S.pin[${i}].bhVL=this.value;persist();debounceSyncDev('pin')" style="width:70px"/></td>
     <td><input value="${esc(r.bhHS)}" onchange="S.pin[${i}].bhHS=this.value;persist();debounceSyncDev('pin')" style="width:70px"/></td>
     <td><button class="btn btn-xs btn-red" onclick="delDev('pin',${i})">✕</button></td>
@@ -1785,10 +1831,11 @@ function renderDtInv(){
   document.getElementById('dt-inv').innerHTML=S.inv.map((r,i)=>`<tr>
     <td><input value="${esc(r.ma)}" onchange="S.inv[${i}].ma=this.value;persist();debounceSyncDev('inv')" style="width:130px"/></td>
     <td><input value="${esc(r.ten)}" onchange="S.inv[${i}].ten=this.value;persist();populateQSelects()" style="width:200px"/></td>
-    <td><input value="${esc(r.moTa)}" onchange="S.inv[${i}].moTa=this.value;persist();debounceSyncDev('inv')" style="width:180px"/></td>
+    <td><input value="${esc(r.moTa||r.mo||'')}" onchange="S.inv[${i}].moTa=this.value;S.inv[${i}].mo=this.value;persist();debounceSyncDev('inv')" style="width:180px"/></td>
     <td><input value="${esc(r.cs)}" onchange="S.inv[${i}].cs=this.value;persist();debounceSyncDev('inv')" style="width:65px"/></td>
     <td><input value="${esc(r.dvt)}" onchange="S.inv[${i}].dvt=this.value;persist();debounceSyncDev('inv')" style="width:45px"/></td>
-    <td><input type="number" value="${r.gia}" onchange="S.inv[${i}].gia=+this.value;persist();debounceSyncDev('inv')" style="width:105px"/></td>
+    <td><input type="number" value="${r.buy||0}" onchange="S.inv[${i}].buy=+this.value;persist();debounceSyncDev('inv')" style="width:105px;background:#fff7ed" title="Giá nhập NCC"/></td>
+    <td><input type="number" value="${r.gia}" onchange="S.inv[${i}].gia=+this.value;persist();debounceSyncDev('inv')" style="width:105px;background:#ecfdf5" title="Giá bán"/></td>
     <td><input value="${esc(r.bh)}" onchange="S.inv[${i}].bh=this.value;persist();debounceSyncDev('inv')" style="width:50px"/></td>
     <td><select onchange="S.inv[${i}].loai=this.value;persist();populateQSelects()" style="font-size:12px">
       ${['Hybrid','Hòa lưới','Độc lập'].map(v=>`<option${r.loai===v?' selected':''}>${v}</option>`).join('')}
@@ -1800,10 +1847,11 @@ function renderDtBat(){
   document.getElementById('dt-bat').innerHTML=S.bat.map((r,i)=>`<tr>
     <td><input value="${esc(r.ma)}" onchange="S.bat[${i}].ma=this.value;persist();debounceSyncDev('bat')" style="width:130px"/></td>
     <td><input value="${esc(r.ten)}" onchange="S.bat[${i}].ten=this.value;persist();populateQSelects()" style="width:200px"/></td>
-    <td><input value="${esc(r.moTa)}" onchange="S.bat[${i}].moTa=this.value;persist();debounceSyncDev('bat')" style="width:180px"/></td>
+    <td><input value="${esc(r.moTa||r.mo||'')}" onchange="S.bat[${i}].moTa=this.value;S.bat[${i}].mo=this.value;persist();debounceSyncDev('bat')" style="width:180px"/></td>
     <td><input value="${esc(r.dl)}" onchange="S.bat[${i}].dl=this.value;persist();debounceSyncDev('bat')" style="width:70px"/></td>
     <td><input value="${esc(r.dvt)}" onchange="S.bat[${i}].dvt=this.value;persist();debounceSyncDev('bat')" style="width:45px"/></td>
-    <td><input type="number" value="${r.gia}" onchange="S.bat[${i}].gia=+this.value;persist();debounceSyncDev('bat')" style="width:105px"/></td>
+    <td><input type="number" value="${r.buy||0}" onchange="S.bat[${i}].buy=+this.value;persist();debounceSyncDev('bat')" style="width:105px;background:#fff7ed" title="Giá nhập NCC"/></td>
+    <td><input type="number" value="${r.gia}" onchange="S.bat[${i}].gia=+this.value;persist();debounceSyncDev('bat')" style="width:105px;background:#ecfdf5" title="Giá bán"/></td>
     <td><input value="${esc(r.bh)}" onchange="S.bat[${i}].bh=this.value;persist();debounceSyncDev('bat')" style="width:70px"/></td>
     <td><button class="btn btn-xs btn-red" onclick="delDev('bat',${i})">✕</button></td>
   </tr>`).join('');
@@ -1813,12 +1861,13 @@ function renderDtVtp(){
     <td><input value="${esc(r.ma)}" onchange="S.vtp[${i}].ma=this.value;persist();debounceSyncDev('vtp')" style="width:90px"/></td>
     <td><input value="${esc(r.ten)}" onchange="S.vtp[${i}].ten=this.value;persist();populateQSelects()" style="width:200px"/></td>
     <td><select onchange="S.vtp[${i}].loai=this.value;persist();debounceSyncDev('vtp')" style="font-size:12px">
-      ${['Tất cả','Hòa lưới','Hybrid','Độc lập'].map(v=>`<option${r.loai===v?' selected':''}>${v}</option>`).join('')}
+      ${['Tất cả','Hòa lưới','Hybrid','Độc lập','Cáp DC','Cáp AC','Ống'].map(v=>`<option${r.loai===v?' selected':''}>${v}</option>`).join('')}
     </select></td>
     <td><input type="number" value="${r.csMin||0}" onchange="S.vtp[${i}].csMin=+this.value;persist();debounceSyncDev('vtp')" style="width:70px"/></td>
     <td><input type="number" value="${r.csMax||100}" onchange="S.vtp[${i}].csMax=+this.value;persist();debounceSyncDev('vtp')" style="width:70px"/></td>
-    <td><input type="number" value="${r.giaFix||0}" onchange="S.vtp[${i}].giaFix=+this.value;persist();debounceSyncDev('vtp')" style="width:100px"/></td>
-    <td><input type="number" value="${r.giaKwp||0}" onchange="S.vtp[${i}].giaKwp=+this.value;persist();debounceSyncDev('vtp')" style="width:100px"/></td>
+    <td><input type="number" value="${r.buy||0}" onchange="S.vtp[${i}].buy=+this.value;persist();debounceSyncDev('vtp')" style="width:100px;background:#fff7ed" title="Giá nhập NCC"/></td>
+    <td><input type="number" value="${r.giaFix||0}" onchange="S.vtp[${i}].giaFix=+this.value;persist();debounceSyncDev('vtp')" style="width:100px;background:#ecfdf5" title="Giá bán cố định"/></td>
+    <td><input type="number" value="${r.giaKwp||0}" onchange="S.vtp[${i}].giaKwp=+this.value;persist();debounceSyncDev('vtp')" style="width:100px;background:#ecfdf5" title="Giá bán theo kWp"/></td>
     <td><input value="${esc(r.dvt)}" onchange="S.vtp[${i}].dvt=this.value;persist();debounceSyncDev('vtp')" style="width:45px"/></td>
     <td><button class="btn btn-xs btn-red" onclick="delDev('vtp',${i})">✕</button></td>
   </tr>`).join('');
@@ -1945,80 +1994,205 @@ function qAutoCalc(){
 }
 function getQData(){
   const loai=val('q_loai');const isLuu=loai!=='Hòa lưới';
-  const cspv=nval('q_cspv');const csluu=nval('q_csluu');
-  const sl=val('q_sl')||Math.round(cspv*120);
+  // ===== AUTO-CALC: CS dàn Pin = số tấm × CS mỗi tấm =====
+  const piI=val('q_pin');const pinDataLocal=piI!==''?S.pin[+piI]:null;
+  const slpin=nval('q_slpin');
+  let cspv = nval('q_cspv'); // giá trị user nhập (nếu có)
+  if(pinDataLocal && slpin > 0){
+    // Parse "550W" → 550 (Watt) → /1000 = kWp
+    const csPerPanel = parseFloat(String(pinDataLocal.cs||'').replace(/[^0-9.]/g,''))||0;
+    if(csPerPanel > 0){
+      cspv = Math.round((slpin * csPerPanel / 1000) * 100) / 100; // làm tròn 2 chữ số
+      // Auto-fill ô q_cspv nếu khác giá trị hiện tại (tránh vô hạn loop)
+      const elCspv = document.getElementById('q_cspv');
+      if(elCspv && parseFloat(elCspv.value) !== cspv) elCspv.value = cspv;
+    }
+  }
+  // ===== AUTO-CALC: Sản lượng TB = CS × 4.5h × 30 ngày =====
+  const slAuto = Math.round(cspv * 4.5 * 30);
+  const elSl = document.getElementById('q_sl');
+  if(elSl && (elSl.value === '' || parseInt(elSl.value) === 0)){
+    elSl.value = slAuto;
+  }
+  const sl = nval('q_sl') || slAuto;
+  const csluu=nval('q_csluu');
   const vat=nval('q_vat');const ck=nval('q_ck');
-  const piI=val('q_pin'),inI=val('q_inv'),baI=val('q_bat');
-  const pin=piI!==''?S.pin[+piI]:null;
+  const inI=val('q_inv'),baI=val('q_bat');
+  const pin=pinDataLocal;
   const inv=inI!==''?S.inv[+inI]:null;
   const bat=(isLuu&&baI!=='')?S.bat[+baI]:null;
   const vtpI=val('q_vtp'),ncI=val('q_nc');
   const vtp=vtpI!==''?S.vtp[+vtpI]:null;
   const labor=ncI!==''?S.labor[+ncI]:null;
-  const slpin=nval('q_slpin'),slinv=nval('q_slinv'),slbat=nval('q_slbat');
+  const slinv=nval('q_slinv'),slbat=nval('q_slbat');
   const gpin=nval('q_gpin'),ginv=nval('q_ginv'),gbat=nval('q_gbat');
-  const gvtp=nval('q_gvtp'),gnc=nval('q_gnc');
-  const ttPin=gpin*slpin,ttInv=ginv*slinv,ttBat=isLuu?(gbat*slbat):0,ttVtp=gvtp,ttNc=gnc;
-  const sub=ttPin+ttInv+ttBat+ttVtp+ttNc-ck;
+  // ===== AUTO-CALC: Nhân công = đơn giá/kWp × CS dàn Pin =====
+  const giaNcKw = nval('q_giaNcKw');
+  const gnc = Math.round(giaNcKw * cspv);
+  const elGnc = document.getElementById('q_gnc');
+  if(elGnc && parseFloat(elGnc.value) !== gnc) elGnc.value = gnc;
+  const gvtp=nval('q_gvtp'),giaVc=nval('q_giaVc');
+  // Cáp điện & phụ kiện điện: lấy từ list động window.__qCapRows
+  // User CHỈ nhập SL, đơn giá + ĐVT lấy auto từ data VTP_DATA
+  const capRows=(window.__qCapRows||[]).map(r=>{
+    const v=r.vtpIdx!==''&&r.vtpIdx!=null?S.vtp[+r.vtpIdx]:null;
+    if(!v) return null;
+    const cspvLocal=nval('q_cspv');
+    const gF=parseFloat(v.giaFix||v.gF||0);
+    const gK=parseFloat(v.giaKwp||v.gK||0);
+    const gia=gF>0?gF:(gK>0?Math.round(gK*cspvLocal):(parseFloat(v.gia)||0));
+    const sl=parseFloat(r.sl)||0;
+    return {
+      ten: v.ten||v.ma||'',
+      ma:  v.ma||'',
+      mo:  v.mo||v.moTa||'',
+      dvt: v.dvt||'m',
+      loai:v.loai||'',
+      sl, gia, tt: sl*gia
+    };
+  }).filter(r=>r && (r.sl>0 || r.gia>0));
+  const ttCap=capRows.reduce((s,r)=>s+r.tt,0);
+  const ttPin=gpin*slpin,ttInv=ginv*slinv,ttBat=isLuu?(gbat*slbat):0,ttVtp=gvtp,ttNc=gnc,ttVc=giaVc;
+  const sub=ttPin+ttInv+ttBat+ttVtp+ttCap+ttNc+ttVc-ck;
   const tienVat=Math.round(sub*vat/100);
   const total=sub+tienVat;
-  return{loai,isLuu,cspv,csluu,sl,vat,ck,pin,inv,bat,vtp,labor,slpin,slinv,slbat,gpin,ginv,gbat,gvtp,gnc,ttPin,ttInv,ttBat,ttVtp,ttNc,sub,tienVat,total,
-    kh:val('q_kh'),dc:val('q_dc'),ngay:val('q_ngay'),ma:val('q_ma'),nguoilap:val('q_nguoilap'),note:val('q_note'),csInv:inv?inv.cs:'—',
-    notePin:val('q_notePin'),noteInv:val('q_noteInv'),noteBat:val('q_noteBat')};
+  return{loai,isLuu,cspv,csluu,sl,vat,ck,pin,inv,bat,vtp,labor,slpin,slinv,slbat,gpin,ginv,gbat,gvtp,gnc,giaVc,ttPin,ttInv,ttBat,ttVtp,ttNc,ttVc,sub,tienVat,total,
+    capRows,ttCap,
+    kh:val('q_kh'),sdt:val('q_sdt'),dc:val('q_dc'),ngay:val('q_ngay'),ma:val('q_ma'),nguoilap:val('q_nguoilap'),note:val('q_note'),csInv:inv?inv.cs:'—',
+    notePin:val('q_notePin'),noteInv:val('q_noteInv'),noteBat:val('q_noteBat'),
+    vtKhac:val('q_vtKhac'),bsKhac:val('q_bsKhac'),
+    imgPin:(window.__qImg&&window.__qImg.q_imgPin)||'',imgInv:(window.__qImg&&window.__qImg.q_imgInv)||'',imgBat:(window.__qImg&&window.__qImg.q_imgBat)||'',imgVtp:(window.__qImg&&window.__qImg.q_imgVtp)||''};
+}
+
+// === MULTI-ROW CÁP ĐIỆN & PHỤ KIỆN ===
+window.__qCapRows = window.__qCapRows || [];
+
+function addCapRow(){
+  window.__qCapRows.push({vtpIdx:'',sl:'',gia:''});
+  renderCapRows();
+  if(typeof qAutoCalc==='function') qAutoCalc();
+}
+function delCapRow(i){
+  window.__qCapRows.splice(i,1);
+  renderCapRows();
+  if(typeof qAutoCalc==='function') qAutoCalc();
+}
+function onCapVtpChange(i,sel){
+  const r=window.__qCapRows[i]; if(!r) return;
+  r.vtpIdx=sel.value;
+  // Khi đổi item, giữ SL hiện tại để user khỏi nhập lại
+  renderCapRows();
+  if(typeof qAutoCalc==='function') qAutoCalc();
+}
+function onCapSlChange(i,v){
+  if(window.__qCapRows[i]){ window.__qCapRows[i].sl=v; if(typeof qAutoCalc==='function') qAutoCalc(); }
+}
+// Tính giá + ĐVT từ data VTP_DATA (auto, không cho user edit)
+function getCapInfo(vtpIdx){
+  if(vtpIdx==='' || vtpIdx==null) return {gia:0, dvt:'', ten:'', mo:'', ma:'', loai:''};
+  const v = S.vtp[+vtpIdx];
+  if(!v) return {gia:0, dvt:'', ten:'', mo:'', ma:'', loai:''};
+  const cspv = nval('q_cspv');
+  const gF = parseFloat(v.giaFix||v.gF||0);
+  const gK = parseFloat(v.giaKwp||v.gK||0);
+  const gia = gF>0 ? gF : (gK>0 ? Math.round(gK*cspv) : (parseFloat(v.gia)||0));
+  return {
+    gia, dvt: v.dvt||'m',
+    ten: v.ten||v.ma||'', ma: v.ma||'',
+    mo: v.mo||v.moTa||'',
+    loai: v.loai||''
+  };
+}
+function renderCapRows(){
+  const container=document.getElementById('q_capRows');
+  if(!container) return;
+  const allOpts=(S.vtp||[]).map((v,i)=>`<option value="${i}">${esc(v.ma||'')} - ${esc(v.ten||v.loai||'')} ${v.loai?'('+esc(v.loai)+')':''}</option>`).join('');
+  const rows=window.__qCapRows||[];
+  if(rows.length===0){
+    container.innerHTML='<div style="color:var(--muted);font-style:italic;font-size:11px;text-align:center;padding:8px;background:#f8fafc;border-radius:6px;border:1px dashed var(--border)">Chưa có cáp điện. Nhấn <b>+ Thêm dòng</b> để add từ Data vật tư phụ.</div>';
+    return;
+  }
+  // Header row
+  let headHtml = `<div style="display:grid;grid-template-columns:2.4fr 48px 60px 1fr 1fr 32px;gap:5px;margin-bottom:4px;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.3px;padding:0 4px">
+    <div>Vật tư (từ Data VTP)</div>
+    <div style="text-align:center">ĐVT</div>
+    <div style="text-align:center">SL</div>
+    <div style="text-align:right">Đơn giá</div>
+    <div style="text-align:right">Thành tiền</div>
+    <div></div>
+  </div>`;
+  container.innerHTML = headHtml + rows.map((r,i)=>{
+    const info = getCapInfo(r.vtpIdx);
+    const sl=parseFloat(r.sl)||0, tt=sl*info.gia;
+    return `<div style="display:grid;grid-template-columns:2.4fr 48px 60px 1fr 1fr 32px;gap:5px;margin-bottom:4px;align-items:center">
+      <select class="fc" style="font-size:11px;padding:6px 8px" onchange="onCapVtpChange(${i},this)"><option value="">-- Chọn vật tư từ Data --</option>${allOpts}</select>
+      <input class="fc" style="font-size:11px;padding:6px;text-align:center;background:#f1f5f9;color:var(--muted);font-weight:600" readonly value="${esc(info.dvt||'—')}"/>
+      <input type="number" class="fc" style="font-size:11px;padding:6px;text-align:center;font-weight:600" placeholder="SL" value="${r.sl||''}" oninput="onCapSlChange(${i},this.value)"/>
+      <input class="fc" style="font-size:11px;padding:6px;background:#f1f5f9;color:var(--muted);text-align:right;font-weight:600" readonly value="${info.gia?fmtV(info.gia):'—'}"/>
+      <input class="fc" style="font-size:11px;padding:6px;background:#f8fafc;text-align:right;font-weight:700;color:var(--navy)" readonly value="${tt?fmtV(tt):''}"/>
+      <button type="button" onclick="delCapRow(${i})" style="background:var(--red-l);color:var(--red);border:none;border-radius:6px;padding:6px;cursor:pointer" title="Xóa"><i class="fa fa-trash"></i></button>
+    </div>`;
+  }).join('');
+  // Set selected sau khi render (vì innerHTML reset value của select)
+  rows.forEach((r,i)=>{
+    if(r.vtpIdx!==''){
+      const selectEl = container.querySelectorAll('select')[i];
+      if(selectEl) selectEl.value = r.vtpIdx;
+    }
+  });
+}
+
+// Đọc file ảnh thành base64 lưu vào window.__qImg để báo giá render
+function readImg(inputEl, key, statusId){
+  const file = inputEl.files && inputEl.files[0];
+  if(!file) return;
+  if(file.size > 800*1024){ // giới hạn 800KB
+    toast('Ảnh quá lớn (>800KB). Vui lòng resize trước.','warn');
+    inputEl.value=''; return;
+  }
+  const reader = new FileReader();
+  reader.onload = function(e){
+    window.__qImg = window.__qImg || {};
+    window.__qImg[key] = e.target.result;
+    const st = document.getElementById(statusId);
+    if(st) st.textContent = '✓ ' + Math.round(file.size/1024) + 'KB';
+    if(typeof buildQPreview === 'function') buildQPreview();
+  };
+  reader.readAsDataURL(file);
 }
 function buildQPreview(){
   const d=getQData();
+  // ===== Cập nhật hàng 1: Thông số kỹ thuật =====
+  document.getElementById('sq_cspv').textContent=(d.cspv||0)+' kWp';
+  document.getElementById('sq_sl').textContent=fmtV(d.sl).replace('đ','')+' kWh';
+  document.getElementById('sq_csinv').textContent=(d.inv?d.inv.cs+' ('+d.loai+')':'—');
+  document.getElementById('sq_csluu').textContent=d.isLuu?(d.csluu+' kWh'):'Không';
+  // ===== Hàng 2: Tài chính =====
   document.getElementById('sq_tb').textContent=fmtM(d.ttPin+d.ttInv+d.ttBat);
-  document.getElementById('sq_vt').textContent=fmtM(d.ttVtp);
-  document.getElementById('sq_nc').textContent=fmtM(d.ttNc);
+  document.getElementById('sq_vt').textContent=fmtM(d.ttVtp+d.ttCap);
+  document.getElementById('sq_nc').textContent=fmtM(d.ttNc+d.ttVc);
   document.getElementById('sq_tot').textContent=fmtM(d.total);
-  const batRow=d.isLuu&&d.bat?`<tr><td>3</td><td><b>${esc(d.bat.ma)}</b> - Dung lượng: ${esc(d.bat.dl)} - Vòng đời >8000 lần - BH: ${esc(d.bat.bh)} năm</td><td>${esc(d.bat.dvt)}</td><td>${d.slbat}</td><td>${fmtV(d.gbat)}</td><td><b>${fmtV(d.ttBat)}</b></td></tr>`:'';
-  const vtpRow=d.vtp?`<tr><td>4</td><td><b>${esc(d.vtp.ma)}</b> – ${esc(d.vtp.moTa||d.vtp.ten)}</td><td>${esc(d.vtp.dvt)}</td><td>1</td><td>${fmtV(d.gvtp)}</td><td><b>${fmtV(d.ttVtp)}</b></td></tr>`:`<tr><td>4</td><td><b>Hệ khung + phụ kiện</b></td><td>Hệ</td><td>1</td><td>${fmtV(d.gvtp)}</td><td><b>${fmtV(d.ttVtp)}</b></td></tr>`;
-  document.getElementById('qPreview').innerHTML=`
-    <div class="qp-header">
-      <div class="qp-co">☀️ HTSOLAR</div>
-      <div style="font-size:9px;color:var(--muted)">48 Đường Vũ Quang, P.Thành Sen, Hà Tĩnh | MST: 3002289382 | Hotline: 0945 371 686</div>
-      <div class="qp-ttl">Báo giá hệ thống điện mặt trời</div>
-      <div class="qp-meta">Mã: <b>${esc(d.ma)}</b> | Ngày: ${esc(d.ngay)} | Người lập: ${esc(d.nguoilap)}</div>
-    </div>
-    <hr class="qp-div"/>
-    <table style="width:100%;font-size:10px;border-collapse:collapse;margin-bottom:6px">
-      <tr><td style="padding:2px 0"><b>Khách hàng:</b> ${esc(d.kh)}</td><td><b>Địa chỉ:</b> ${esc(d.dc)}</td></tr>
-      <tr><td><b>CS dàn Pin:</b> ${d.cspv} kWp</td><td><b>Sản lượng TB:</b> ${d.sl} kWh/tháng</td></tr>
-      <tr><td><b>CS Biến tần:</b> ${d.csInv} (${d.loai})</td><td><b>Lưu trữ:</b> ${d.isLuu?d.csluu+' kWh':'—'}</td></tr>
-    </table>
-    <div class="qp-sec">1. THIẾT BỊ CHÍNH (Bảo hành theo tiêu chuẩn NSX)</div>
-    <table class="qp-tbl"><thead><tr><th>#</th><th>Tên thiết bị / Quy cách</th><th>ĐVT</th><th>SL</th><th>Đơn giá</th><th>Thành tiền</th></tr></thead><tbody>
-      <tr><td>1</td><td><b>${d.pin?esc(d.pin.ma):'—'}</b>${d.pin?` - CS: ${esc(d.pin.cs)} - ${esc(d.pin.moTa)} - BH VL: ${esc(d.pin.bhVL)}; BH HS: ${esc(d.pin.bhHS)}`:''}</td><td>${d.pin?esc(d.pin.dvt):'Tấm'}</td><td>${d.slpin}</td><td>${fmtV(d.gpin)}</td><td><b>${fmtV(d.ttPin)}</b></td></tr>
-      <tr><td>2</td><td><b>${d.inv?esc(d.inv.ma):'—'}</b>${d.inv?` - CS: ${esc(d.inv.cs)} - ${esc(d.inv.moTa)} - BH: ${esc(d.inv.bh)} năm`:''}</td><td>${d.inv?esc(d.inv.dvt):'Bộ'}</td><td>${d.slinv}</td><td>${fmtV(d.ginv)}</td><td><b>${fmtV(d.ttInv)}</b></td></tr>
-      ${batRow}
-    </tbody></table>
-    <div class="qp-sec">2. VẬT TƯ PHỤ & HỆ KHUNG GIÀN</div>
-    <table class="qp-tbl"><thead><tr><th>#</th><th>Tên vật tư</th><th>ĐVT</th><th>SL</th><th>Đơn giá</th><th>Thành tiền</th></tr></thead><tbody>
-      ${vtpRow}
-      <tr><td>5</td><td><b>Hệ thống cáp điện</b> – Dây DC 4mm², dây AC 2×10mm², ống ruột gà lõi thép</td><td>Gói</td><td>1</td><td>—</td><td>—</td></tr>
-      <tr><td>6</td><td><b>Vật tư khác</b></td><td>Gói</td><td>1</td><td>—</td><td>—</td></tr>
-    </tbody></table>
-    <div class="qp-sec">3. NHÂN CÔNG & VẬN CHUYỂN</div>
-    <table class="qp-tbl"><thead><tr><th>#</th><th>Hạng mục</th><th>ĐVT</th><th>SL</th><th>Đơn giá</th><th>Thành tiền</th></tr></thead><tbody>
-      <tr><td>7</td><td><b>${d.labor?esc(d.labor.ten):'Nhân công lắp đặt, đấu nối, bảo trì'}</b></td><td>Gói</td><td>1</td><td>${fmtV(d.gnc)}</td><td><b>${fmtV(d.ttNc)}</b></td></tr>
-      <tr><td>8</td><td><b>Vận chuyển</b></td><td>Gói</td><td>1</td><td>—</td><td>—</td></tr>
-    </tbody></table>
-    <div class="qp-tot">
-      <div class="qp-tot-row">Tổng cộng thiết bị & vật tư (Chưa VAT): <b>${fmtV(d.sub)}</b></div>
-      <div class="qp-tot-row">Thuế GTGT (VAT ${d.vat}%): <b>${fmtV(d.tienVat)}</b></div>
-      ${d.ck>0?`<div class="qp-tot-row" style="color:var(--red)">Chiết khấu: <b>-${fmtV(d.ck)}</b></div>`:''}
-      <div class="qp-tot-final">TỔNG CỘNG GIÁ TRỊ HỢP ĐỒNG: ${fmtV(d.total)}</div>
-    </div>
-    ${d.note?`<div style="margin-top:6px;font-size:9px;color:var(--muted)">📝 ${esc(d.note)}</div>`:''}
-    <div style="margin-top:8px;font-size:9px;color:#aaa">✅ Hiệu lực 07 ngày | TT 40% khi ký HĐ, 100% sau lắp đặt | Thi công 2–5 ngày</div>`;
+  // Render iframe với cùng template như khi xuất PDF
+  const html = printQuote('returnHTML');
+  if (typeof html !== 'string') return;
+  const container = document.getElementById('qPreview');
+  container.innerHTML = '';
+  const iframe = document.createElement('iframe');
+  iframe.style.cssText = 'width:100%;height:1100px;border:1px solid #e2e8f0;border-radius:6px;background:#e5e7eb;display:block';
+  iframe.srcdoc = html;
+  container.appendChild(iframe);
 }
-function renderQuotePage(){buildQPreview();renderQHistory();}
+function renderQuotePage(){renderCapRows();buildQPreview();renderQHistory();}
 
 // Print báo giá ra cửa sổ A4 đẹp theo mẫu HT-TEK → user nhấn Cmd+P/Ctrl+P để lưu PDF
-function printQuote(){
+// Nếu gọi với printQuote('returnHTML') → trả về HTML string (dùng cho preview)
+function printQuote(mode){
+  const isReturn = mode === 'returnHTML';
   const d=getQData();
-  if(!d.kh){toast('Vui lòng nhập tên khách hàng trước!','warn');return;}
+  if(!d.kh){
+    if(isReturn) return '<!DOCTYPE html><html><body style="font-family:-apple-system,Segoe UI,Roboto,sans-serif;padding:60px 20px;text-align:center;color:#94a3b8;background:#e5e7eb"><div style="background:#fff;padding:60px 30px;border-radius:8px;max-width:400px;margin:0 auto"><div style="font-size:42px;margin-bottom:12px">📋</div><div style="color:#0f2d5e;font-weight:600;margin-bottom:8px">Chưa có dữ liệu báo giá</div><div style="font-size:13px">Vui lòng điền <b>Tên khách hàng</b> để xem preview</div></div></body></html>';
+    toast('Vui lòng nhập tên khách hàng trước!','warn');return;
+  }
   // Thông tin công ty
   const COMPANY = {
     name: 'CÔNG TY TNHH HT-TEK',
@@ -2035,11 +2209,21 @@ function printQuote(){
   const ICON_PIN = '<svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" style="width:46px;height:46px"><rect x="6" y="6" width="48" height="48" rx="4" fill="#1a56db" stroke="#0f2d5e" stroke-width="2"/><g stroke="#fff" stroke-width="1" opacity=".5"><line x1="6" y1="18" x2="54" y2="18"/><line x1="6" y1="30" x2="54" y2="30"/><line x1="6" y1="42" x2="54" y2="42"/><line x1="18" y1="6" x2="18" y2="54"/><line x1="30" y1="6" x2="30" y2="54"/><line x1="42" y1="6" x2="42" y2="54"/></g></svg>';
   const ICON_INV = '<svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" style="width:46px;height:46px"><rect x="8" y="10" width="44" height="40" rx="4" fill="#f97316" stroke="#c2410c" stroke-width="2"/><rect x="14" y="16" width="32" height="14" rx="2" fill="#fff7ed"/><text x="30" y="26" font-family="Arial" font-size="8" font-weight="bold" fill="#c2410c" text-anchor="middle">DEYE</text><circle cx="20" cy="40" r="3" fill="#fff"/><circle cx="30" cy="40" r="3" fill="#fff"/><circle cx="40" cy="40" r="3" fill="#fff"/></svg>';
   const ICON_BAT = '<svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" style="width:46px;height:46px"><rect x="10" y="12" width="40" height="40" rx="3" fill="#16a34a" stroke="#15803d" stroke-width="2"/><rect x="22" y="8" width="16" height="6" rx="1" fill="#15803d"/><rect x="16" y="20" width="28" height="6" rx="1" fill="#fff" opacity=".8"/><rect x="16" y="30" width="28" height="6" rx="1" fill="#fff" opacity=".6"/><rect x="16" y="40" width="28" height="6" rx="1" fill="#fff" opacity=".4"/></svg>';
-  // Row builder: row có ảnh + ghi chú riêng
-  const buildMainRow = (tt, icon, ma, specs, noteUser, dvt, sl, gia, tt2) => `<tr>
+  // Image cell: dùng ảnh thực nếu có upload, không thì SVG icon
+  const imgCell = (imgData, fallbackIcon) => imgData
+    ? `<img src="${imgData}" style="max-width:50px;max-height:50px;object-fit:contain;display:block;margin:0 auto;border-radius:3px"/>`
+    : `<div class="qd-img-box">${fallbackIcon}</div>`;
+
+  // Row builder: TT | Tên+Mã+Mô tả+Quy cách | Ảnh | Ghi chú | ĐVT | SL | Đơn giá | Thành tiền
+  const buildMainRow = (tt, ten, ma, mo, specs, imgHtml, dvt, sl, gia, tt2, noteUser) => `<tr>
     <td class="qd-c-tt">${tt}</td>
-    <td class="qd-c-img"><div class="qd-img-box">${icon}</div></td>
-    <td class="qd-c-name"><b>${esc(ma)}</b>${specs}</td>
+    <td class="qd-c-name">
+      <div class="qd-name-main">${esc(ten||ma)}</div>
+      ${ma&&ten&&ma!==ten?`<div class="qd-name-code">Mã: ${esc(ma)}</div>`:''}
+      ${mo?`<div class="qd-name-desc">${esc(mo)}</div>`:''}
+      ${specs}
+    </td>
+    <td class="qd-c-img">${imgHtml}</td>
     <td class="qd-c-note">${noteUser?esc(noteUser):'<span class="qd-mute">—</span>'}</td>
     <td class="qd-c-dvt">${esc(dvt)}</td>
     <td class="qd-c-sl">${sl}</td>
@@ -2047,13 +2231,19 @@ function printQuote(){
     <td class="qd-c-num"><b>${fmtV(tt2)}</b></td>
   </tr>`;
 
-  const pinSpecs = d.pin?`<div class="qd-sub">CS: ${esc(d.pin.cs)} • ${esc(d.pin.moTa||d.pin.ten||'n-type TOPCon, 2 mặt kính')}</div><div class="qd-sub">BH vật lý: ${esc(d.pin.bhVL)}; BH hiệu suất: ${esc(d.pin.bhHS)}</div>`:'';
-  const invSpecs = d.inv?`<div class="qd-sub">CS: ${esc(d.inv.cs)} • ${esc(d.inv.moTa||d.inv.ten||'')}</div><div class="qd-sub">BH: ${esc(d.inv.bh)} năm</div>`:'';
-  const batSpecs = d.bat?`<div class="qd-sub">Dung lượng: ${esc(d.bat.dl)} • Vòng đời > 8000 lần</div><div class="qd-sub">BH: ${esc(d.bat.bh)} năm</div>`:'';
+  // Specs chi tiết — chỉ giữ thông số kỹ thuật (không trùng với "mô tả")
+  const pinSpecs = d.pin?`<div class="qd-sub"><b>Công suất:</b> ${esc(d.pin.cs)} • <b>BH vật lý:</b> ${esc(d.pin.bhVL)} • <b>BH hiệu suất:</b> ${esc(d.pin.bhHS)}</div>`:'';
+  const invSpecs = d.inv?`<div class="qd-sub"><b>Công suất:</b> ${esc(d.inv.cs)} • <b>Loại:</b> ${esc(d.inv.loai||d.loai)} • <b>BH:</b> ${esc(d.inv.bh)} năm</div>`:'';
+  const batSpecs = d.bat?`<div class="qd-sub"><b>Dung lượng:</b> ${esc(d.bat.dl)} • <b>Vòng đời:</b> >8000 lần • <b>BH:</b> ${esc(d.bat.bh)} năm</div>`:'';
 
-  const pinRow = buildMainRow(1, ICON_PIN, d.pin?d.pin.ma:'—', pinSpecs, d.notePin, d.pin?d.pin.dvt:'Tấm', d.slpin, d.gpin, d.ttPin);
-  const invRow = buildMainRow(2, ICON_INV, d.inv?d.inv.ma:'—', invSpecs, d.noteInv, d.inv?d.inv.dvt:'Bộ', d.slinv, d.ginv, d.ttInv);
-  const batRow = (d.isLuu && d.bat) ? buildMainRow(3, ICON_BAT, d.bat.ma, batSpecs, d.noteBat, d.bat.dvt||'Bộ', d.slbat, d.gbat, d.ttBat) : '';
+  // Mô tả: prefer field `mo` (Sheets) over `moTa` (local seed)
+  const pinMo = d.pin?(d.pin.mo||d.pin.moTa||''):'';
+  const invMo = d.inv?(d.inv.mo||d.inv.moTa||''):'';
+  const batMo = d.bat?(d.bat.mo||d.bat.moTa||''):'';
+
+  const pinRow = buildMainRow(1, d.pin?d.pin.ten:'', d.pin?d.pin.ma:'—', pinMo, pinSpecs, imgCell(d.imgPin,ICON_PIN), d.pin?d.pin.dvt:'Tấm', d.slpin, d.gpin, d.ttPin, d.notePin);
+  const invRow = buildMainRow(2, d.inv?d.inv.ten:'', d.inv?d.inv.ma:'—', invMo, invSpecs, imgCell(d.imgInv,ICON_INV), d.inv?d.inv.dvt:'Bộ', d.slinv, d.ginv, d.ttInv, d.noteInv);
+  const batRow = (d.isLuu && d.bat) ? buildMainRow(3, d.bat.ten, d.bat.ma, batMo, batSpecs, imgCell(d.imgBat,ICON_BAT), d.bat.dvt||'Bộ', d.slbat, d.gbat, d.ttBat, d.noteBat) : '';
 
   const vtpDesc = d.vtp ? esc(d.vtp.moTa||d.vtp.ten||'Hệ khung chuyên dụng') : 'Hệ khung chuyên dụng, kẹp biên/giữa, tủ điện, thiết bị bảo vệ, cắt sét lan truyền, tiếp địa, máng cáp';
   const vtpMa   = d.vtp ? esc(d.vtp.ma) : 'Hệ khung + phụ kiện';
@@ -2062,65 +2252,80 @@ function printQuote(){
 <style>
 /* === Stable system fonts — không cần load remote, không bao giờ méo === */
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;color:#1e293b;background:#e5e7eb;padding:60px 0 24px;font-size:11px;line-height:1.35;-webkit-font-smoothing:antialiased}
-.page{width:210mm;height:297mm;background:#fff;margin:0 auto;padding:10mm 10mm;box-shadow:0 6px 24px rgba(0,0,0,.15);overflow:hidden;display:flex;flex-direction:column}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;color:#0f172a;background:#e5e7eb;padding:${isReturn?'12px':'60px'} 0 24px;font-size:11px;line-height:1.35;-webkit-font-smoothing:antialiased}
+.page{width:210mm;min-height:297mm;background:#fff;margin:0 auto;padding:7mm 9mm;box-shadow:0 6px 24px rgba(0,0,0,.15);overflow:hidden}
 
 /* === Header === */
-.qd-hdr{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2.5px solid #f97316;padding-bottom:6px;margin-bottom:8px;flex-shrink:0}
+.qd-hdr-top{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:4px;border-bottom:1px solid #e5e7eb}
 .qd-logo{font-size:22px;font-weight:800;color:#f97316;letter-spacing:0.5px;line-height:1}
-.qd-co-name{font-size:11px;font-weight:700;color:#0f2d5e;margin-top:3px}
-.qd-co-info{font-size:9.5px;color:#64748b;margin-top:1px}
-.qd-r{text-align:right}
-.qd-title{font-size:18px;font-weight:800;color:#0f2d5e;line-height:1;letter-spacing:0.3px}
-.qd-sub-title{font-size:9.5px;color:#64748b;margin-top:2px}
-.qd-r .meta-num{font-size:10px;margin-top:3px;color:#374151}
+.qd-co-name{font-size:11.5px;font-weight:800;color:#0f2d5e;margin-top:2px;letter-spacing:0.2px}
+.qd-co-info{font-size:10px;color:#475569;margin-top:1px}
+.qd-num-box{text-align:right;font-size:10.5px;color:#0f172a}
+.qd-num-box div{margin-top:2px}
+.qd-num-box b{color:#0f2d5e}
 
-/* === Meta info === */
-.qd-meta{display:grid;grid-template-columns:1fr 1fr;gap:2px 18px;margin-bottom:7px;font-size:10.5px;flex-shrink:0}
-.qd-meta div{padding:1px 0}
-.qd-meta b{color:#0f2d5e}
+/* === Tiêu đề lớn căn giữa === */
+.qd-title-bar{text-align:center;padding:5px 0 4px;border-bottom:2.5px solid #f97316;margin-bottom:5px}
+.qd-title{font-size:22px;font-weight:800;color:#0f2d5e;letter-spacing:1.5px;line-height:1.1}
+.qd-title-sub{font-size:9.5px;color:#64748b;margin-top:1px;letter-spacing:0.5px;text-transform:uppercase}
+
+/* === Meta info (KH trái, Người lập phải) === */
+.qd-meta{display:flex;justify-content:space-between;gap:16px;margin-bottom:5px;font-size:11px;align-items:flex-start}
+.qd-meta-left{flex:1}
+.qd-meta-right{text-align:right;flex-shrink:0}
+.qd-meta div{padding:1px 0;color:#0f172a}
+.qd-meta b{color:#0f2d5e;font-weight:600}
 
 /* === Section header === */
-.qd-section{background:linear-gradient(90deg,#1a56db,#0f2d5e);color:#fff;padding:4px 9px;font-weight:700;font-size:10px;margin:6px 0 0;border-radius:3px 3px 0 0;letter-spacing:0.3px;flex-shrink:0}
-.qd-specs{background:#eff6ff;border:1px solid #dbeafe;border-top:none;padding:6px 9px;display:grid;grid-template-columns:1fr 1fr;gap:2px 14px;font-size:10px;border-radius:0 0 3px 3px;margin-bottom:6px;flex-shrink:0}
+.qd-section{background:linear-gradient(90deg,#1a56db,#0f2d5e);color:#fff;padding:3px 9px;font-weight:700;font-size:10.5px;margin:4px 0 0;border-radius:3px 3px 0 0;letter-spacing:0.3px}
+.qd-specs{background:#eff6ff;border:1px solid #dbeafe;border-top:none;padding:4px 9px;display:grid;grid-template-columns:1fr 1fr;gap:1px 14px;font-size:10.5px;border-radius:0 0 3px 3px;margin-bottom:4px;color:#0f172a}
+.qd-specs b{color:#0f2d5e;font-weight:700}
 
-/* === Table chi tiết === */
-.qd-tbl{width:100%;border-collapse:collapse;margin-bottom:4px;font-size:9.5px;flex-shrink:0}
-.qd-tbl th{background:#0f2d5e;color:#fff;padding:4px 5px;font-weight:600;text-align:left;border:1px solid #0f2d5e;font-size:9px;letter-spacing:0.2px}
-.qd-tbl th.qd-num{text-align:right}
-.qd-tbl td{padding:4px 5px;border:1px solid #e5e7eb;vertical-align:top;font-size:9.5px}
-.qd-tbl-sub td{background:#dbeafe!important;font-weight:700;color:#0f2d5e;padding:4px 9px;font-size:9.5px}
-.qd-c-tt{width:24px;text-align:center;font-weight:600}
-.qd-c-img{width:52px;text-align:center;padding:2px!important}
-.qd-c-name{width:auto}
-.qd-c-note{width:80px;font-size:9px;color:#475569}
-.qd-c-dvt{width:30px;text-align:center}
-.qd-c-sl{width:24px;text-align:center}
-.qd-c-num{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;width:70px}
-.qd-img-box{width:46px;height:46px;display:flex;align-items:center;justify-content:center;background:#f8fafc;border-radius:4px;margin:0 auto}
-.qd-sub{color:#64748b;font-size:8.5px;margin-top:1px;line-height:1.3}
-.qd-mute{color:#cbd5e1;font-size:9px}
+/* === Table chi tiết — ORDER MỚI: TT | Tên | Ảnh | Ghi chú | ĐVT | SL | Đơn giá | Thành tiền === */
+.qd-tbl{width:100%;border-collapse:collapse;margin-bottom:5px;font-size:10.5px}
+.qd-tbl th{background:#0f2d5e;color:#fff;padding:5px 6px;font-weight:600;text-align:left;border:1px solid #0f2d5e;font-size:10px;letter-spacing:0.2px}
+.qd-tbl th.qd-c-num{text-align:right}
+.qd-tbl td{padding:5px 6px;border:1px solid #e5e7eb;vertical-align:middle;font-size:10.5px;color:#0f172a}
+.qd-tbl-sub td{background:#dbeafe!important;font-weight:700;color:#0f2d5e;padding:4px 10px;font-size:10.5px}
+.qd-c-tt{width:24px;text-align:center;font-weight:700;color:#0f172a}
+.qd-c-name{width:34%;color:#0f172a;vertical-align:top!important;padding:5px 7px!important}
+.qd-c-name .qd-name-main{font-weight:700;color:#0f172a;font-size:11.5px;letter-spacing:0.2px;line-height:1.25}
+.qd-c-name .qd-name-code{font-size:10px;color:#475569;margin-top:1px;font-weight:600;letter-spacing:0.3px}
+.qd-c-name .qd-name-code:before{content:'';display:inline-block;width:3px;height:3px;background:#f97316;border-radius:50%;margin-right:5px;vertical-align:middle}
+.qd-c-name .qd-name-desc{font-size:9.5px;color:#1e293b;margin-top:2px;line-height:1.4;font-style:italic}
+.qd-c-img{width:64px;text-align:center;padding:3px!important;background:#fafafa}
+.qd-c-dvt{width:34px;text-align:center;font-weight:600;color:#0f172a;font-size:10.5px}
+.qd-c-sl{width:28px;text-align:center;font-weight:700;color:#0f172a;font-size:10.5px}
+.qd-c-num{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;width:74px;font-weight:600;color:#0f172a;font-size:10.5px}
+.qd-c-num b{font-weight:800;color:#0f2d5e}
+.qd-c-note{width:78px;font-size:9.5px;color:#475569;font-style:italic;vertical-align:top!important;padding:5px 6px!important}
+.qd-img-box{width:54px;height:54px;display:flex;align-items:center;justify-content:center;background:#f1f5f9;border-radius:4px;margin:0 auto}
+.qd-sub{color:#475569;font-size:9px;margin-top:2px;line-height:1.35}
+.qd-sub b{color:#0f2d5e;font-weight:600}
+.qd-mute{color:#cbd5e1;font-size:10px}
 
 /* === Tổng cộng === */
-.qd-tot{margin-top:6px;padding:6px 10px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:4px;flex-shrink:0}
-.qd-tot-row{display:flex;justify-content:space-between;padding:1px 0;font-size:10.5px}
-.qd-tot-final{display:flex;justify-content:space-between;padding-top:5px;margin-top:3px;border-top:1.5px solid #f97316;font-weight:800;font-size:12.5px;color:#f97316}
+.qd-tot{margin-top:4px;padding:5px 10px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:4px}
+.qd-tot-row{display:flex;justify-content:space-between;padding:1px 0;font-size:11px;color:#0f172a}
+.qd-tot-row b{color:#0f2d5e}
+.qd-tot-final{display:flex;justify-content:space-between;padding-top:4px;margin-top:3px;border-top:1.5px solid #f97316;font-weight:800;font-size:13px;color:#f97316}
 
 /* === Điều khoản + bank === */
-.qd-bottom{margin-top:6px;display:grid;grid-template-columns:1.4fr 1fr;gap:6px;flex-shrink:0}
-.qd-terms{padding:6px 9px;background:#fff7ed;border-left:3px solid #f97316;font-size:9.5px;border-radius:2px}
-.qd-terms h4{font-size:10px;color:#c2410c;margin-bottom:3px;font-weight:700}
-.qd-terms ul{padding-left:14px;line-height:1.45}
-.qd-bank{padding:6px 9px;background:#ecfdf5;border-left:3px solid #16a34a;font-size:9.5px;border-radius:2px}
-.qd-bank h4{font-size:10px;color:#15803d;margin-bottom:3px;font-weight:700}
+.qd-bottom{margin-top:4px;display:grid;grid-template-columns:1.5fr 1fr;gap:5px}
+.qd-terms{padding:4px 9px;background:#fff7ed;border-left:3px solid #f97316;font-size:10px;border-radius:2px;color:#0f172a}
+.qd-terms h4{font-size:10.5px;color:#c2410c;margin-bottom:2px;font-weight:700}
+.qd-terms ul{padding-left:14px;line-height:1.4}
+.qd-bank{padding:4px 9px;background:#ecfdf5;border-left:3px solid #16a34a;font-size:10px;border-radius:2px;color:#0f172a}
+.qd-bank h4{font-size:10.5px;color:#15803d;margin-bottom:2px;font-weight:700}
+.qd-bank b{color:#0f2d5e}
 
 /* === Chữ ký === */
-.qd-sign{margin-top:auto;padding-top:6px;display:grid;grid-template-columns:1fr 1fr;gap:16px;text-align:center;font-size:9.5px;flex-shrink:0}
-.qd-sign-box{padding:4px}
-.qd-sign-box .role{font-weight:700;text-transform:uppercase;color:#0f2d5e;margin-bottom:28px;font-size:10px}
-.qd-sign-box .esign{color:#16a34a;font-style:italic;margin-bottom:2px;font-size:9px}
-.qd-sign-box .name{font-weight:700;font-size:10px}
-.qd-sign-box .sub{color:#64748b;font-size:8.5px}
+.qd-sign{margin-top:5px;display:grid;grid-template-columns:1fr 1fr;gap:16px;text-align:center;font-size:10px}
+.qd-sign-box{padding:2px}
+.qd-sign-box .role{font-weight:700;text-transform:uppercase;color:#0f2d5e;margin-bottom:16px;font-size:10.5px}
+.qd-sign-box .esign{color:#16a34a;font-style:italic;margin-bottom:2px;font-size:9.5px}
+.qd-sign-box .name{font-weight:700;font-size:11px;color:#0f172a}
+.qd-sign-box .sub{color:#64748b;font-size:9px}
 
 /* === Print toolbar === */
 .qd-print-bar{position:fixed;top:0;left:0;right:0;background:#0f2d5e;color:#fff;padding:10px 20px;display:flex;justify-content:space-between;align-items:center;z-index:1000;box-shadow:0 2px 8px rgba(0,0,0,.2);font-family:inherit}
@@ -2138,34 +2343,45 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica N
 }
 </style></head>
 <body>
-<div class="qd-print-bar">
+${isReturn ? '' : `<div class="qd-print-bar">
   <div><b>Báo giá ${esc(d.ma)}</b> — ${esc(d.kh)}</div>
   <div>
     <button class="btn-print" onclick="window.print()">🖨️ In / Lưu PDF</button>
     <button class="btn-close" onclick="window.close()">✕ Đóng</button>
   </div>
-</div>
+</div>`}
 
 <div class="page">
-  <div class="qd-hdr">
-    <div>
-      <div class="qd-logo">☀ ${esc(COMPANY.logo)}</div>
-      <div class="qd-co-name">${esc(COMPANY.name)}</div>
-      <div class="qd-co-info">${esc(COMPANY.addr)}</div>
-      <div class="qd-co-info">MST: ${esc(COMPANY.mst)} • Hotline: ${esc(COMPANY.hotline)}</div>
+  <div class="qd-hdr-top">
+    <div style="display:flex;align-items:center;gap:12px;flex:1">
+      <div style="width:140px;flex-shrink:0">${LOGO_HTTEK_HTML('width:100%;height:auto')}</div>
+      <div>
+        <div class="qd-co-name">${esc(COMPANY.name)}</div>
+        <div class="qd-co-info">${esc(COMPANY.addr)}</div>
+        <div class="qd-co-info">MST: ${esc(COMPANY.mst)} • Hotline: ${esc(COMPANY.hotline)}</div>
+      </div>
     </div>
-    <div class="qd-r">
-      <div class="qd-title">BÁO GIÁ</div>
-      <div class="qd-sub-title">HỆ THỐNG ĐIỆN MẶT TRỜI</div>
-      <div class="meta-num"><b>Số:</b> ${esc(d.ma)}</div>
-      <div class="meta-num"><b>Ngày:</b> ${esc(d.ngay)}</div>
+    <div class="qd-num-box">
+      <div><b>Số báo giá:</b> ${esc(d.ma)}</div>
+      <div><b>Ngày:</b> ${esc(d.ngay)}</div>
     </div>
   </div>
 
+  <div class="qd-title-bar">
+    <div class="qd-title">BÁO GIÁ HỆ THỐNG ĐIỆN MẶT TRỜI</div>
+    <div class="qd-title-sub">Solar System Quotation</div>
+  </div>
+
   <div class="qd-meta">
-    <div><b>Khách hàng:</b> ${esc(d.kh)}</div>
-    <div><b>Người lập:</b> ${esc(d.nguoilap)}</div>
-    <div style="grid-column:span 2"><b>Địa chỉ:</b> ${esc(d.dc||'—')}</div>
+    <div class="qd-meta-left">
+      <div><b>Khách hàng:</b> ${esc(d.kh)}</div>
+      ${d.sdt?`<div><b>SĐT:</b> ${esc(d.sdt)}</div>`:''}
+      <div><b>Địa chỉ:</b> ${esc(d.dc||'—')}</div>
+    </div>
+    <div class="qd-meta-right">
+      <div><b>Người lập báo giá:</b></div>
+      <div style="margin-top:2px;font-weight:600;color:#0f172a">${esc(d.nguoilap)}</div>
+    </div>
   </div>
 
   <div class="qd-section">⚡ THÔNG SỐ KỸ THUẬT HỆ THỐNG</div>
@@ -2180,25 +2396,60 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica N
   <table class="qd-tbl">
     <thead><tr>
       <th class="qd-c-tt">TT</th>
-      <th class="qd-c-img">Ảnh</th>
       <th>Tên thiết bị / Quy cách</th>
+      <th class="qd-c-img">Ảnh</th>
       <th class="qd-c-note">Ghi chú</th>
       <th class="qd-c-dvt">ĐVT</th>
       <th class="qd-c-sl">SL</th>
-      <th class="qd-num">Đơn giá (đ)</th>
-      <th class="qd-num">Thành tiền (đ)</th>
+      <th class="qd-c-num">Đơn giá (đ)</th>
+      <th class="qd-c-num">Thành tiền (đ)</th>
     </tr></thead>
     <tbody>
-      <tr class="qd-tbl-sub"><td colspan="8">1. THIẾT BỊ CHÍNH (Bảo hành theo tiêu chuẩn NSX)</td></tr>
+      <tr class="qd-tbl-sub"><td colspan="8">I. THIẾT BỊ CHÍNH (Bảo hành theo tiêu chuẩn NSX)</td></tr>
       ${pinRow}
       ${invRow}
       ${batRow}
-      <tr class="qd-tbl-sub"><td colspan="8">2. VẬT TƯ PHỤ &amp; HỆ KHUNG GIÀN</td></tr>
-      <tr><td class="qd-c-tt">4</td><td class="qd-c-img"></td><td><b>${vtpMa}</b><div class="qd-sub">${vtpDesc}</div></td><td class="qd-c-note"><span class="qd-mute">—</span></td><td class="qd-c-dvt">${vtpDvt}</td><td class="qd-c-sl">1</td><td class="qd-c-num">${fmtV(d.gvtp)}</td><td class="qd-c-num"><b>${fmtV(d.ttVtp)}</b></td></tr>
-      <tr><td class="qd-c-tt">5</td><td class="qd-c-img"></td><td><b>Hệ thống cáp điện chuyên dụng</b><div class="qd-sub">Dây DC 4mm², dây AC 2×10mm², ống ruột gà lõi thép</div></td><td class="qd-c-note"><span class="qd-mute">—</span></td><td class="qd-c-dvt">Gói</td><td class="qd-c-sl">1</td><td class="qd-c-num">—</td><td class="qd-c-num">—</td></tr>
-      <tr class="qd-tbl-sub"><td colspan="8">3. NHÂN CÔNG &amp; VẬN CHUYỂN</td></tr>
-      <tr><td class="qd-c-tt">6</td><td class="qd-c-img"></td><td><b>${d.labor?esc(d.labor.ten):'Nhân công lắp đặt, đấu nối, bảo hành bảo trì'}</b></td><td class="qd-c-note"><span class="qd-mute">—</span></td><td class="qd-c-dvt">Gói</td><td class="qd-c-sl">1</td><td class="qd-c-num">${fmtV(d.gnc)}</td><td class="qd-c-num"><b>${fmtV(d.ttNc)}</b></td></tr>
-      <tr><td class="qd-c-tt">7</td><td class="qd-c-img"></td><td><b>Vận chuyển</b></td><td class="qd-c-note"><span class="qd-mute">—</span></td><td class="qd-c-dvt">Gói</td><td class="qd-c-sl">1</td><td class="qd-c-num">—</td><td class="qd-c-num">—</td></tr>
+      <tr class="qd-tbl-sub"><td colspan="8">II. VẬT TƯ PHỤ &amp; HỆ KHUNG GIÀN</td></tr>
+      <tr>
+        <td class="qd-c-tt">4</td>
+        <td class="qd-c-name">
+          <div class="qd-name-main">Hệ khung &amp; phụ kiện chuyên dụng</div>
+          ${d.vtp&&d.vtp.ma?`<div class="qd-name-code">Mã: ${esc(d.vtp.ma)}</div>`:''}
+          <div class="qd-name-desc">${vtpDesc}</div>
+        </td>
+        <td class="qd-c-img">${imgCell(d.imgVtp, '<svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" style="width:46px;height:46px"><rect x="6" y="22" width="48" height="6" fill="#64748b"/><rect x="6" y="32" width="48" height="6" fill="#64748b"/><line x1="14" y1="10" x2="14" y2="50" stroke="#64748b" stroke-width="3"/><line x1="30" y1="10" x2="30" y2="50" stroke="#64748b" stroke-width="3"/><line x1="46" y1="10" x2="46" y2="50" stroke="#64748b" stroke-width="3"/></svg>')}</td>
+        <td class="qd-c-note"><span class="qd-mute">—</span></td>
+        <td class="qd-c-dvt">${vtpDvt}</td><td class="qd-c-sl">1</td>
+        <td class="qd-c-num">${fmtV(d.gvtp)}</td><td class="qd-c-num"><b>${fmtV(d.ttVtp)}</b></td>
+      </tr>
+      ${(()=>{
+        // STT bắt đầu từ 5 (sau Hệ khung 4) hoặc 4 nếu không có VTP
+        let stt = 5;
+        let html = '';
+        // Render từng dòng cáp từ list động
+        (d.capRows||[]).forEach(c => {
+          if (!c.ten && !c.sl) return; // skip empty
+          html += `<tr><td class="qd-c-tt">${stt}</td><td class="qd-c-name"><div class="qd-name-main">${esc(c.ten)}</div>${c.ma&&c.ma!==c.ten?`<div class="qd-name-code">Mã: ${esc(c.ma)}</div>`:''}${c.mo?`<div class="qd-name-desc">${esc(c.mo)}</div>`:''}</td><td class="qd-c-img"></td><td class="qd-c-note"><span class="qd-mute">—</span></td><td class="qd-c-dvt">${esc(c.dvt||'m')}</td><td class="qd-c-sl">${c.sl||'—'}</td><td class="qd-c-num">${c.gia?fmtV(c.gia):'—'}</td><td class="qd-c-num"><b>${c.tt?fmtV(c.tt):'—'}</b></td></tr>`;
+          stt++;
+        });
+        // Vật tư khác
+        if (d.vtKhac){
+          html += `<tr><td class="qd-c-tt">${stt}</td><td class="qd-c-name"><div class="qd-name-main">Vật tư khác</div><div class="qd-name-desc">${esc(d.vtKhac)}</div></td><td class="qd-c-img"></td><td class="qd-c-note"><span class="qd-mute">—</span></td><td class="qd-c-dvt">Gói</td><td class="qd-c-sl">1</td><td class="qd-c-num">—</td><td class="qd-c-num">—</td></tr>`;
+          stt++;
+        }
+        // Section III
+        html += `<tr class="qd-tbl-sub"><td colspan="8">III. NHÂN CÔNG &amp; VẬN CHUYỂN</td></tr>`;
+        html += `<tr><td class="qd-c-tt">${stt}</td><td class="qd-c-name"><div class="qd-name-main">${d.labor?esc(d.labor.ten):'Nhân công lắp đặt, đấu nối, bảo hành bảo trì'}</div></td><td class="qd-c-img"></td><td class="qd-c-note"><span class="qd-mute">—</span></td><td class="qd-c-dvt">Gói</td><td class="qd-c-sl">1</td><td class="qd-c-num">${fmtV(d.gnc)}</td><td class="qd-c-num"><b>${fmtV(d.ttNc)}</b></td></tr>`;
+        stt++;
+        html += `<tr><td class="qd-c-tt">${stt}</td><td class="qd-c-name"><div class="qd-name-main">Vận chuyển</div>${d.giaVc?'':`<div class="qd-sub" style="color:#16a34a;font-style:italic">Miễn phí trong nội thành</div>`}</td><td class="qd-c-img"></td><td class="qd-c-note"><span class="qd-mute">—</span></td><td class="qd-c-dvt">Gói</td><td class="qd-c-sl">1</td><td class="qd-c-num">${d.giaVc?fmtV(d.giaVc):'<span style="color:#16a34a;font-weight:700">Miễn phí</span>'}</td><td class="qd-c-num">${d.giaVc?`<b>${fmtV(d.ttVc)}</b>`:'<span style="color:#16a34a;font-weight:700">—</span>'}</td></tr>`;
+        stt++;
+        // Section IV
+        if (d.bsKhac){
+          html += `<tr class="qd-tbl-sub"><td colspan="8">IV. BỔ SUNG KHÁC</td></tr>`;
+          html += `<tr><td class="qd-c-tt">${stt}</td><td class="qd-c-name"><div class="qd-name-main">Hạng mục bổ sung</div><div class="qd-name-desc">${esc(d.bsKhac)}</div></td><td class="qd-c-img"></td><td class="qd-c-note"><span class="qd-mute">—</span></td><td class="qd-c-dvt">—</td><td class="qd-c-sl">—</td><td class="qd-c-num">—</td><td class="qd-c-num">—</td></tr>`;
+        }
+        return html;
+      })()}
     </tbody>
   </table>
 
@@ -2246,6 +2497,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica N
 // setTimeout(()=>window.print(), 800);
 </scr`+`ipt>
 </body></html>`;
+  if (isReturn) return html;
   const w = window.open('', '_blank', 'width=900,height=1100');
   if (!w) { toast('Trình duyệt chặn popup. Cho phép popup cho trang này.','error'); return; }
   w.document.write(html);
@@ -2487,9 +2739,20 @@ document.addEventListener('keydown',e=>{
 // ══════════════════════════════════════════════════════════
 //  BOOT
 // ══════════════════════════════════════════════════════════
+// === LOGO HT-TEK ===
+// Inline SVG dùng cho sidebar, login, báo giá PDF
+const LOGO_IMG_SRC = 'data:image/png;base64,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'; 
+const LOGO_HTTEK_HTML = (sizeStyle) => `<img src="${LOGO_IMG_SRC}" alt="HT-TEK Logo" style="${sizeStyle||'width:100%;height:auto'};display:block"/>`;
+
+function injectLogos(){
+  document.querySelectorAll('[data-logo="httek-dark"]').forEach(el => { el.innerHTML = LOGO_HTTEK_HTML('width:100%;height:auto'); });
+  document.querySelectorAll('[data-logo="httek-light"]').forEach(el => { el.innerHTML = LOGO_HTTEK_HTML('height:34px;width:auto;background:#fff;border-radius:6px;padding:2px') + '<span style="margin-left:8px;color:#fff;font-family:\'Syne\',sans-serif;font-size:16px;font-weight:800">HT-TEK</span>'; });
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
   restore();
   seedAll();
+  injectLogos();
   await hashPendingPasswords();
   // Auto-restore session nếu token còn hiệu lực
   try {
